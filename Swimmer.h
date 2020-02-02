@@ -5,18 +5,25 @@
 
 #include <QPainter>
 
+#include <iostream>
+#include <math.h>
+
 class Swimmer {
 public:
     Swimmer(double x, double y)
         : x_(x)
         , y_(y)
+        , bearing_(0.0)
+        , speed_(0.1)
     {
     }
 
     void Tick()
     {
-        x_ += Random(-10.0, 10.0);
-        y_ += Random(-10.0, 10.0);
+        x_ += std::sin(bearing_) * speed_;
+        y_ += -(std::cos(bearing_) * speed_);
+
+        bearing_ += Random(-0.1, 0.1);
     }
 
     void Draw(QPainter& paint)
@@ -27,6 +34,9 @@ public:
 private:
     double x_;
     double y_;
+
+    double bearing_;
+    double speed_;
 };
 
 #endif // SWIMMER_H

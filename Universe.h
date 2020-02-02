@@ -21,9 +21,6 @@ public:
     Universe(QWidget *parent)
         : QWidget(parent)
     {
-        //setGeometry(0, 0, 1000, 1000);
-        //parent->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
         for (auto i = 0; i < 50; i++) {
             swimmers_.push_back({Random<double>(0, 1000.0), Random<double>(0, 1000.0)});
         }
@@ -99,6 +96,11 @@ private:
 
     double energy_ = 1000.0;
 
+    /*
+     * Going forward my idea is to have a map of vectors of entities
+     *
+     * Anything that can be interacted with will be an entity in
+     */
     std::vector<FoodPellet> food_;
     std::vector<Swimmer> swimmers_;
 
