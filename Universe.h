@@ -1,14 +1,14 @@
 #ifndef UNIVERSE_H
 #define UNIVERSE_H
 
+#include "FoodPellet.h"
+#include "Swimmer.h"
+#include "Random.h"
+
 #include <QScrollArea>
 #include <QTimer>
 #include <QPaintEvent>
 #include <QPainter>
-
-#include "FoodPellet.h"
-#include "Swimmer.h"
-#include "Random.h"
 
 #include <iostream>
 #include <iomanip>
@@ -37,11 +37,11 @@ public:
         {
             this->Thread();
         });
-        timer->start(1);
+        timer->start(20);
     }
 
 protected:
-    void wheelEvent(QWheelEvent* event)
+    virtual void wheelEvent(QWheelEvent* event) override final
     {
         simScale_ += 0.001 * event->angleDelta().y();
         simScale_ = std::max(0.2, std::min(simScale_, 2.0));
@@ -96,11 +96,6 @@ private:
 
     double energy_ = 1000.0;
 
-    /*
-     * Going forward my idea is to have a map of vectors of entities
-     *
-     * Anything that can be interacted with will be an entity in
-     */
     std::vector<FoodPellet> food_;
     std::vector<Swimmer> swimmers_;
 
