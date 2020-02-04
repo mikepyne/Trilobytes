@@ -11,6 +11,8 @@
 
 class Swimmer : public Entity {
 public:
+    double radius_;
+
     Swimmer(double x, double y);
 
     void Tick();

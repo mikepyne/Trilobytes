@@ -2,6 +2,7 @@
 
 Swimmer::Swimmer(double x, double y)
     : Entity(x, y)
+    , radius_(6.0)
 {
     speed_ = 0.5;
 }
@@ -17,5 +18,5 @@ void Swimmer::Tick()
 void Swimmer::Draw(QPainter& paint)
 {
     paint.setBrush(QColor(15, 15, 235));
-    paint.drawEllipse({x_, y_}, 12.5, 12.5);
+    paint.drawEllipse({x_, y_}, radius_, radius_);
 }

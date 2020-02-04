@@ -1,17 +1,24 @@
 #ifndef FOODPELLET_H
 #define FOODPELLET_H
 
+#include "Entity.h"
+
 #include <QPainter>
 
-class FoodPellet {
+class FoodPellet : public Entity {
 public:
-    double x_;
-    double y_;
+    double radius_;
+
+    FoodPellet(double x, double y)
+        : Entity(x, y)
+        , radius_(2.5)
+    {
+    }
 
     void Draw(QPainter& paint)
     {
         paint.setBrush(QColor(15, 235, 15));
-        paint.drawEllipse(QPointF{x_, y_,}, 2.5, 2.5);
+        paint.drawEllipse(QPointF{x_, y_}, radius_, radius_);
     }
 };
 
