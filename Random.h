@@ -6,25 +6,68 @@
 #include <vector>
 #include <algorithm>
 
-// TODO use modern C++ random  generation to create a number of helper functions to create "biologically" distrubuted random numbers (mutation size based on normal distribution e.g.)
-// allow seeding / saving / loading of random state
-// helper functions for ranges etc that do it right
+class Random {
+public:
+    static void Seed(const std::mt19937::result_type& seed)
+    {
+        entropy_.seed(seed);
+    }
 
-// Thought this would be a good area for you to explore Tom, c++ has very nice modern classes for cool, clever, efficient, neatly wrapped random operations
+    template<typename NumericType>
+    static NumericType Gaussian(NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
+    {
+        return Number<std::normal_distribution<NumericType>>(min, max);
+    }
 
-template<typename NumericType>
-NumericType Random(NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
-{
-    // VERY BAD IMPL!
-    return static_cast<NumericType>(((static_cast<double>(std::rand()) / RAND_MAX) * (max - min)) + min);
-}
+    template<typename NumericType>
+    static NumericType Int(NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
+    {
+        return Number<std::uniform_int_distribution<NumericType>>(min, max);
+    }
 
-template<typename NumericType>
-NumericType RandomArray(typename std::vector<NumericType>::size_t count, NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
-{
-    std::vector<NumericType> rands;
-    rands.reserve(count);
-    std::generate_n(std::back_inserter(rands), count, [&](){ return Random(min, max); });
-}
+    template<typename NumericType>
+    static NumericType Real(NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
+    {
+        return Number<std::uniform_real_distribution<NumericType>>(min, max);
+    }
+
+    template<typename NumericType>
+    static std::vector<NumericType> GaussianArray(typename std::vector<NumericType>::size_type count, NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
+    {
+        std::vector<NumericType> rands;
+        rands.reserve(count);
+        std::generate_n(std::back_inserter(rands), count, [&](){ return Gaussian(min, max); });
+        return rands;
+    }
+
+    template<typename NumericType>
+    static std::vector<NumericType> IntArray(typename std::vector<NumericType>::size_type count, NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
+    {
+        std::vector<NumericType> rands;
+        rands.reserve(count);
+        std::generate_n(std::back_inserter(rands), count, [&](){ return Int(min, max); });
+        return rands;
+    }
+
+    template<typename NumericType>
+    static std::vector<NumericType> RealArray(typename std::vector<NumericType>::size_type count, NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
+    {
+        std::vector<NumericType> rands;
+        rands.reserve(count);
+        std::generate_n(std::back_inserter(rands), count, [&](){ return Real(min, max); });
+        return rands;
+    }
+
+private:
+    inline static std::mt19937 entropy_ = std::mt19937();
+
+    template<typename DistributionType, typename NumericType>
+    static NumericType Number(NumericType min, NumericType max)
+    {
+        static DistributionType dist;
+        dist.param(typename DistributionType::param_type(min, max));
+        return dist(entropy_);
+    }
+};
 
 #endif // RANDOM_H

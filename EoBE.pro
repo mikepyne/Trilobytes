@@ -1,6 +1,4 @@
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core gui widgets
 
 CONFIG += c++17
 
@@ -18,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     Entity.cpp \
     FoodPellet.cpp \
+    NeuralNetwork.cpp \
     Random.cpp \
     Swimmer.cpp \
     Universe.cpp \
@@ -28,6 +27,7 @@ HEADERS += \
     Entity.h \
     FoodPellet.h \
     MainWindow.h \
+    NeuralNetwork.h \
     Random.h \
     Swimmer.h \
     Universe.h

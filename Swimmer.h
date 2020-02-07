@@ -3,6 +3,7 @@
 
 #include "Entity.h"
 #include "Random.h"
+#include "NeuralNetwork.h"
 
 #include <QPainter>
 
@@ -18,6 +19,9 @@ public:
     void Tick();
 
     void Draw(QPainter& paint);
+
+private:
+    NeuralNetwork brain_;
 };
 
 #endif // SWIMMER_H

@@ -4,7 +4,7 @@ Universe::Universe(QWidget* parent)
     : QWidget(parent)
 {
     for (auto i = 0; i < 50; i++) {
-        swimmers_.push_back({Random<double>(0, 1000.0), Random<double>(0, 1000.0)});
+        swimmers_.push_back({Random::Real(0.0, 1000.0), Random::Real(0.0, 1000.0)});
     }
 
     /*
@@ -73,8 +73,8 @@ void Universe::Thread()
         double foodX;
         double foodY;
         //if (food_.size() < 100 || Random(0.0, 100.0) < 0.5) {
-        foodX = Random<double>(0.0, 1000.0);
-        foodY = Random<double>(0.0, 1000.0);
+        foodX = Random::Real(0.0, 1000.0);
+        foodY = Random::Real(0.0, 1000.0);
         //} else {
         //   auto& p = food_.at(Random(0u, food_.size() - 1u));
         //    foodX = p.x_ + Random(-17.0, 17.0);
