@@ -12,6 +12,7 @@
 
 class Swimmer : public Entity {
 public:
+    double energy_ = 1.0;
     double radius_;
 
     Swimmer(double x, double y);
@@ -20,8 +21,12 @@ public:
 
     void Draw(QPainter& paint);
 
+    Swimmer GiveBirth();
+
 private:
     NeuralNetwork brain_;
+
+    Swimmer(double x, double y, NeuralNetwork&& brain);
 };
 
 #endif // SWIMMER_H

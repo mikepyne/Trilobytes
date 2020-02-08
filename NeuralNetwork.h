@@ -27,6 +27,7 @@ public:
      */
     NeuralNetwork(unsigned layerCount, unsigned width);
 
+
     /**
      * Inputs should be between 0.0 and 1.0 inclusive. Returns the final node
      * values.
@@ -36,9 +37,15 @@ public:
      */
     const std::vector<double>& ForwardPropogate(const std::vector<double>& inputs);
 
+    NeuralNetwork Mutated();
+
 private:
     std::vector<Layer> layers_;
     std::vector<double> outputs_;
+
+    NeuralNetwork(std::vector<Layer>&& layers);
+
+    std::vector<Layer> CreateRandomLayers(unsigned layerCount, unsigned width);
 };
 
 #endif // NEURALNETWORK_H
