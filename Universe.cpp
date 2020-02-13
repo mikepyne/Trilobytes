@@ -28,8 +28,10 @@ Universe::Universe(QWidget* parent)
 
 void Universe::wheelEvent(QWheelEvent* event)
 {
-    simScale_ += 0.001 * event->angleDelta().y();
-    simScale_ = std::max(0.2, std::min(simScale_, 2.0));
+    double d = 1.0 + (0.001 * double(event->angleDelta().y()));
+    simScale_ *= d;
+    simX_ *= d;
+    simY_ *= d;
 }
 
 void Universe::mouseReleaseEvent(QMouseEvent*)
@@ -59,7 +61,7 @@ void Universe::paintEvent(QPaintEvent*)
     QPainter p(this);
     p.setBackground(QColor(200, 225, 255));
     p.drawText(0, 15, QString::number(rootNode_.EntityCount()));
-    p.translate(simX_, simY_);
+    p.translate(simX_ + (width() / 2), simY_ + (height() / 2));
     p.scale(simScale_, simScale_);
 
 
