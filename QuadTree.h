@@ -16,15 +16,22 @@
 class QuadTree {
 public:
     QuadTree(const Rect& startingArea)
-        : root_(std::make_shared<Quad>(startingArea))
+        : root_(std::make_shared<Quad>(startingArea, *this, nullptr))
+        , targetCount_(1)
+        , leewayCount_(0)
+        , requiresRebalance_(true)
+        , rootExpandedCount_(0)
     {
     }
 
     void Tick()
     {
+        if (requiresRebalance_) {
+            root_->Rebalance(targetCount_, leewayCount_);
+            requiresRebalance_ = false;
+        }
         root_->TickRecursive();
         root_->ResolveRecursive();
-        root_->Rebalance(20, 5);
     }
 
     void Draw(QPainter& paint)
@@ -42,13 +49,45 @@ public:
         return root_->RecursiveEntityCount();
     }
 
+    void SetEntityCapacity(uint64_t target, uint64_t leeway)
+    {
+        targetCount_ = target;
+        leewayCount_ = leeway;
+        root_->Rebalance(targetCount_, leewayCount_);
+        requiresRebalance_ = false;
+    }
+
 private:
-    class Quad : private EntityContainer {
+    class Quad : private EntityContainerInterface {
     public:
-        Quad(const Rect& area, Quad* parent = nullptr)
-            : parent_(parent)
+        Quad(const Rect& area, QuadTree& owner, Quad* parent)
+            : baseTree_(owner)
+            , parent_(parent)
             , rect_(area)
         {
+        }
+
+        Quad(const Rect& area, QuadTree& owner, std::vector<std::shared_ptr<Quad>>&& children)
+            : Quad(area, owner, nullptr)
+        {
+            children_.swap(children);
+            for (auto& child : children_) {
+                child->parent_ = this;
+            }
+        }
+
+        static std::vector<std::shared_ptr<Quad>> CreateChildren(Rect parentRect, QuadTree& baseTree, Quad* parent)
+        {
+            double halfWidth = (parentRect.right - parentRect.left) / 2.0;
+            double midX = parentRect.left + halfWidth;
+            double midY = parentRect.top + halfWidth;
+
+            return {
+                std::make_shared<Quad>(Rect{ parentRect.left, parentRect.top, midX            , midY }             , baseTree, parent),
+                std::make_shared<Quad>(Rect{ midX           , parentRect.top, parentRect.right, midY }             , baseTree, parent),
+                std::make_shared<Quad>(Rect{ parentRect.left, midY          , midX            , parentRect.bottom }, baseTree, parent),
+                std::make_shared<Quad>(Rect{ midX           , midY          , parentRect.right, parentRect.bottom }, baseTree, parent),
+            };
         }
 
         virtual void AddEntity(const std::shared_ptr<Entity>& entity) override final
@@ -86,6 +125,10 @@ private:
                 for (auto& child : children_) {
                     child->ResolveRecursive();
                 }
+
+                if (AllChildrenAreLeaves() && RecursiveEntityCount() <= baseTree_.targetCount_ - baseTree_.leewayCount_) {
+                    baseTree_.requiresRebalance_ = true;
+                }
             } else {
                 entities_.erase(std::remove_if(std::begin(entities_), std::end(entities_), [&](auto& e)
                 {
@@ -102,6 +145,10 @@ private:
                     return e->Alive();
                 });
                 enteringEntities_.clear();
+
+                if (entities_.size() >= baseTree_.targetCount_ + baseTree_.leewayCount_) {
+                    baseTree_.requiresRebalance_ = true;
+                }
             }
         }
 
@@ -128,6 +175,9 @@ private:
                         enteringEntities_.push_back(entity);
                     } else {
                         entities_.push_back(entity);
+                        if (entities_.size() >= baseTree_.targetCount_ + baseTree_.leewayCount_) {
+                            baseTree_.requiresRebalance_ = true;
+                        }
                     }
                 } else {
                     for (auto& child : children_) {
@@ -139,8 +189,14 @@ private:
             } else if (parent_) {
                 parent_->RehomeRecursive(entity, delayed);
             } else {
-                // TODO need to create a new parent, and somehow communictae that root has updated
+                baseTree_.ExpandRoot();
+                RehomeRecursive(entity, delayed);
             }
+        }
+
+        const Rect& GetRect()
+        {
+            return rect_;
         }
 
         \
@@ -182,34 +238,12 @@ private:
                 entities_ = RecursivelyCollectEntities();
                 children_.clear();
             } else if (children_.empty() && RecursiveEntityCount() > targetCount + historesis) {
-                double halfWidth = (rect_.right - rect_.left) / 2.0;
-                double midX = rect_.left + halfWidth;
-                double midY = rect_.top + halfWidth;
-
-                children_ = {
-                    std::make_shared<Quad>(Rect{ rect_.left, rect_.top, midX,        midY }, this),
-                    std::make_shared<Quad>(Rect{ midX,       rect_.top, rect_.right, midY }, this),
-                    std::make_shared<Quad>(Rect{ rect_.left, midY,      midX,        rect_.bottom }, this),
-                    std::make_shared<Quad>(Rect{ midX,       midY,      rect_.right, rect_.bottom }, this),
-                };
-
-                Quad& topLeft = *children_.at(0);
-                Quad& topRight = *children_[1];
-                Quad& bottomLeft = *children_[2];
-                Quad& bottomRight = *children_[3];
-
+                children_ = CreateChildren(rect_, baseTree_, this);
                 for (auto entity : entities_) {
-                    if (entity->GetX() < midX) {
-                        if (entity->GetY() < midY) {
-                            topLeft.entities_.push_back(std::move(entity));
-                        } else {
-                            bottomLeft.entities_.push_back(std::move(entity));
-                        }
-                    } else {
-                        if (entity->GetY() < midY) {
-                            topRight.entities_.push_back(std::move(entity));
-                        } else {
-                            bottomRight.entities_.push_back(std::move(entity));
+                    for (auto& child : children_) {
+                        if (Contains(child->rect_, Point{ entity->GetX(), entity->GetY() })) {
+                            child->entities_.push_back(entity);
+                            continue;
                         }
                     }
                 }
@@ -235,6 +269,7 @@ private:
         }
 
     private:
+        QuadTree& baseTree_;
         Quad* parent_;
         std::vector<std::shared_ptr<Quad>> children_;
 
@@ -266,6 +301,16 @@ private:
             }
         }
 
+        bool AllChildrenAreLeaves()
+        {
+            for (auto& child : children_) {
+                if (!child->children_.empty()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         std::vector<std::shared_ptr<Entity>> RecursivelyCollectEntities()
         {
             std::vector<std::shared_ptr<Entity>> allEntities;
@@ -282,6 +327,34 @@ private:
     };
 
     std::shared_ptr<Quad> root_;
+
+    uint64_t targetCount_;
+    uint64_t leewayCount_;
+    bool requiresRebalance_;
+    uint64_t rootExpandedCount_;
+
+    void ExpandRoot()
+    {
+        bool expandOutwards = rootExpandedCount_++ % 2 == 0;
+        const Rect& oldRootRect = root_->GetRect();
+        double width = oldRootRect.right - oldRootRect.left;
+        double height = oldRootRect.bottom - oldRootRect.top;
+
+        Rect newRootRect = {
+            oldRootRect.left - (expandOutwards ? 0.0 : width),
+            oldRootRect.top - (expandOutwards ? 0.0 : height),
+            oldRootRect.right + (expandOutwards ? width : 0.0),
+            oldRootRect.bottom + (expandOutwards ? height : 0.0)
+        };
+        std::vector<std::shared_ptr<Quad>> children = Quad::CreateChildren(newRootRect, *this, nullptr);
+        for (auto& child : children) {
+            if (root_->GetRect() == child->GetRect()) {
+                child.swap(root_);
+                break;
+            }
+        }
+        root_ = std::make_shared<Quad>(newRootRect, *this, std::move(children));
+    }
 };
 
 

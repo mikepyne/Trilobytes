@@ -15,7 +15,7 @@ public:
     Swimmer(double x, double y);
     Swimmer(double x, double y, NeuralNetwork&& brain);
 
-    virtual bool Tick(EntityContainer& container) override final;
+    virtual bool Tick(EntityContainerInterface& container) override final;
     virtual void Draw(QPainter& paint) override final;
 
     std::shared_ptr<Swimmer> GiveBirth();

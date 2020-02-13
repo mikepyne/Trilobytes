@@ -22,6 +22,8 @@ Universe::Universe(QWidget* parent)
         rootNode_.AddEntity(std::make_shared<Swimmer>(Random::Real(n, 1000.0), Random::Real(0.0, 1000.0)));
         energy_ -= 1.0;
     }
+
+    rootNode_.SetEntityCapacity(25, 5);
 }
 
 void Universe::wheelEvent(QWheelEvent* event)

@@ -13,7 +13,7 @@ public:
         energy_ = 1.0;
     }
 
-    virtual bool Tick(EntityContainer& /*container*/) override final
+    virtual bool Tick(EntityContainerInterface& /*container*/) override final
     {
         return false;
     }

@@ -27,6 +27,11 @@ struct Rect {
     const double bottom;
 };
 
+inline bool operator==(const Rect& r1, const Rect& r2)
+{
+    return r1.left == r2.left && r1.top == r2.top && r1.right == r2.right && r1.bottom == r2.bottom;
+}
+
 inline Rect RectFromCircle(const Circle& c)
 {
     return {c.x - c.radius, c.y - c.radius, c.x + c.radius , c.y + c.radius };
@@ -44,7 +49,7 @@ inline bool Collides(const Rect& r1, const Rect& r2)
 
 inline bool Collides(const Circle& c1, const Circle& c2)
 {
-    return (std::pow(c1.x - c2.x, 2.0) + std::pow(c1.y - c2.y, 2.0)) <= (std::pow(c1.radius, 2.0) + std::pow(c2.radius, 2.0));
+    return (std::pow(c1.x - c2.x, 2.0) + std::pow(c1.y - c2.y, 2.0)) <= std::pow(c1.radius + c2.radius, 2.0);
 }
 
 inline bool Collides(const Rect& r, const Circle& c)

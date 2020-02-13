@@ -26,6 +26,7 @@ SOURCES += \
 
 HEADERS += \
     Entity.h \
+    EntityContainerInterface.h \
     FoodPellet.h \
     MainWindow.h \
     NeuralNetwork.h \

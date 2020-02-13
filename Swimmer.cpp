@@ -16,7 +16,7 @@ Swimmer::Swimmer(double x, double y, NeuralNetwork&& brain)
     energy_ = 1.0;
 }
 
-bool Swimmer::Tick(EntityContainer& container)
+bool Swimmer::Tick(EntityContainerInterface& container)
 {
     auto& out = brain_.ForwardPropogate({Random::Real(-2.0, 2.0), energy_ - 2.0, (bearing_ / 3.14) - 1});
     bearing_ += (out[1]);

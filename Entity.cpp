@@ -55,7 +55,3 @@ bool Entity::Move()
     }
     return false;
 }
-
-EntityContainer::~EntityContainer()
-{
-}
