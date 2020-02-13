@@ -2,6 +2,7 @@
 
 Universe::Universe(QWidget* parent)
     : QWidget(parent)
+    , rootNode_({0, 0, 1000, 1000})
 {
     /*
      * QT hack to get this running in the QT event loop (necessary for
@@ -15,7 +16,12 @@ Universe::Universe(QWidget* parent)
     {
         this->Thread();
     });
-    timer->start(1);
+    timer->start(20);
+
+    for (auto n : std::vector<double>(30, 0.0)) {
+        rootNode_.AddEntity(std::make_shared<Swimmer>(Random::Real(n, 1000.0), Random::Real(0.0, 1000.0)));
+        energy_ -= 1.0;
+    }
 }
 
 void Universe::wheelEvent(QWheelEvent* event)
@@ -49,78 +55,24 @@ void Universe::mouseMoveEvent(QMouseEvent* event)
 void Universe::paintEvent(QPaintEvent*)
 {
     QPainter p(this);
-    p.drawText(0, 15, QString::number(swimmers_.size()));
+    p.setBackground(QColor(200, 225, 255));
+    p.drawText(0, 15, QString::number(rootNode_.EntityCount()));
     p.translate(simX_, simY_);
     p.scale(simScale_, simScale_);
 
-    p.drawRect(0, 0, 1000, 1000);
 
-    for (auto& e : food_) {
-        e.Draw(p);
-    }
-    for (auto& e : swimmers_) {
-        e.Draw(p);
-    }
-    update();
+    rootNode_.Draw(p);
 }
 
 void Universe::Thread()
 {
+    rootNode_.Tick();
+
     if (energy_ > 1) {
-        double foodX;
-        double foodY;
-        //if (food_.size() < 100 || Random(0.0, 100.0) < 0.5) {
-        foodX = Random::Real(0.0, 1000.0);
-        foodY = Random::Real(0.0, 1000.0);
-        //} else {
-        //   auto& p = food_.at(Random(0u, food_.size() - 1u));
-        //    foodX = p.x_ + Random(-17.0, 17.0);
-        //    foodY = p.y_ + Random(-17.0, 17.0);
-        //}
-
-        food_.push_back({foodX, foodY});
+        double foodX = Random::Real(0.0, 1000.0);
+        double foodY = Random::Real(0.0, 1000.0);
+        rootNode_.AddEntity(std::make_shared<FoodPellet>(foodX, foodY));
         --energy_;
-    }
-
-    std::vector<Swimmer> eggs;
-    swimmers_.erase(std::remove_if(std::begin(swimmers_), std::end(swimmers_), [&](Swimmer& swimmer)
-    {
-        swimmer.Tick();
-        double energyLoss = 1.0 / 1000;
-        if (swimmer.energy_ > energyLoss) {
-            swimmer.energy_ -= energyLoss;
-            energy_ += energyLoss;
-        } else {
-            energy_ += swimmer.energy_;
-            std::cout << "DEATH" << std::endl;
-            return true;
-        }
-        food_.erase(std::remove_if(std::begin(food_), std::end(food_), [&](FoodPellet& f)
-        {
-            if (swimmer.DistanceSq(f) < std::pow(swimmer.radius_, 2)) {
-                --energy_;
-                swimmer.energy_++;
-                return true;
-            }
-            return false;
-        }), food_.end());
-
-        if (swimmer.energy_ >= 3.0) {
-            std::cout << "BIRTH" << std::endl;
-            eggs.push_back(swimmer.GiveBirth());
-            swimmer.energy_ -= 1;
-            eggs.back().energy_ += 1;
-        }
-        return false;
-    }), swimmers_.end());
-
-    std::copy(eggs.begin(), eggs.end(), std::back_inserter(swimmers_));
-    eggs.clear();
-
-    while (swimmers_.size() < 10) {
-        std::cout << "CREATED" << std::endl;
-        swimmers_.push_back({Random::Real(0.0, 1000.0), Random::Real(0.0, 1000.0)});
-        energy_ -= swimmers_.back().energy_;
     }
 
     // QT paint call

@@ -3,6 +3,7 @@
 
 #include "FoodPellet.h"
 #include "Swimmer.h"
+#include "QuadTree.h"
 #include "Random.h"
 
 #include <QScrollArea>
@@ -38,8 +39,7 @@ private:
 
     double energy_ = 1000.0;
 
-    std::vector<FoodPellet> food_;
-    std::vector<Swimmer> swimmers_;
+    QuadTree rootNode_;
 
     void Thread();
 };

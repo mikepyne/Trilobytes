@@ -73,7 +73,7 @@ std::vector<NeuralNetwork::Layer> NeuralNetwork::CreateRandomLayers(unsigned lay
     // First layer doesn't need input weights, as it will be assigned a value by the ForwardPropogate() func
     for (auto& layer : layers) {
         for (auto& node : layer) {
-            node = Random::GaussianArray(width, -0.5, 0.5);
+            node = Random::GaussianArray(width, 0.0, 0.75);
         }
     }
 

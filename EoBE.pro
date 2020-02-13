@@ -17,6 +17,7 @@ SOURCES += \
     Entity.cpp \
     FoodPellet.cpp \
     NeuralNetwork.cpp \
+    QuadTree.cpp \
     Random.cpp \
     Swimmer.cpp \
     Universe.cpp \
@@ -28,7 +29,9 @@ HEADERS += \
     FoodPellet.h \
     MainWindow.h \
     NeuralNetwork.h \
+    QuadTree.h \
     Random.h \
+    Shape.h \
     Swimmer.h \
     Universe.h
 

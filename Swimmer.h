@@ -12,21 +12,16 @@
 
 class Swimmer : public Entity {
 public:
-    double energy_ = 1.0;
-    double radius_;
-
     Swimmer(double x, double y);
+    Swimmer(double x, double y, NeuralNetwork&& brain);
 
-    void Tick();
+    virtual bool Tick(EntityContainer& container) override final;
+    virtual void Draw(QPainter& paint) override final;
 
-    void Draw(QPainter& paint);
-
-    Swimmer GiveBirth();
+    std::shared_ptr<Swimmer> GiveBirth();
 
 private:
     NeuralNetwork brain_;
-
-    Swimmer(double x, double y, NeuralNetwork&& brain);
 };
 
 #endif // SWIMMER_H

@@ -7,18 +7,28 @@
 
 class FoodPellet : public Entity {
 public:
-    double radius_;
-
     FoodPellet(double x, double y)
-        : Entity(x, y)
-        , radius_(2.5)
+        : Entity(x, y, 2.5)
     {
+        energy_ = 1.0;
     }
 
-    void Draw(QPainter& paint)
+    virtual bool Tick(EntityContainer& /*container*/) override final
+    {
+        return false;
+    }
+
+    virtual void Draw(QPainter& paint) override final
     {
         paint.setBrush(QColor(15, 235, 15));
-        paint.drawEllipse(QPointF{x_, y_}, radius_, radius_);
+        paint.drawEllipse(QPointF{GetX(), GetY()}, radius_, radius_);
+    }
+
+    double Eat()
+    {
+        double toGive = energy_;
+        energy_ = 0.0;
+        return toGive;
     }
 };
 
