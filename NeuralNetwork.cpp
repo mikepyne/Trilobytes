@@ -10,15 +10,13 @@ const std::vector<double>& NeuralNetwork::ForwardPropogate(const std::vector<dou
 {
     static std::vector<double> previousNodeValues;
 
-    const size_t width = layers_.front().size();
-    assert(inputs.size() == width);
-
     // about to swap with previousNodeValues so we can return outputs at the end
+    // also allows to skip propogation when no hidden layers
     outputs_ = inputs;
     for (auto& layer : layers_) {
         std::swap(outputs_, previousNodeValues);
         // We'll reuse this vector for the output of each layer
-        outputs_.assign(width, 0.0);
+        outputs_.assign(layer.size(), 0.0);
 
         size_t nodeIndex = 0;
         for (auto& node : layer) {
@@ -39,7 +37,6 @@ const std::vector<double>& NeuralNetwork::ForwardPropogate(const std::vector<dou
 NeuralNetwork NeuralNetwork::Mutated()
 {
     size_t layerCount = layers_.size();
-    size_t width = layers_.front().size();
     std::vector<Layer> layers;
     for (auto& layer : layers_) {
         layers.push_back(Layer());
@@ -48,7 +45,7 @@ NeuralNetwork NeuralNetwork::Mutated()
             for (auto& edge : node) {
                 double newEdge = edge;
                 // i.e average 3 mutations per child
-                if (Random::Int(0u, layerCount * width * width) < 3) {
+                if (Random::Int(0u, layerCount * layer.size() * layer.size()) < 3) {
                     edge += Random::Gaussian(-0.5, 0.5);
                 }
                 layers.back().back().push_back(newEdge);
@@ -65,9 +62,6 @@ NeuralNetwork::NeuralNetwork(std::vector<NeuralNetwork::Layer>&& layers)
 
 std::vector<NeuralNetwork::Layer> NeuralNetwork::CreateRandomLayers(unsigned layerCount, unsigned width)
 {
-    assert(layerCount > 0);
-    assert(width > 0);
-
     std::vector<Layer> layers(layerCount, Layer(width, Node(width)));
 
     // First layer doesn't need input weights, as it will be assigned a value by the ForwardPropogate() func

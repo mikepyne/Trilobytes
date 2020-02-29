@@ -13,6 +13,8 @@ public:
         energy_ = 1.0;
     }
 
+    virtual std::string GetName() const override { return "FoodPellet"; }
+
     virtual bool Tick(EntityContainerInterface& /*container*/) override final
     {
         return false;

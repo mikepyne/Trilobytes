@@ -27,6 +27,7 @@ public:
      */
     NeuralNetwork(unsigned layerCount, unsigned width);
 
+    unsigned GetOutputCount() const { return outputs_.size(); }
 
     /**
      * Inputs should be between 0.0 and 1.0 inclusive. Returns the final node

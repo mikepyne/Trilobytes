@@ -19,8 +19,13 @@ SOURCES += \
     NeuralNetwork.cpp \
     QuadTree.cpp \
     Random.cpp \
+    Sensors/Sense.cpp \
+    Sensors/SenseEntityPresence.cpp \
+    Sensors/SenseMagneticField.cpp \
+    Sensors/SenseRandom.cpp \
     Swimmer.cpp \
     Universe.cpp \
+    Utils.cpp \
     main.cpp \
     MainWindow.cpp
 
@@ -32,9 +37,14 @@ HEADERS += \
     NeuralNetwork.h \
     QuadTree.h \
     Random.h \
+    Sensors/Sense.h \
+    Sensors/SenseEntityPresence.h \
+    Sensors/SenseMagneticField.h \
+    Sensors/SenseRandom.h \
     Shape.h \
     Swimmer.h \
-    Universe.h
+    Universe.h \
+    Utils.h
 
 FORMS += \
     MainWindow.ui

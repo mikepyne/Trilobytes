@@ -65,7 +65,7 @@ public:
     static std::vector<NumericType> RealArray(typename std::vector<NumericType>::size_type count, NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
     {
         static std::uniform_real_distribution<NumericType> distribution;
-        distribution.param({ min, max });
+        distribution.param(typename std::uniform_real_distribution<NumericType>::param_type(min, max));
 
         std::vector<NumericType> rands;
         rands.reserve(count);

@@ -1,9 +1,10 @@
 #include "Entity.h"
 
+#include "Utils.h"
 #include "Random.h"
 
 Entity::Entity(double x, double y, double radius)
-    : Entity(x, y, radius, Random::Real(0.0, 6.28), 0.0)
+    : Entity(x, y, radius, Random::Real(0.0, EoBE::Tau), 0.0)
 {
 }
 

@@ -108,4 +108,25 @@ inline bool Contains(const Rect& r, const Circle& c)
     return Contains(r, RectFromCircle(c));
 }
 
+/**
+ * Returns a value between Pi and -Pi
+ * North: 0.0
+ * East : Pi / 2.0
+ * South: -Pi or Pi
+ * West : -Pi / 2.0
+ * To normalise for a neural network, just divide by Pi
+ */
+inline double GetBearing(const Point& from, const Point& to)
+{
+    double xDiff = from.x - to.x;
+    double yDiff = from.y - to.y;
+
+    return std::atan2(xDiff, yDiff);
+}
+
+inline double GetDistanceSquare(const Point& a, const Point& b)
+{
+    return std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2);
+}
+
 #endif // SHAPEH

@@ -15,6 +15,8 @@ public:
     Entity(double x, double y, double radius, double bearing, double speed);
     virtual ~Entity();
 
+    virtual std::string GetName() const = 0;
+
     const double& GetX() const;
     const double& GetY() const;
     const double& GetRadius() const;
