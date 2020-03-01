@@ -12,7 +12,7 @@ Swimmer::Swimmer(double x, double y)
 Swimmer::Swimmer(double x, double y, NeuralNetwork&& brain)
     : Entity(x, y, 6.0)
     , brain_(std::move(brain))
-    , taste_(SenseEntityPresence::MakeSingleEntityTypeSensor<FoodPellet>(*this, 0.0, 0.0, radius_))
+    , taste_(*this, 0.0, 0.0, radius_, SenseEntityPresence::MakeCustomFilter<FoodPellet>(1.0))
     , compass_(*this)
     , rand_(*this, 1)
 {
