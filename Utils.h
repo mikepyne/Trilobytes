@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <string>
+#include <sstream>
 #include <string_view>
 
 namespace EoBE {
@@ -36,6 +38,17 @@ constexpr std::string_view TypeName()
     name.remove_prefix(prefix.size());
     name.remove_suffix(suffix.size());
     return name;
+}
+
+template<typename Arg, typename... Args>
+std::string TypeNames(const std::string& seperator)
+{
+    std::stringstream result;
+    result << TypeName<Arg>();
+    if constexpr (sizeof...(Args) > 0) {
+        result << seperator << TypeNames<Args...>(seperator);
+    }
+    return result.str();
 }
 
 } // namespace EoBE

@@ -18,6 +18,30 @@ class SenseEntityPresence : public Sense {
 private:
     using FilterFunction = std::function<std::optional<std::pair<size_t, double>>(Entity&)>;
 
+    /*
+     * Recursive variadic template function
+     * Index will match the number of times we had to recurse to find the match,
+     * or the number of items in Rest
+     */
+    template<typename First, typename... Rest>
+    static bool MatchesAnyOf(const Entity& e, unsigned& index)
+    {
+        static_assert(!(std::is_same<Entity, First>() && sizeof...(Rest) != 0), "All types following Entity have no chance of being detected! If generically detecting all entities, make sure that is the final type category.");
+
+        // Check if it matches the First type, if not, recurse (if more Types available) and count times recursed
+        if (dynamic_cast<const First*>(&e)) {
+            return true;
+        } else if constexpr(sizeof...(Rest) > 0) {
+            ++index;
+            return MatchesAnyOf<Rest...>(e, index);
+        }
+        return false;
+    }
+
+    /*
+     * Don't trust a user to construct one of these properly, keep it private!
+     * (FilterFunc relies on inputCount being correct)
+     */
     struct CustomFilter {
         const unsigned inputCount_;
         const unsigned hiddenLayers_;
@@ -42,61 +66,57 @@ public:
      */
     SenseEntityPresence(Entity& owner, double xOffset, double yOffset, double range, CustomFilter&& detectionParameters = MakeDefaultFilter(1.0))
         : Sense(owner, detectionParameters.inputCount_, detectionParameters.hiddenLayers_)
-        , name_(detectionParameters.typeNames_ + "Detector")
+        , entityNames_(detectionParameters.typeNames_ + "Detector")
         , xOffset_(xOffset)
         , yOffset_(yOffset)
         , range_(range)
-        , filter_(std::move(detectionParameters.filter_))
+        , entityFilter_(std::move(detectionParameters.filter_))
     {
     }
 
+    /*
+     * Detects any entities of any type.
+     */
     static CustomFilter MakeDefaultFilter(double detectionQuantity = 1.0);
 
-    template <typename E1>
-    static CustomFilter MakeCustomFilter(double detectionQuantity)
+    /*
+     * Yike... took a day to write, not proud of how easy this code is to
+     * understand, but it certainly makes using it hard to use incorrectly, and
+     * easy to read the code using it.
+     *
+     * Basically our filer needs to tell us whether it found a type we care
+     * about AND which input neuron to prime AND the value to apply to the input
+     * neuron. It does this by returning a std::optional (i.e. only populated if
+     * we found a type we were looking for) and the optional containing the pair
+     * of values, networkInputIndex and the valueToAddToInput.
+     */
+    template <typename... Es>
+    static CustomFilter MakeCustomFilter(unsigned hiddenLayers, std::array<double, sizeof...(Es)> detectionValues)
     {
         return {
-            1,
-            0,
-            std::string(EoBE::TypeName<E1>()),
+            sizeof...(Es),
+            hiddenLayers,
+            EoBE::TypeNames<Es...>("&"),
             [=](Entity& e) -> std::optional<std::pair<size_t, double>>
             {
-                if (dynamic_cast<E1*>(&e)) {
-                    return std::make_pair(0u, detectionQuantity);
+                unsigned index = 0;
+                if (MatchesAnyOf<Es...>(e, index)) {
+                    return std::make_pair(index, detectionValues[index]);
                 }
                 return { };
             }
         };
     }
 
-    template <typename E1, typename E2>
-    static CustomFilter MakeCustomFilter(double type1DetectionQuantity, double type2DetectionQuantity)
-    {
-        return {
-            2,
-            1,
-            std::string(EoBE::TypeName<E1>()) + "&" + std::string(EoBE::TypeName<E2>()),
-            [=](Entity& e) -> std::optional<std::pair<size_t, double>>
-            {
-                if (dynamic_cast<E1*>(&e)) {
-                    return std::make_pair(0u, type1DetectionQuantity);
-                } else if (dynamic_cast<E2*>(&e)) {
-                    return std::make_pair(1u, type2DetectionQuantity);
-                }
-                return { };
-            }
-        };
-    }
-
-    virtual std::string GetName() const override { return name_; }
-    virtual void Draw(QPainter& paint) const override {}
+    virtual std::string GetName() const override { return entityNames_; }
+    virtual void Draw(QPainter& paint) const override;
 
 private:
-    std::string name_;
+    std::string entityNames_;
     double xOffset_;
     double yOffset_;
     double range_;
-    FilterFunction filter_;
+    FilterFunction entityFilter_;
 
     virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) override final;
 };
