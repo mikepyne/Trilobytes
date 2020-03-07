@@ -1,5 +1,5 @@
-#ifndef SENSE_ENTITY_PRESENCE_H
-#define SENSE_ENTITY_PRESENCE_H
+#ifndef SENSEENTITYDISTANCE_H
+#define SENSEENTITYDISTANCE_H
 
 #include "Sense.h"
 #include "Shape.h"
@@ -12,9 +12,10 @@
 
 /**
  * Used to check if one or a number of entities of any or specific types are
- * within a given area.
+ * within a given area, weighted based on their proximity to the center of the
+ * sense.
  */
-class SenseEntityPresence : public Sense {
+class SenseEntityDistance : public Sense {
 private:
     using FilterFunction = std::function<std::optional<std::pair<size_t, double>>(Entity&)>;
 
@@ -64,7 +65,7 @@ public:
      *          any entity of any type is detected as 1.0 (max value) so the
      *          sense is binary anything or nothing detected.
      */
-    SenseEntityPresence(Entity& owner, double xOffset, double yOffset, double range, CustomFilter&& detectionParameters = MakeDefaultFilter(1.0))
+    SenseEntityDistance(Entity& owner, double xOffset, double yOffset, double range, CustomFilter&& detectionParameters = MakeDefaultFilter(1.0))
         : Sense(owner, detectionParameters.inputCount_, detectionParameters.hiddenLayers_)
         , entityNames_(detectionParameters.typeNames_ + "Detector")
         , xOffset_(xOffset)
@@ -121,4 +122,4 @@ private:
     virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) override final;
 };
 
-#endif // SENSE_ENTITY_PRESENCE_H
+#endif // SENSEENTITYDISTANCE_H

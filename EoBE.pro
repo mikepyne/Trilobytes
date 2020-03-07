@@ -20,6 +20,7 @@ SOURCES += \
     QuadTree.cpp \
     Random.cpp \
     Sensors/Sense.cpp \
+    Sensors/SenseEntityDistance.cpp \
     Sensors/SenseEntityPresence.cpp \
     Sensors/SenseMagneticField.cpp \
     Sensors/SenseRandom.cpp \
@@ -38,6 +39,7 @@ HEADERS += \
     QuadTree.h \
     Random.h \
     Sensors/Sense.h \
+    Sensors/SenseEntityDistance.h \
     Sensors/SenseEntityPresence.h \
     Sensors/SenseMagneticField.h \
     Sensors/SenseRandom.h \

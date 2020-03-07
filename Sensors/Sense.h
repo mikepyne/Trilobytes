@@ -7,7 +7,9 @@ class QPainter;
 
 #include "NeuralNetwork.h"
 
-/**iko
+#include <string_view>
+
+/**
  * All senses contain a small Neural network which is propogated each tick.
  */
 class Sense {
@@ -25,7 +27,7 @@ public:
     virtual void Draw(QPainter& paint) const;
     virtual const std::vector<double>& Tick(const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) final;
 
-    virtual std::string GetName() const = 0;
+    virtual std::string_view GetName() const = 0;
     unsigned GetOutputCount() const { return network_.GetOutputCount(); }
 
 protected:

@@ -4,6 +4,8 @@
 #include "Shape.h"
 #include "EntityContainerInterface.h"
 
+#include <string_view>
+
 class QPainter;
 
 class Entity {
@@ -15,11 +17,12 @@ public:
     Entity(double x, double y, double radius, double bearing, double speed);
     virtual ~Entity();
 
-    virtual std::string GetName() const = 0;
+    virtual std::string_view GetName() const = 0;
 
     const double& GetX() const;
     const double& GetY() const;
     const double& GetRadius() const;
+    const double& GetBearing() const;
     Point GetLocation() const;
 
     bool Alive() const;
