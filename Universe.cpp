@@ -29,7 +29,7 @@ Universe::Universe(QWidget* parent)
     timer->start(20);
 
     for (auto n : std::vector<double>(30, 0.0)) {
-        rootNode_.AddEntity(std::make_shared<Swimmer>(Random::Real(-500.0, 500.0) + n, Random::Real(-500.0, 500.0)));
+        rootNode_.AddEntity(std::make_shared<Swimmer>(Random::Number(-500.0, 500.0) + n, Random::Number(-500.0, 500.0)));
         energy_ -= 1.0;
     }
 
@@ -82,8 +82,8 @@ void Universe::Thread()
     rootNode_.Tick();
 
     if (energy_ > 1) {
-        double foodX = Random::Real(-500.0, 500.0);
-        double foodY = Random::Real(-500.0, 500.0);
+        double foodX = Random::Number(-500.0, 500.0);
+        double foodY = Random::Number(-500.0, 500.0);
         rootNode_.AddEntity(std::make_shared<FoodPellet>(foodX, foodY));
         --energy_;
     }

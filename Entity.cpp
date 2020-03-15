@@ -4,7 +4,7 @@
 #include "Random.h"
 
 Entity::Entity(double x, double y, double radius)
-    : Entity(x, y, radius, Random::Real(0.0, EoBE::Tau), 0.0)
+    : Entity(x, y, radius, Random::Number(0.0, EoBE::Tau), 0.0)
 {
 }
 
@@ -34,6 +34,11 @@ const double& Entity::GetY() const
 const double& Entity::GetRadius() const
 {
     return radius_;
+}
+
+const double& Entity::GetBearing() const
+{
+    return bearing_;
 }
 
 Point Entity::GetLocation() const

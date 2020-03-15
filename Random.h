@@ -14,73 +14,72 @@ public:
     }
 
     template<typename NumericType>
+    static NumericType Number(NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
+    {
+        if constexpr (std::is_integral<NumericType>::value) {
+            static std::uniform_int_distribution<NumericType> distribution;
+            distribution.param(typename std::uniform_int_distribution<NumericType>::param_type(min, max));
+            return Generate(distribution);
+        } else if constexpr (std::is_floating_point<NumericType>::value) {
+            static std::uniform_real_distribution<NumericType> distribution;
+            distribution.param(typename std::uniform_real_distribution<NumericType>::param_type(min, max));
+            return Generate(distribution);
+        } else {
+            static_assert(std::is_floating_point<NumericType>::value, "Random::Number requires an integral OR floating point number type to work.");
+        }
+    }
+
+    template<typename NumericType>
     static NumericType Gaussian(NumericType mean = std::numeric_limits<NumericType>::min(), NumericType standardDeviation = static_cast<NumericType>(1.0))
     {
         static std::normal_distribution<NumericType> distribution;
         distribution.param(typename std::normal_distribution<NumericType>::param_type(mean, standardDeviation));
-        return Number(distribution);
+        return Generate(distribution);
     }
 
     template<typename NumericType>
-    static NumericType Int(NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
+    static std::vector<NumericType> Numbers(typename std::vector<NumericType>::size_type count, NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
     {
-        static std::uniform_int_distribution<NumericType> distribution;
-        distribution.param(typename std::uniform_int_distribution<NumericType>::param_type(min, max));
-        return Number(distribution);
+        std::vector<NumericType> rands;
+        rands.reserve(count);
+
+        if constexpr (std::is_integral<NumericType>::value) {
+            static std::uniform_int_distribution<NumericType> distribution;
+            distribution.param(typename std::uniform_int_distribution<NumericType>::param_type(min, max));
+
+            std::generate_n(std::back_inserter(rands), count, [&](){ return Generate(distribution); });
+        } else if constexpr (std::is_floating_point<NumericType>::value) {
+            static std::uniform_real_distribution<NumericType> distribution;
+            distribution.param(typename std::uniform_real_distribution<NumericType>::param_type(min, max));
+
+            std::generate_n(std::back_inserter(rands), count, [&](){ return Generate(distribution); });
+        } else {
+            static_assert(std::is_floating_point<NumericType>::value, "Random::Numbers requires an integral OR floating point number type to work.");
+        }
+
+        return rands;
     }
 
     template<typename NumericType>
-    static NumericType Real(NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
-    {
-        static std::uniform_real_distribution<NumericType> distribution;
-        distribution.param(typename std::uniform_real_distribution<NumericType>::param_type(min, max));
-        return Number(distribution);
-    }
-
-    template<typename NumericType>
-    static std::vector<NumericType> GaussianArray(typename std::vector<NumericType>::size_type count, NumericType mean = std::numeric_limits<NumericType>::min(), NumericType standardDeviation = static_cast<NumericType>(1.0))
+    static std::vector<NumericType> Gaussians(typename std::vector<NumericType>::size_type count, NumericType mean = std::numeric_limits<NumericType>::min(), NumericType standardDeviation = static_cast<NumericType>(1.0))
     {
         static std::normal_distribution<NumericType> distribution;
         distribution.param(typename std::normal_distribution<NumericType>::param_type(mean, standardDeviation));
 
         std::vector<NumericType> rands;
         rands.reserve(count);
-        std::generate_n(std::back_inserter(rands), count, [&](){ return Number(distribution); });
+        std::generate_n(std::back_inserter(rands), count, [&](){ return Generate(distribution); });
         return rands;
-    }
-
-    template<typename NumericType>
-    static std::vector<NumericType> IntArray(typename std::vector<NumericType>::size_type count, NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
-    {
-        static std::uniform_int_distribution<NumericType> distribution;
-        distribution.param(typename std::uniform_int_distribution<NumericType>::param_type(min, max));
-
-        std::vector<NumericType> rands;
-        rands.reserve(count);
-        std::generate_n(std::back_inserter(rands), count, [&](){ return Number(distribution); });
-        return rands;
-    }
-
-    template<typename NumericType>
-    static std::vector<NumericType> RealArray(typename std::vector<NumericType>::size_type count, NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
-    {
-        static std::uniform_real_distribution<NumericType> distribution;
-        distribution.param(typename std::uniform_real_distribution<NumericType>::param_type(min, max));
-
-        std::vector<NumericType> rands;
-        rands.reserve(count);
-        std::generate_n(std::back_inserter(rands), count, [&](){ return Number(distribution); });
-        return rands;
-    }
-
-    template<typename DistributionType>
-    static typename DistributionType::result_type Number(DistributionType& distribution)
-    {
-        return distribution(entropy_);
     }
 
 private:
     inline static std::mt19937 entropy_ = std::mt19937();
+
+    template<typename DistributionType>
+    static typename DistributionType::result_type Generate(DistributionType& distribution)
+    {
+        return distribution(entropy_);
+    }
 };
 
 #endif // RANDOM_H

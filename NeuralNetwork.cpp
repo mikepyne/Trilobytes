@@ -45,7 +45,7 @@ NeuralNetwork NeuralNetwork::Mutated()
             for (auto& edge : node) {
                 double newEdge = edge;
                 // i.e average 3 mutations per child
-                if (Random::Int(0u, layerCount * layer.size() * layer.size()) < 3) {
+                if (Random::Number(0u, layerCount * layer.size() * layer.size()) < 3) {
                     edge += Random::Gaussian(-0.5, 0.5);
                 }
                 layers.back().back().push_back(newEdge);
@@ -67,7 +67,7 @@ std::vector<NeuralNetwork::Layer> NeuralNetwork::CreateRandomLayers(unsigned lay
     // First layer doesn't need input weights, as it will be assigned a value by the ForwardPropogate() func
     for (auto& layer : layers) {
         for (auto& node : layer) {
-            node = Random::GaussianArray(width, 0.0, 0.75);
+            node = Random::Gaussians(width, 0.0, 0.75);
         }
     }
 
