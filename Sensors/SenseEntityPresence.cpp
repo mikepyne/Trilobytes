@@ -9,7 +9,12 @@ SenseEntityPresence::CustomFilter SenseEntityPresence::MakeDefaultFilter(double 
 
 void SenseEntityPresence::Draw(QPainter& paint) const
 {
-    paint.drawEllipse(QPointF(owner_.GetX() + xOffset_, owner_.GetY() + yOffset_), range_, range_);
+    double offsetBearing = GetBearing({0, 0}, {xOffset_, yOffset_});
+    double offsetDistance = std::sqrt(GetDistanceSquare({0, 0}, {xOffset_, yOffset_}));
+
+    double x = owner_.GetX() + (std::sin(owner_.GetBearing() + offsetBearing) * offsetDistance);
+    double y = owner_.GetY() + (-std::cos(owner_.GetBearing() + offsetBearing) * offsetDistance);
+    paint.drawEllipse(QPointF(x, y), range_, range_);
 }
 
 void SenseEntityPresence::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef& /*environment*/)
@@ -18,7 +23,13 @@ void SenseEntityPresence::PrimeInputs(std::vector<double>& inputs, const EntityC
         input = 0.0;
     }
 
-    entities.ForEachIn(Circle{ owner_.GetX() + xOffset_, owner_.GetY() + yOffset_, range_ }, [&](Entity& e)
+    double offsetBearing = GetBearing({0, 0}, {xOffset_, yOffset_});
+    double offsetDistance = std::sqrt(GetDistanceSquare({0, 0}, {xOffset_, yOffset_}));
+
+    double x = owner_.GetX() + (std::sin(owner_.GetBearing() + offsetBearing) * offsetDistance);
+    double y = owner_.GetY() + (-std::cos(owner_.GetBearing() + offsetBearing) * offsetDistance);
+
+    entities.ForEachIn(Circle{ x, y, range_ }, [&](Entity& e)
     {
         if (auto optional = entityFilter_(e); optional.has_value()) {
             auto [ index, value ] = optional.value();

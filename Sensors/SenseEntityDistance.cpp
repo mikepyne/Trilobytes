@@ -24,8 +24,11 @@ void SenseEntityDistance::PrimeInputs(std::vector<double>& inputs, const EntityC
         input = 0.0;
     }
 
-    double x = owner_.GetX() ;//+ (std::sin(owner_.GetBearing()) * (owner_.GetX() + xOffset_));
-    double y = owner_.GetY() ;//+ (-std::cos(owner_.GetBearing()) * (owner_.GetY() + yOffset_));
+    double offsetBearing = GetBearing({0, 0}, {xOffset_, yOffset_});
+    double offsetDistance = std::sqrt(GetDistanceSquare({0, 0}, {xOffset_, yOffset_}));
+
+    double x = owner_.GetX() + (std::sin(owner_.GetBearing() + offsetBearing) * offsetDistance);
+    double y = owner_.GetY() + (-std::cos(owner_.GetBearing() + offsetBearing) * offsetDistance);
 
     entities.ForEachIn(Circle{ x, y, range_ }, [&](Entity& e)
     {
