@@ -29,7 +29,9 @@ private:
         static_assert(!(std::is_same<Entity, First>() && sizeof...(Rest) != 0), "All types following Entity have no chance of being detected! If generically detecting all entities, make sure that is the final type category.");
 
         // Check if it matches the First type, if not, recurse (if more Types available) and count times recursed
-        if (dynamic_cast<const First*>(&e)) {
+        if constexpr (std::is_same<Entity, First>()) {
+            return true;
+        } else if (dynamic_cast<const First*>(&e)) {
             return true;
         } else if constexpr(sizeof...(Rest) > 0) {
             ++index;

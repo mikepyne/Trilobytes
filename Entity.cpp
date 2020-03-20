@@ -24,10 +24,10 @@ Entity::~Entity()
 
 bool Entity::Alive() const
 {
-    return energy_.Quantity() > 0.0;
+    return energy_.Quantity() > 0;
 }
 
-void Entity::FeedOn(Entity& other, double quantity)
+void Entity::FeedOn(Entity& other, uint64_t quantity)
 {
     other.energy_.GiveTo(energy_, quantity);
 }

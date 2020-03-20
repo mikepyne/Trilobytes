@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <algorithm>
+#include <cstdint>
 
 class EnergyPool {
 public:
@@ -14,17 +15,17 @@ public:
 
     static EnergyPool& GetGlobalEnergyPool();
 
-    void GiveTo(EnergyPool& toGiveTo, double quantityToGive);
-    void Decay(double quantityToGiveToGlobalPool);
+    void GiveTo(EnergyPool& toGiveTo, uint64_t quantityToGive);
+    void Decay(uint64_t quantityToGiveToGlobalPool);
 
-    double Quantity() const { return energy_; }
-    EnergyPool CreateChild(double energyToTransfer);
+    uint64_t Quantity() const { return energy_; }
+    EnergyPool CreateChild(uint64_t energyToTransfer);
 
 private:
-    double energy_;
+    uint64_t energy_;
 
-    EnergyPool(double quantity);
-    EnergyPool(EnergyPool& parent, double energyToTransfer);
+    EnergyPool(uint64_t quantity);
+    EnergyPool(EnergyPool& parent, uint64_t energyToTransfer);
 };
 
 #endif // ENERGYPOOL_H

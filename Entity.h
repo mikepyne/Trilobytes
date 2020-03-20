@@ -25,10 +25,10 @@ public:
     const double& GetRadius() const { return radius_; }
     const double& GetBearing() const { return bearing_; }
     Point GetLocation() const { return { x_, y_ }; }
-    double GetEnergy() const { return energy_.Quantity(); }
+    uint64_t GetEnergy() const { return energy_.Quantity(); }
 
     bool Alive() const;
-    void FeedOn(Entity& other, double quantity);
+    void FeedOn(Entity& other, uint64_t quantity);
 
     // returns true if the entity has moved
     virtual bool Tick(EntityContainerInterface& container) = 0;

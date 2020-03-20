@@ -45,16 +45,16 @@ bool Swimmer::Tick(EntityContainerInterface& container)
         bearing_ -= EoBE::Tau;
     }
 
-    energy_.Decay(1.0 / 333.33);
+    energy_.Decay(100000 / 333);
 
     container.ForEachIn(Circle{ GetX(), GetY(), radius_ }, [&](Entity& other) -> void
     {
         if (FoodPellet* f = dynamic_cast<FoodPellet*>(&other)) {
-            FeedOn(*f, 1.0);
+            FeedOn(*f, f->GetEnergy());
         }
     });
 
-    if (energy_.Quantity() >= 3.0) {
+    if (energy_.Quantity() > 300000) {
         container.AddEntity(GiveBirth());
     }
 
@@ -82,6 +82,6 @@ void Swimmer::Draw(QPainter& paint)
 
 std::shared_ptr<Swimmer> Swimmer::GiveBirth()
 {
-    return std::make_shared<Swimmer>(energy_.CreateChild(1.0), GetX(), GetY(), brain_.Mutated());
+    return std::make_shared<Swimmer>(energy_.CreateChild(100000), GetX(), GetY(), brain_.Mutated());
 }
 

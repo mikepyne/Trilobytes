@@ -1,7 +1,7 @@
 #include "EnergyPool.h"
 
 EnergyPool::EnergyPool(EnergyPool&& other)
-    : energy_(0.0)
+    : energy_(0)
 {
     other.GiveTo(*this, other.energy_);
 }
@@ -13,28 +13,28 @@ EnergyPool::~EnergyPool()
 
 EnergyPool& EnergyPool::GetGlobalEnergyPool()
 {
-    static EnergyPool globalPool(1000.0);
+    static EnergyPool globalPool(100000000);
     return globalPool;
 }
 
-void EnergyPool::GiveTo(EnergyPool& other, double quantityToGive)
+void EnergyPool::GiveTo(EnergyPool& other, uint64_t quantityToGive)
 {
-    quantityToGive = std::clamp(quantityToGive, 0.0, energy_);
+    quantityToGive = std::clamp(quantityToGive, static_cast<uint64_t>(0), energy_);
     energy_ -= quantityToGive;
     other.energy_ += quantityToGive;
 }
 
-void EnergyPool::Decay(double quantityToGiveToGlobalPool)
+void EnergyPool::Decay(uint64_t quantityToGiveToGlobalPool)
 {
     GiveTo(GetGlobalEnergyPool(), quantityToGiveToGlobalPool);
 }
 
-EnergyPool EnergyPool::CreateChild(double energyToTransfer)
+EnergyPool EnergyPool::CreateChild(uint64_t energyToTransfer)
 {
     return EnergyPool(*this, energyToTransfer);
 }
 
-EnergyPool::EnergyPool(double quantity)
+EnergyPool::EnergyPool(uint64_t quantity)
     : energy_(quantity)
 {
     static bool createdGlobalPool = false;
@@ -44,8 +44,8 @@ EnergyPool::EnergyPool(double quantity)
     createdGlobalPool = true;
 }
 
-EnergyPool::EnergyPool(EnergyPool& parent, double energyToTransfer)
-    : energy_(0.0)
+EnergyPool::EnergyPool(EnergyPool& parent, uint64_t energyToTransfer)
+    : energy_(0)
 {
     parent.GiveTo(*this, energyToTransfer);
 }
