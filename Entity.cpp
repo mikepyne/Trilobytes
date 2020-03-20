@@ -3,15 +3,16 @@
 #include "Utils.h"
 #include "Random.h"
 
-Entity::Entity(double x, double y, double radius)
-    : Entity(x, y, radius, Random::Number(0.0, EoBE::Tau), 0.0)
+Entity::Entity(EnergyPool&& energy, double x, double y, double radius)
+    : Entity(std::move(energy), x, y, radius, Random::Number(0.0, EoBE::Tau), 0.0)
 {
 }
 
-Entity::Entity(double x, double y, double radius, double bearing, double speed)
+Entity::Entity(EnergyPool&& energy, double x, double y, double radius, double bearing, double speed)
     : radius_(radius)
     , bearing_(bearing)
     , speed_(speed)
+    , energy_(std::move(energy))
     , x_(x)
     , y_(y)
 {
@@ -21,35 +22,14 @@ Entity::~Entity()
 {
 }
 
-const double& Entity::GetX() const
-{
-    return x_;
-}
-
-const double& Entity::GetY() const
-{
-    return y_;
-}
-
-const double& Entity::GetRadius() const
-{
-    return radius_;
-}
-
-const double& Entity::GetBearing() const
-{
-    return bearing_;
-}
-
-Point Entity::GetLocation() const
-{
-    return { x_, y_ };
-}
-
 bool Entity::Alive() const
 {
-    assert(energy_ >= 0.0);
-    return energy_ > 0.0;
+    return energy_.Quantity() > 0.0;
+}
+
+void Entity::FeedOn(Entity& other, double quantity)
+{
+    other.energy_.GiveTo(energy_, quantity);
 }
 
 bool Entity::Move()

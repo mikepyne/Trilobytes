@@ -4,14 +4,14 @@
 #include "Entity.h"
 
 #include <QPainter>
-
 class FoodPellet : public Entity {
 public:
-    FoodPellet(double x, double y)
-        : Entity(x, y, 2.5)
+    FoodPellet(EnergyPool&& energy, double x, double y)
+        : Entity(std::move(energy), x, y, 2.5)
     {
-        energy_ = 1.0;
     }
+
+    virtual ~FoodPellet() override final;
 
     virtual std::string_view GetName() const override { return "FoodPellet"; }
 
@@ -26,12 +26,6 @@ public:
         paint.drawEllipse(QPointF{GetX(), GetY()}, radius_, radius_);
     }
 
-    double Eat()
-    {
-        double toGive = energy_;
-        energy_ = 0.0;
-        return toGive;
-    }
 };
 
 #endif // FOODPELLET_H

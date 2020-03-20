@@ -12,8 +12,11 @@
 
 Universe::Universe(QWidget* parent)
     : QWidget(parent)
+    , energy_(EnergyPool::GetGlobalEnergyPool())
     , rootNode_({0, 0, 1000, 1000})
 {
+    setFocusPolicy(Qt::StrongFocus);
+
     /*
      * QT hack to get this running in the QT event loop (necessary for
      * drawing anything, not ideal for running the Sim quickly...)
@@ -27,11 +30,6 @@ Universe::Universe(QWidget* parent)
         this->Thread();
     });
     timer->start(20);
-
-    for (auto n : std::vector<double>(30, 0.0)) {
-        rootNode_.AddEntity(std::make_shared<Swimmer>(Random::Number(-500.0, 500.0) + n, Random::Number(-500.0, 500.0)));
-        energy_ -= 1.0;
-    }
 
     rootNode_.SetEntityCapacity(25, 5);
 }
@@ -66,11 +64,36 @@ void Universe::mouseMoveEvent(QMouseEvent* event)
     }
 }
 
+void Universe::keyPressEvent(QKeyEvent* event)
+{
+    switch (event->key()) {
+    case Qt::Key_Space :
+        pauseSim_ = !pauseSim_;
+        break;
+    case Qt::Key_F :
+        spawnFood_ = !spawnFood_;
+        break;
+    case Qt::Key_R :
+        respawn_ = true;
+        break;
+
+    }
+}
+
 void Universe::paintEvent(QPaintEvent*)
 {
+    double totalEnergy = energy_.Quantity();
+    rootNode_.ForEach([&](const Entity& e) -> void { totalEnergy += e.GetEnergy(); });
+
     QPainter p(this);
     p.setBackground(QColor(200, 225, 255));
-    p.drawText(0, 15, QString::number(rootNode_.EntityCount()));
+    p.drawText(0, 15, "Entities:    " + QString::number(rootNode_.EntityCount()));
+    p.drawText(0, 30, "SpareEnergy: " + QString::number(energy_.Quantity()));
+    p.drawText(0, 45, "TotalEnergy: " + QString::number(totalEnergy));
+    p.drawText(0, 60, "Energy Error: " + QString::number(1000.0 - totalEnergy));
+    p.drawText(0, 75, "Paused (space): " + QVariant(pauseSim_).toString());
+    p.drawText(0, 90, "Spawn Food (F): " + QVariant(spawnFood_).toString());
+    p.drawText(0, 105, "Respawn (R)");
     p.translate(simX_ + (width() / 2), simY_ + (height() / 2));
     p.scale(simScale_, simScale_);
 
@@ -79,13 +102,23 @@ void Universe::paintEvent(QPaintEvent*)
 
 void Universe::Thread()
 {
-    rootNode_.Tick();
+    if (!pauseSim_) {
+        rootNode_.Tick();
+    }
 
-    if (energy_ > 1) {
-        double foodX = Random::Number(-500.0, 500.0);
-        double foodY = Random::Number(-500.0, 500.0);
-        rootNode_.AddEntity(std::make_shared<FoodPellet>(foodX, foodY));
-        --energy_;
+    if (respawn_) {
+        respawn_ = false;
+        for (auto n : std::vector<double>(30, 0.0)) {
+            rootNode_.AddEntity(std::make_shared<Swimmer>(energy_.CreateChild(2.9), Random::Number(-500.0, 500.0) + n, Random::Number(-500.0, 500.0)));
+        }
+    }
+
+    if (spawnFood_) {
+        while (energy_.Quantity() > 30) {
+            double foodX = Random::Number(-500, 500);
+            double foodY = Random::Number(-500, 500);
+            rootNode_.AddEntity(std::make_shared<FoodPellet>(energy_.CreateChild(0.25), foodX, foodY));
+        }
     }
 
     // QT paint call

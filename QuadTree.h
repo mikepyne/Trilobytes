@@ -18,9 +18,10 @@ public:
     void Tick();
     void Draw(QPainter& paint);
 
-   void AddEntity(const std::shared_ptr<Entity>& entity);
+    void AddEntity(const std::shared_ptr<Entity>& entity);
     uint64_t EntityCount();
     void SetEntityCapacity(uint64_t target, uint64_t leeway);
+    void ForEach(const std::function<void(const Entity&)>& action) const;
 
 private:
     class Quad : private EntityContainerInterface {
@@ -35,6 +36,7 @@ private:
         void ResolveRecursive();
         void DrawRecursive(QPainter& paint);
         void RehomeRecursive(const std::shared_ptr<Entity>& entity, bool delayed);
+        void ForEachRecursive(const std::function<void(const Entity&)>& action) const;
         uint64_t RecursiveEntityCount() const;
 
         const Rect& GetRect();

@@ -5,16 +5,15 @@
 
 #include <QPainter>
 
-#include <iostream>
 #include <math.h>
 
-Swimmer::Swimmer(double x, double y)
-    : Swimmer(x, y, NeuralNetwork(3, 6))
+Swimmer::Swimmer(EnergyPool&& energy, double x, double y)
+    : Swimmer(std::move(energy), x, y, NeuralNetwork(3, 6))
 {
 }
 
-Swimmer::Swimmer(double x, double y, NeuralNetwork&& brain)
-    : Entity(x, y, 6.0)
+Swimmer::Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain)
+    : Entity(std::move(energy), x, y, 6.0)
     , brain_(std::move(brain))
     , taste_(*this, 0.0, 0.0, radius_, SenseEntityPresence::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
     , leftAntenna_(*this, -15.0, -20.0, radius_ * 5, SenseEntityDistance::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
@@ -23,7 +22,10 @@ Swimmer::Swimmer(double x, double y, NeuralNetwork&& brain)
     , rand_(*this, 1)
 {
     speed_ = 0.5;
-    energy_ = 1.0;
+}
+
+Swimmer::~Swimmer()
+{
 }
 
 bool Swimmer::Tick(EntityContainerInterface& container)
@@ -43,22 +45,16 @@ bool Swimmer::Tick(EntityContainerInterface& container)
         bearing_ -= EoBE::Tau;
     }
 
-    double energyLoss = 1.0 / 1000;
-    if (energy_ > energyLoss) {
-        energy_ -= energyLoss;
-    } else {
-        energy_ = 0;
-    }
+    energy_.Decay(1.0 / 333.33);
 
     container.ForEachIn(Circle{ GetX(), GetY(), radius_ }, [&](Entity& other) -> void
     {
         if (FoodPellet* f = dynamic_cast<FoodPellet*>(&other)) {
-            energy_ += f->Eat();
+            FeedOn(*f, 1.0);
         }
     });
 
-    if (energy_ >= 3.0) {
-        energy_ -= 1;
+    if (energy_.Quantity() >= 3.0) {
         container.AddEntity(GiveBirth());
     }
 
@@ -86,6 +82,6 @@ void Swimmer::Draw(QPainter& paint)
 
 std::shared_ptr<Swimmer> Swimmer::GiveBirth()
 {
-    return std::make_shared<Swimmer>(GetX(), GetY(), brain_.Mutated());
+    return std::make_shared<Swimmer>(energy_.CreateChild(1.0), GetX(), GetY(), brain_.Mutated());
 }
 

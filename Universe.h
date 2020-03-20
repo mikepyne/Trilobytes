@@ -4,6 +4,7 @@
 #include "FoodPellet.h"
 #include "Swimmer.h"
 #include "QuadTree.h"
+#include "EnergyPool.h"
 #include "Random.h"
 
 #include <QScrollArea>
@@ -11,7 +12,6 @@
 #include <QPaintEvent>
 #include <QPainter>
 
-#include <iostream>
 #include <iomanip>
 #include <iomanip>
 #include <math.h>
@@ -27,6 +27,8 @@ protected:
     virtual void mousePressEvent(QMouseEvent* event) override final;
     virtual void mouseMoveEvent(QMouseEvent* event) override final;
 
+    virtual void keyPressEvent(QKeyEvent* event) override;
+
     virtual void paintEvent(QPaintEvent* event) override final;
 
 private:
@@ -37,7 +39,11 @@ private:
     double dragY_;
     bool dragging_ = false;
 
-    double energy_ = 1000.0;
+    bool spawnFood_ = true;
+    bool pauseSim_ = false;
+    bool respawn_ = true;
+
+    EnergyPool& energy_;
 
     QuadTree rootNode_;
 

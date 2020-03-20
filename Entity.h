@@ -2,6 +2,7 @@
 #define ENTITY_H
 
 #include "Shape.h"
+#include "EnergyPool.h"
 #include "EntityContainerInterface.h"
 
 #include <string_view>
@@ -13,19 +14,21 @@ public:
     /**
      * Places stationary entity at coordinates with random bearing.
      */
-    Entity(double x, double y, double radius);
-    Entity(double x, double y, double radius, double bearing, double speed);
+    Entity(EnergyPool&& energy, double x, double y, double radius);
+    Entity(EnergyPool&& energy, double x, double y, double radius, double bearing, double speed);
     virtual ~Entity();
 
     virtual std::string_view GetName() const = 0;
 
-    const double& GetX() const;
-    const double& GetY() const;
-    const double& GetRadius() const;
-    const double& GetBearing() const;
-    Point GetLocation() const;
+    const double& GetX() const { return x_; }
+    const double& GetY() const { return y_; }
+    const double& GetRadius() const { return radius_; }
+    const double& GetBearing() const { return bearing_; }
+    Point GetLocation() const { return { x_, y_ }; }
+    double GetEnergy() const { return energy_.Quantity(); }
 
     bool Alive() const;
+    void FeedOn(Entity& other, double quantity);
 
     // returns true if the entity has moved
     virtual bool Tick(EntityContainerInterface& container) = 0;
@@ -35,7 +38,7 @@ protected:
     double radius_;
     double bearing_;
     double speed_;
-    double energy_;
+    EnergyPool energy_;
 
     // returns true if the entity has moved
     bool Move();

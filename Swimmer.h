@@ -10,8 +10,9 @@
 
 class Swimmer : public Entity {
 public:
-    Swimmer(double x, double y);
-    Swimmer(double x, double y, NeuralNetwork&& brain);
+    Swimmer(EnergyPool&& energy, double x, double y);
+    Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain);
+    virtual ~Swimmer() override final;
 
     virtual std::string_view GetName() const override { return "Swimmer"; }
 
