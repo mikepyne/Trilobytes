@@ -246,7 +246,7 @@ void QuadTree::Quad::ForEachIn(const Rect& collide, const std::function<void (En
     if (Contains(rect_, collide) || (!parent_ && Collides(rect_, collide))) {
         ForEachInRecursive(collide, action);
     } else if (parent_){
-        parent_->ForEachInRecursive(collide, action);
+        parent_->ForEachIn(collide, action);
     }
 }
 
@@ -255,7 +255,7 @@ void QuadTree::Quad::ForEachIn(const Circle& collide, const std::function<void (
     if (Contains(rect_, collide) || (!parent_ && Collides(rect_, collide))) {
         ForEachInRecursive(collide, action);
     } else if (parent_){
-        parent_->ForEachInRecursive(collide, action);
+        parent_->ForEachIn(collide, action);
     }
 }
 
