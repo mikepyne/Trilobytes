@@ -38,6 +38,14 @@ public:
     }
 
     template<typename NumericType>
+    static NumericType Poisson(NumericType mean = std::numeric_limits<NumericType>::min())
+    {
+        static std::poisson_distribution<NumericType> distribution;
+        distribution.param(typename std::poisson_distribution<NumericType>::param_type(mean));
+        return Generate(distribution);
+    }
+
+    template<typename NumericType>
     static std::vector<NumericType> Numbers(typename std::vector<NumericType>::size_type count, NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
     {
         std::vector<NumericType> rands;
@@ -65,6 +73,18 @@ public:
     {
         static std::normal_distribution<NumericType> distribution;
         distribution.param(typename std::normal_distribution<NumericType>::param_type(mean, standardDeviation));
+
+        std::vector<NumericType> rands;
+        rands.reserve(count);
+        std::generate_n(std::back_inserter(rands), count, [&](){ return Generate(distribution); });
+        return rands;
+    }
+
+    template<typename NumericType>
+    static std::vector<NumericType> Poissons(typename std::vector<NumericType>::size_type count, NumericType mean = std::numeric_limits<NumericType>::min())
+    {
+        static std::poisson_distribution<NumericType> distribution;
+        distribution.param(typename std::poisson_distribution<NumericType>::param_type(mean));
 
         std::vector<NumericType> rands;
         rands.reserve(count);

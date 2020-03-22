@@ -1,6 +1,10 @@
 #include "Universe.h"
 
-#include <iostream>
+#include "Swimmer.h"
+#include "Seed.h"
+#include "FoodPellet.h"
+#include "Random.h"
+#include "MainWindow.h"
 
 //Sensors and effectors need to Inherit "Inheritable" with each value they hold inheriting trait (like for compass, the distance from the pole that they consider the max distance for calculating the normalised distance value for their neural network) then if a trait must be instantiated with an inheritable and each IHtble gets instantiated with a genome, we can automatically save/load and mutate our variable collection of traits and such, and easily couple each trait with a mutable bool, or a rate of mutation, or a fixed range (these things either construct with a parent and a bool for mutate, handled in base class, or created from scratch with ability to set the fixed values for a particular trait/inheritable) each could generate unique sciency name "ECRGB-4XT" for example and register with a global stats object that monitors number and popularity of traits in the population (graphs =])
 
@@ -11,6 +15,8 @@
 //Settings for sim tick cap, tranalate for x y scale (with hot keys) plant distribution, maximum system energy (perhaps ease this one down instead of having instantaneous famine?) perhaps have apply and ease options next to slider all with tooltips
 
 //If sticking with QT, consider spawning seperate thread for sim and leaving rendering on QT thread, ensure data races only over trivial things like where to draw things, so Render thread is read only, mutex over settings for obvious reasons
+
+// FIXME appears that food is not being collided with properly over quad boundaries
 
 Universe::Universe(QWidget* parent)
     : QWidget(parent)
@@ -31,9 +37,16 @@ Universe::Universe(QWidget* parent)
     {
         this->Thread();
     });
-    timer->start(20);
+    timer->start(1);
 
     rootNode_.SetEntityCapacity(25, 5);
+}
+
+void Universe::SetupGraphs(LineGraph& graph)
+{
+    connect(this, &Universe::OnFoodEnergySampled, [&](double energy) { graph.PushBack(QColor(0, 200, 0).rgb(), energy); });
+    connect(this, &Universe::OnSwimmerEnergySampled, [&](double energy) { graph.PushBack(QColor(100, 100, 255).rgb(), energy); });
+    connect(this, &Universe::OnGraphResetRequested, [&]() { graph.Reset(); });
 }
 
 void Universe::wheelEvent(QWheelEvent* event)
@@ -78,32 +91,22 @@ void Universe::keyPressEvent(QKeyEvent* event)
     case Qt::Key_R :
         respawn_ = true;
         break;
-
+    case Qt::Key_G :
+        emit OnGraphResetRequested();
+        break;
     }
 }
 
 void Universe::paintEvent(QPaintEvent*)
 {
-    uint64_t foodEnergy = 0;
-    uint64_t swimmerEnergy = 0;
-    rootNode_.ForEach([&](const Entity& e) -> void
-    {
-        if (const auto* f = dynamic_cast<const FoodPellet*>(&e)) {
-            foodEnergy += f->GetEnergy();
-        } else if (const auto* s = dynamic_cast<const Swimmer*>(&e)) {
-            swimmerEnergy += s->GetEnergy();
-        }
-    });
-
     QPainter p(this);
     p.setBackground(QColor(200, 225, 255));
     p.drawText(0, 15, "Entities:    " + QString::number(rootNode_.EntityCount()));
     p.drawText(0, 30, "SpareEnergy: " + QString::number(energy_.Quantity()));
-    p.drawText(0, 45, "FoodEnergy: " + QString::number(foodEnergy));
-    p.drawText(0, 60, "SwimmerEnergy: " + QString::number(swimmerEnergy));
-    p.drawText(0, 75, "Paused (space): " + QVariant(pauseSim_).toString());
-    p.drawText(0, 90, "Spawn Food (F): " + QVariant(spawnFood_).toString());
-    p.drawText(0, 105, "Respawn (R)");
+    p.drawText(0, 45, "Paused (space): " + QVariant(pauseSim_).toString());
+    p.drawText(0, 60, "Spawn Food (F): " + QVariant(spawnFood_).toString());
+    p.drawText(0, 75, "Respawn (R)");
+    p.drawText(0, 90, "Reset Graph (G)");
     p.translate(simX_ + (width() / 2), simY_ + (height() / 2));
     p.scale(simScale_, simScale_);
 
@@ -119,7 +122,9 @@ void Universe::Thread()
     if (respawn_) {
         respawn_ = false;
         for (auto n : std::vector<double>(30, 0.0)) {
-            rootNode_.AddEntity(std::make_shared<Swimmer>(energy_.CreateChild(300000), Random::Number(-500.0, 500.0) + n, Random::Number(-500.0, 500.0)));
+            double swimmerX = Random::Number(-500, 500);
+            double swimmerY = Random::Number(-500, 500);
+            rootNode_.AddEntity(std::make_shared<Swimmer>(energy_.CreateChild(300000), n + swimmerX, swimmerY));
         }
     }
 
@@ -127,8 +132,25 @@ void Universe::Thread()
         while (energy_.Quantity() > 30) {
             double foodX = Random::Number(-500, 500);
             double foodY = Random::Number(-500, 500);
-            rootNode_.AddEntity(std::make_shared<FoodPellet>(energy_.CreateChild(25000), foodX, foodY));
+            unsigned delay = Random::Number(0u, 1000u);
+            rootNode_.AddEntity(std::make_shared<Seed>(energy_.CreateChild(25000), foodX, foodY, delay));
         }
+    }
+
+    static uint64_t tick = 0;
+    if (++tick % 100 == 0) {
+        uint64_t foodEnergy = 0;
+        uint64_t swimmerEnergy = 0;
+        rootNode_.ForEach([&](const Entity& e) -> void
+        {
+            if (const auto* f = dynamic_cast<const FoodPellet*>(&e)) {
+                foodEnergy += f->GetEnergy();
+            } else if (const auto* s = dynamic_cast<const Swimmer*>(&e)) {
+                swimmerEnergy += s->GetEnergy();
+            }
+        });
+        emit OnFoodEnergySampled(foodEnergy);
+        emit OnSwimmerEnergySampled(swimmerEnergy);
     }
 
     // QT paint call

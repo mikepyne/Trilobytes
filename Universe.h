@@ -1,11 +1,9 @@
 #ifndef UNIVERSE_H
 #define UNIVERSE_H
 
-#include "FoodPellet.h"
-#include "Swimmer.h"
 #include "QuadTree.h"
 #include "EnergyPool.h"
-#include "Random.h"
+#include "LineGraph.h"
 
 #include <QScrollArea>
 #include <QTimer>
@@ -20,6 +18,13 @@ class Universe : public QWidget {
     Q_OBJECT
 public:
     Universe(QWidget *parent);
+
+    void SetupGraphs(LineGraph& graph);
+
+signals:
+    void OnFoodEnergySampled(double energy);
+    void OnSwimmerEnergySampled(double energy);
+    void OnGraphResetRequested();
 
 protected:
     virtual void wheelEvent(QWheelEvent* event) override final;

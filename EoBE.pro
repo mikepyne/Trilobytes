@@ -17,9 +17,11 @@ SOURCES += \
     EnergyPool.cpp \
     Entity.cpp \
     FoodPellet.cpp \
+    LineGraph.cpp \
     NeuralNetwork.cpp \
     QuadTree.cpp \
     Random.cpp \
+    Seed.cpp \
     Sensors/Sense.cpp \
     Sensors/SenseEntityDistance.cpp \
     Sensors/SenseEntityPresence.cpp \
@@ -36,10 +38,12 @@ HEADERS += \
     Entity.h \
     EntityContainerInterface.h \
     FoodPellet.h \
+    LineGraph.h \
     MainWindow.h \
     NeuralNetwork.h \
     QuadTree.h \
     Random.h \
+    Seed.h \
     Sensors/Sense.h \
     Sensors/SenseEntityDistance.h \
     Sensors/SenseEntityPresence.h \
