@@ -19,7 +19,7 @@ public:
     virtual bool Tick(EntityContainerInterface& container) override final;
     virtual void Draw(QPainter& paint) override final;
 
-    std::shared_ptr<Swimmer> GiveBirth();
+    std::shared_ptr<Entity> GiveBirth();
 
 private:
     NeuralNetwork brain_;

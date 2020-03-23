@@ -2,6 +2,7 @@
 #include "Random.h"
 #include "FoodPellet.h"
 #include "Utils.h"
+#include "Egg.h"
 
 #include <QPainter>
 
@@ -80,8 +81,8 @@ void Swimmer::Draw(QPainter& paint)
     paint.restore();
 }
 
-std::shared_ptr<Swimmer> Swimmer::GiveBirth()
+std::shared_ptr<Entity> Swimmer::GiveBirth()
 {
-    return std::make_shared<Swimmer>(energy_.CreateChild(100000), GetX(), GetY(), brain_.Mutated());
+    return std::make_shared<Egg>(energy_.CreateChild(100000), GetX(), GetY(), brain_.Mutated(), Random::Poisson(50u));
 }
 

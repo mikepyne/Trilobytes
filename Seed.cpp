@@ -6,7 +6,7 @@
 #include <QPainter>
 
 Seed::Seed(EnergyPool&& energy, double x, double y, unsigned germinationDelay)
-    : Entity(std::move(energy), x, y, 1.0)
+    : Entity(std::move(energy), x, y, 2.0)
     , germinationDelay_(germinationDelay)
 {
 }
@@ -25,6 +25,6 @@ void Seed::Draw(QPainter& paint)
 {
     paint.save();
     paint.setBrush(QColor(209, 225, 200));
-    paint.drawEllipse(QPointF(GetX(), GetY()), GetRadius(), GetRadius());
+    paint.drawEllipse(QPointF(GetX(), GetY()), GetRadius() / 2.0, GetRadius());
     paint.restore();
 }
