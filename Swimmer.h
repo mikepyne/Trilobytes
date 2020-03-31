@@ -16,10 +16,11 @@ public:
 
     virtual std::string_view GetName() const override { return "Swimmer"; }
 
-    virtual bool Tick(EntityContainerInterface& container) override final;
-    virtual void Draw(QPainter& paint) override final;
-
     std::shared_ptr<Entity> GiveBirth();
+
+protected:
+    virtual void TickImpl(EntityContainerInterface& container) override final;
+    virtual void DrawImpl(QPainter& paint) override final;
 
 private:
     NeuralNetwork brain_;

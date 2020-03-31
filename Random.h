@@ -1,6 +1,8 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
+#include "Utils.h"
+
 #include <random>
 #include <limits>
 #include <vector>
@@ -11,6 +13,11 @@ public:
     static void Seed(const std::mt19937::result_type& seed)
     {
         entropy_.seed(seed);
+    }
+
+    static double Bearing()
+    {
+        return Random::Number(0.0, EoBE::Tau);
     }
 
     template<typename NumericType>

@@ -9,8 +9,10 @@ public:
 
     virtual std::string_view GetName() const override { return "Seed"; }
 
-    virtual bool Tick(EntityContainerInterface& container) override;
-    virtual void Draw(QPainter& paint) override;
+
+protected:
+    virtual void TickImpl(EntityContainerInterface& container) override;
+    virtual void DrawImpl(QPainter& paint) override;
 
 private:
     unsigned germinationDelay_;

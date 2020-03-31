@@ -6,17 +6,8 @@
 #include "Random.h"
 #include "MainWindow.h"
 
-//Sensors and effectors need to Inherit "Inheritable" with each value they hold inheriting trait (like for compass, the distance from the pole that they consider the max distance for calculating the normalised distance value for their neural network) then if a trait must be instantiated with an inheritable and each IHtble gets instantiated with a genome, we can automatically save/load and mutate our variable collection of traits and such, and easily couple each trait with a mutable bool, or a rate of mutation, or a fixed range (these things either construct with a parent and a bool for mutate, handled in base class, or created from scratch with ability to set the fixed values for a particular trait/inheritable) each could generate unique sciency name "ECRGB-4XT" for example and register with a global stats object that monitors number and popularity of traits in the population (graphs =])
-
-//Eggs need to have an ideal sperm genome similarity and choose a sperm that has been deposited at it with weighted probability based on the similarity, they also need traits like time to wait and ability to self fertilise if they need to
-
 //RenderSettings struct to contain such as showQuads, showSenseRanges, showPole, showFoodSpawnArea
-
-//Settings for sim tick cap, tranalate for x y scale (with hot keys) plant distribution, maximum system energy (perhaps ease this one down instead of having instantaneous famine?) perhaps have apply and ease options next to slider all with tooltips
-
 //If sticking with QT, consider spawning seperate thread for sim and leaving rendering on QT thread, ensure data races only over trivial things like where to draw things, so Render thread is read only, mutex over settings for obvious reasons
-
-// FIXME appears that food is not being collided with properly over quad boundaries
 
 Universe::Universe(QWidget* parent)
     : QWidget(parent)
@@ -102,7 +93,7 @@ void Universe::paintEvent(QPaintEvent*)
     QPainter p(this);
     p.setBackground(QColor(200, 225, 255));
     p.drawText(0, 15, "Entities:    " + QString::number(rootNode_.EntityCount()));
-    p.drawText(0, 30, "SpareEnergy: " + QString::number(energy_.Quantity()));
+    p.drawText(0, 30, "SpareEnergy (mj): " + QString::number(energy_.Quantity() / 1_mj));
     p.drawText(0, 45, "Paused (space): " + QVariant(pauseSim_).toString());
     p.drawText(0, 60, "Spawn Food (F): " + QVariant(spawnFood_).toString());
     p.drawText(0, 75, "Respawn (R)");
@@ -124,7 +115,7 @@ void Universe::Thread()
         for (auto n : std::vector<double>(30, 0.0)) {
             double swimmerX = Random::Number(-500, 500);
             double swimmerY = Random::Number(-500, 500);
-            rootNode_.AddEntity(std::make_shared<Swimmer>(energy_.CreateChild(300000), n + swimmerX, swimmerY));
+            rootNode_.AddEntity(std::make_shared<Swimmer>(energy_.CreateChild(300_mj), n + swimmerX, swimmerY));
         }
     }
 
@@ -133,7 +124,7 @@ void Universe::Thread()
             double foodX = Random::Number(-500, 500);
             double foodY = Random::Number(-500, 500);
             unsigned delay = Random::Number(0u, 1000u);
-            rootNode_.AddEntity(std::make_shared<Seed>(energy_.CreateChild(25000), foodX, foodY, delay));
+            rootNode_.AddEntity(std::make_shared<Seed>(energy_.CreateChild(25_mj), foodX, foodY, delay));
         }
     }
 

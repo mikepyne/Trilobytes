@@ -36,6 +36,7 @@ SOURCES += \
 
 HEADERS += \
     Egg.h \
+    Energy.h \
     EnergyPool.h \
     Entity.h \
     EntityContainerInterface.h \

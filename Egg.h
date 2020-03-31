@@ -10,8 +10,10 @@ public:
     Egg(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain, unsigned hatchingDelay);
 
     virtual std::string_view GetName() const override { return "Egg"; }
-    virtual bool Tick(EntityContainerInterface& container) override;
-    virtual void Draw(QPainter& paint) override;
+
+protected:
+    virtual void TickImpl(EntityContainerInterface& container) override;
+    virtual void DrawImpl(QPainter& paint) override;
 
 private:
     NeuralNetwork brain_;

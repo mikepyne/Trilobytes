@@ -6,25 +6,21 @@
 #include <QPainter>
 
 Seed::Seed(EnergyPool&& energy, double x, double y, unsigned germinationDelay)
-    : Entity(std::move(energy), x, y, 2.0)
+    : Entity(std::move(energy), x, y, 2.0, QColor::fromRgb(209, 225, 200))
     , germinationDelay_(germinationDelay)
 {
 }
 
-bool Seed::Tick(EntityContainerInterface& container)
+void Seed::TickImpl(EntityContainerInterface& container)
 {
     if (germinationDelay_ > 0) {
         germinationDelay_--;
     } else {
         container.AddEntity(std::make_shared<FoodPellet>(energy_.CreateChild(GetEnergy()), GetX(), GetY()));
     }
-    return false;
 }
 
-void Seed::Draw(QPainter& paint)
+void Seed::DrawImpl(QPainter& paint)
 {
-    paint.save();
-    paint.setBrush(QColor(209, 225, 200));
     paint.drawEllipse(QPointF(GetX(), GetY()), GetRadius() / 2.0, GetRadius());
-    paint.restore();
 }

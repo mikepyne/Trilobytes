@@ -1,9 +1,10 @@
 #ifndef ENERGYPOOL_H
 #define ENERGYPOOL_H
 
+#include "Energy.h"
+
 #include <assert.h>
 #include <algorithm>
-#include <cstdint>
 
 class EnergyPool {
 public:

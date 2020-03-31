@@ -13,7 +13,7 @@ EnergyPool::~EnergyPool()
 
 EnergyPool& EnergyPool::GetGlobalEnergyPool()
 {
-    static EnergyPool globalPool(100000000);
+    static EnergyPool globalPool(100_j);
     return globalPool;
 }
 
