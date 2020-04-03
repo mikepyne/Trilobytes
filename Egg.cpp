@@ -16,7 +16,7 @@ void Egg::TickImpl(EntityContainerInterface& container)
     if (hatchingDelay_ > 0) {
         hatchingDelay_--;
     } else {
-        container.AddEntity(std::make_shared<Swimmer>(energy_.CreateChild(GetEnergy()), GetX(), GetY(), std::move(brain_)));
+        container.AddEntity(std::make_shared<Swimmer>(TakeEnergy(GetEnergy()), GetX(), GetY(), std::move(brain_)));
     }
 }
 

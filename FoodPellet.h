@@ -22,7 +22,7 @@ private:
 
     virtual void DrawImpl(QPainter& paint) override final
     {
-        paint.drawEllipse(QPointF{GetX(), GetY()}, radius_, radius_);
+        paint.drawEllipse(QPointF{GetX(), GetY()}, GetRadius(), GetRadius());
     }
 
 };

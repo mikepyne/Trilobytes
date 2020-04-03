@@ -11,10 +11,10 @@ Entity::Entity(EnergyPool&& energy, double x, double y, double radius, QColor co
 }
 
 Entity::Entity(EnergyPool&& energy, double x, double y, double radius, double bearing, double speed, QColor colour)
-    : radius_(radius)
-    , energy_(std::move(energy))
+    : energy_(std::move(energy))
     , x_(x)
     , y_(y)
+    , radius_(radius)
     , bearing_(bearing)
     , speed_(speed)
     , age_(0)

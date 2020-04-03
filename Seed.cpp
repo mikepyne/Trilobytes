@@ -16,7 +16,7 @@ void Seed::TickImpl(EntityContainerInterface& container)
     if (germinationDelay_ > 0) {
         germinationDelay_--;
     } else {
-        container.AddEntity(std::make_shared<FoodPellet>(energy_.CreateChild(GetEnergy()), GetX(), GetY()));
+        container.AddEntity(std::make_shared<FoodPellet>(TakeEnergy(GetEnergy()), GetX(), GetY()));
     }
 }
 

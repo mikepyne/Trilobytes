@@ -16,9 +16,9 @@ Swimmer::Swimmer(EnergyPool&& energy, double x, double y)
 Swimmer::Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain)
     : Entity(std::move(energy), x, y, 6.0, QColor::fromRgb(15, 15, 235))
     , brain_(std::move(brain))
-    , taste_(*this, 0.0, 0.0, radius_, SenseEntityPresence::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
-    , leftAntenna_(*this, -15.0, -20.0, radius_ * 5, SenseEntityDistance::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
-    , rightAntenna_(*this, 15.0, -20.0, radius_ * 5, SenseEntityDistance::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
+    , taste_(*this, 0.0, 0.0, GetRadius(), SenseEntityPresence::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
+    , leftAntenna_(*this, -15.0, -20.0, GetRadius() * 5, SenseEntityDistance::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
+    , rightAntenna_(*this, 15.0, -20.0, GetRadius() * 5, SenseEntityDistance::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
     , compass_(*this)
     , rand_(*this, 1)
 {
@@ -31,7 +31,7 @@ Swimmer::~Swimmer()
 
 std::shared_ptr<Entity> Swimmer::GiveBirth()
 {
-    return std::make_shared<Egg>(energy_.CreateChild(100_mj), GetX(), GetY(), brain_.Mutated(), Random::Poisson(50u));
+    return std::make_shared<Egg>(TakeEnergy(100_mj), GetX(), GetY(), brain_.Mutated(), Random::Poisson(50u));
 }
 
 void Swimmer::TickImpl(EntityContainerInterface& container)
@@ -53,16 +53,16 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
     }
     SetBearing(newBearing);
 
-    energy_.Decay(333_uj); // TODO remove this, entities will use energy based on what they are doing
+    UseEnergy(333_uj); // TODO remove this, entities will use energy based on what they are doing (well maybe a small base usage would deter couch potatoes...)
 
-    container.ForEachIn(Circle{ GetX(), GetY(), radius_ }, [&](Entity& other) -> void
+    container.ForEachIn(Circle{ GetX(), GetY(), GetRadius() }, [&](Entity& other) -> void
     {
         if (FoodPellet* f = dynamic_cast<FoodPellet*>(&other)) {
             FeedOn(*f, f->GetEnergy());
         }
     });
 
-    if (energy_.Quantity() > 300000) {
+    if (GetEnergy() > 300_mj) {
         container.AddEntity(GiveBirth());
     }
 }
@@ -70,7 +70,7 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
 void Swimmer::DrawImpl(QPainter& paint)
 {
     paint.save();
-    paint.drawEllipse({GetX(), GetY()}, radius_, radius_);
+    paint.drawEllipse({GetX(), GetY()}, GetRadius(), GetRadius());
     paint.setPen(QColor(255, 255, 255));
     paint.drawLine(QPointF(GetX(), GetY()), QPointF(GetX() + std::sin(GetBearing()) * 50.0, GetY() + -(std::cos(GetBearing()) * 50.0)));
     paint.restore();

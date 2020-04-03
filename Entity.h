@@ -51,11 +51,11 @@ public:
     double GetTrait(Trait trait);
 
 protected:
-    double radius_;
-    EnergyPool energy_; // TODO make this private and warm up upon energy use (allow transfer to another entity to be heat free, just have a UseEnergy() func that results in warmth)
-
     virtual void TickImpl(EntityContainerInterface& container) = 0;
     virtual void DrawImpl(QPainter& paint) = 0;
+
+    void UseEnergy(uint64_t quantity) { energy_.Decay(quantity); }
+    EnergyPool TakeEnergy(uint64_t quantity) { return energy_.CreateChild(quantity); }
 
     // TODO consider these "Set" functions might be better as "Adjust" functions?
     void SetColour(double red, double green, double blue);
@@ -64,11 +64,13 @@ protected:
 
 private:
     // Instance variables
+    EnergyPool energy_; // TODO consider tracking energy used recenty via some sort of low pass filtered heat variable that decays over time
     double x_;
     double y_;
+    double radius_;
     double bearing_;
     double speed_;
-    double age_;
+    uint64_t age_;
 
     // Inheritable traits
     QColor colour_;
