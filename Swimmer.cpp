@@ -19,8 +19,8 @@ Swimmer::Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain)
     , taste_(*this, 0.0, 0.0, GetRadius(), SenseEntityPresence::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
     , leftAntenna_(*this, -0.6,  GetRadius() * 3.5, GetRadius() * 5, SenseEntityDistance::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
     , rightAntenna_(*this, 0.6,  GetRadius() * 3.5, GetRadius() * 5, SenseEntityDistance::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
-    , compass_(*this)
     , echoLocator_(*this, GetRadius() * 2, 0.0)
+    , compass_(*this)
     , rand_(*this, 1)
 {
     SetSpeed(0.5);

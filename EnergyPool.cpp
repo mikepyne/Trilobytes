@@ -1,5 +1,7 @@
 #include "EnergyPool.h"
 
+#include <algorithm>
+
 EnergyPool::EnergyPool(EnergyPool&& other)
     : energy_(0)
 {

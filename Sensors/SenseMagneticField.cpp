@@ -8,6 +8,8 @@
 
 SenseMagneticField::SenseMagneticField(Entity& owner)
     : Sense(owner, 2, 1)
+    , lastVector_(0.0)
+    , lastDistance_(0.0)
 {
 }
 

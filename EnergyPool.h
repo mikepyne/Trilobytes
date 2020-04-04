@@ -4,7 +4,6 @@
 #include "Energy.h"
 
 #include <assert.h>
-#include <algorithm>
 
 class EnergyPool {
 public:

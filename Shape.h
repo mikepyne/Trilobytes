@@ -183,7 +183,7 @@ inline bool Collides(const Rect& r, const Circle& c)
         }
         // corners
         // top
-        else if (c.y < r.top) {
+        else if (c.y <= r.top) {
             // top-left
             if (c.x < r.left && Contains(c, Point{r.left, r.top})) {
                 return true;
@@ -194,7 +194,7 @@ inline bool Collides(const Rect& r, const Circle& c)
             }
         }
         // bottom
-        else if (c.y > r.bottom) {
+        else if (c.y >= r.bottom) {
             // bottom-left
             if (c.x < r.left && Contains(c, Point{r.left, r.bottom})) {
                 return true;
