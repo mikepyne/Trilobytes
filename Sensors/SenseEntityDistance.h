@@ -67,11 +67,11 @@ public:
      *          any entity of any type is detected as 1.0 (max value) so the
      *          sense is binary anything or nothing detected.
      */
-    SenseEntityDistance(Entity& owner, double xOffset, double yOffset, double range, CustomFilter&& detectionParameters = MakeDefaultFilter(1.0))
+    SenseEntityDistance(Entity& owner, double angleOffset, double distanceOffset, double range, CustomFilter&& detectionParameters = MakeDefaultFilter(1.0))
         : Sense(owner, detectionParameters.inputCount_, detectionParameters.hiddenLayers_)
         , entityNames_(detectionParameters.typeNames_ + "Detector")
-        , xOffset_(xOffset)
-        , yOffset_(yOffset)
+        , angleOffset_(angleOffset)
+        , distanceOffset_(distanceOffset)
         , range_(range)
         , entityFilter_(std::move(detectionParameters.filter_))
     {
@@ -116,8 +116,8 @@ public:
 
 private:
     std::string entityNames_;
-    double xOffset_;
-    double yOffset_;
+    double angleOffset_;
+    double distanceOffset_;
     double range_;
     FilterFunction entityFilter_;
 

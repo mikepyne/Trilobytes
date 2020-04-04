@@ -26,6 +26,7 @@ SOURCES += \
     Sensors/Sense.cpp \
     Sensors/SenseEntityDistance.cpp \
     Sensors/SenseEntityPresence.cpp \
+    Sensors/SenseEntityRaycast.cpp \
     Sensors/SenseMagneticField.cpp \
     Sensors/SenseRandom.cpp \
     Swimmer.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
     Sensors/Sense.h \
     Sensors/SenseEntityDistance.h \
     Sensors/SenseEntityPresence.h \
+    Sensors/SenseEntityRaycast.h \
     Sensors/SenseMagneticField.h \
     Sensors/SenseRandom.h \
     Shape.h \

@@ -9,11 +9,8 @@ SenseEntityPresence::CustomFilter SenseEntityPresence::MakeDefaultFilter(double 
 
 void SenseEntityPresence::Draw(QPainter& paint) const
 {
-    double offsetBearing = GetBearing({0, 0}, {xOffset_, yOffset_});
-    double offsetDistance = std::sqrt(GetDistanceSquare({0, 0}, {xOffset_, yOffset_}));
-
-    double x = owner_.GetX() + (std::sin(owner_.GetBearing() + offsetBearing) * offsetDistance);
-    double y = owner_.GetY() + (-std::cos(owner_.GetBearing() + offsetBearing) * offsetDistance);
+    Point senseCentre = ApplyOffset(owner_.GetLocation(), owner_.GetBearing() + angleOffset_, distanceOffset_);
+    auto& [ x, y ] = senseCentre;
     paint.drawEllipse(QPointF(x, y), range_, range_);
 }
 
@@ -23,11 +20,8 @@ void SenseEntityPresence::PrimeInputs(std::vector<double>& inputs, const EntityC
         input = 0.0;
     }
 
-    double offsetBearing = GetBearing({0, 0}, {xOffset_, yOffset_});
-    double offsetDistance = std::sqrt(GetDistanceSquare({0, 0}, {xOffset_, yOffset_}));
-
-    double x = owner_.GetX() + (std::sin(owner_.GetBearing() + offsetBearing) * offsetDistance);
-    double y = owner_.GetY() + (-std::cos(owner_.GetBearing() + offsetBearing) * offsetDistance);
+    Point senseCentre = ApplyOffset(owner_.GetLocation(), owner_.GetBearing() + angleOffset_, distanceOffset_);
+    auto& [ x, y ] = senseCentre;
 
     entities.ForEachIn(Circle{ x, y, range_ }, [&](Entity& e)
     {

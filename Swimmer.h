@@ -3,6 +3,7 @@
 
 #include "Entity.h"
 #include "NeuralNetwork.h"
+#include "Sensors/SenseEntityRaycast.h"
 #include "Sensors/SenseEntityPresence.h"
 #include "Sensors/SenseEntityDistance.h"
 #include "Sensors/SenseMagneticField.h"
@@ -27,6 +28,7 @@ private:
     SenseEntityPresence taste_;
     SenseEntityDistance leftAntenna_;
     SenseEntityDistance rightAntenna_;
+    SenseEntityRaycast echoLocator_;
     SenseMagneticField compass_;
     SenseRandom rand_;
 };

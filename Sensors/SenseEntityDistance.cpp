@@ -10,11 +10,8 @@ SenseEntityDistance::CustomFilter SenseEntityDistance::MakeDefaultFilter(double 
 void SenseEntityDistance::Draw(QPainter& paint) const
 {
     paint.setBrush(QColor(0, 0, 0, 0));
-    double offsetBearing = GetBearing({0, 0}, {xOffset_, yOffset_});
-    double offsetDistance = std::sqrt(GetDistanceSquare({0, 0}, {xOffset_, yOffset_}));
-
-    double x = owner_.GetX() + (std::sin(owner_.GetBearing() + offsetBearing) * offsetDistance);
-    double y = owner_.GetY() + (-std::cos(owner_.GetBearing() + offsetBearing) * offsetDistance);
+    Point senseCentre = ApplyOffset(owner_.GetLocation(), owner_.GetBearing() + angleOffset_, distanceOffset_);
+    auto& [ x, y ] = senseCentre;
     paint.drawEllipse(QPointF(x, y), range_, range_);
 }
 
@@ -24,15 +21,12 @@ void SenseEntityDistance::PrimeInputs(std::vector<double>& inputs, const EntityC
         input = 0.0;
     }
 
-    double offsetBearing = GetBearing({0, 0}, {xOffset_, yOffset_});
-    double offsetDistance = std::sqrt(GetDistanceSquare({0, 0}, {xOffset_, yOffset_}));
-
-    double x = owner_.GetX() + (std::sin(owner_.GetBearing() + offsetBearing) * offsetDistance);
-    double y = owner_.GetY() + (-std::cos(owner_.GetBearing() + offsetBearing) * offsetDistance);
+    Point senseCentre = ApplyOffset(owner_.GetLocation(), owner_.GetBearing() + angleOffset_, distanceOffset_);
+    auto& [ x, y ] = senseCentre;
 
     entities.ForEachIn(Circle{ x, y, range_ }, [&](Entity& e)
     {
-        double distanceSquare = GetDistanceSquare(e.GetLocation(), { x, y });
+        double distanceSquare = GetDistanceSquare(e.GetLocation(), senseCentre);
         double smellWeight = 1.0 - (distanceSquare * (1.0 / (std::pow(range_ + 1, 2.0))));
 
         if (auto optional = entityFilter_(e); optional.has_value()) {

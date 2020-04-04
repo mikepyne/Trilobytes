@@ -41,7 +41,12 @@ private:
 
         const Rect& GetRect();
 
-        \
+        /**
+         * Applies the action to every entity that collides with the specified
+         * line.
+         */
+        virtual void ForEachCollidingWith(const Line& collide, const std::function<void (Entity&)>& action) const override;
+
         /**
          * Applies the action to every entity that is contained within the specified
          * collision rectangle.
@@ -80,7 +85,9 @@ private:
         template <typename Shape>
         void ForEachInRecursive(const Shape& collide, const std::function<void(Entity&)>& action) const
         {
-            assert(Collides(rect_, collide));
+            if (!Collides(rect_, collide)) {
+                assert(Collides(rect_, collide));
+            }
             if (children_.empty()) {
                 for (auto& entity : entities_) {
                     if (Collides(collide, Circle{ entity->GetX(), entity->GetY(), entity->GetRadius() })) {
