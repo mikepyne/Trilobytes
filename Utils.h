@@ -13,6 +13,44 @@ namespace EoBE {
 constexpr double Pi = 3.141592653589793;
 constexpr double Tau = Pi * 2;
 
+///
+/// Types
+///
+template <typename T>
+class Range {
+public:
+    Range(const T& first, const T& last)
+        : first_(first)
+        , last_(last)
+    {}
+
+    const T& Min() const { return std::min(first_, last_); }
+    const T& Max() const { return std::max(first_, last_); }
+    T ValueRange() const { return Max() - Min(); }
+    const T& First() const { return first_; }
+    const T& Last() const { return last_; }
+
+    double Similarity(const Range<T>& other) const
+    {
+        double overlap = static_cast<double>(std::min(Max(), other.Max()) - std::max(Min(), other.Min()));
+        if (overlap > 0.0) {
+            double combinedRange = static_cast<double>(std::max(Max(), other.Max()) - std::min(Min(), other.Min()));
+            return overlap / combinedRange;
+        } else {
+            return 1.0;
+        }
+    }
+
+    bool operator>(const Range<T>& other) const { return first_ > other.first_ || (first_ == other.first_ && last_ > other.last_); }
+    bool operator<(const Range<T>& other) const { return first_ < other.first_ || (first_ == other.first_ && last_ < other.last_); }
+    bool operator==(const Range<T>& other) const { return first_ == other.first_ && last_ == other.last_; }
+    bool operator>=(const Range<T>& other) const { return *this > other || *this == other; }
+    bool operator<=(const Range<T>& other) const { return *this < other || *this == other; }
+
+private:
+    const T first_;
+    const T last_;
+};
 
 ///
 /// Helpers

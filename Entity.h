@@ -72,6 +72,7 @@ private:
     double speed_;
     uint64_t age_;
 
+    // TODO remove this section!
     // Inheritable traits
     QColor colour_;
 

@@ -11,6 +11,8 @@ public:
     {
     }
 
+    // TODO create feeder class that spawns a finite number of food pellets in a specified range, allowing multiple feeders to create an interesting food spawn topology
+    // notify parent feeder that it can decrement its food pellet count
     virtual ~FoodPellet() override final;
 
     virtual std::string_view GetName() const override { return "FoodPellet"; }

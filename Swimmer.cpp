@@ -19,7 +19,7 @@ Swimmer::Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain)
     , taste_(*this, 0.0, 0.0, GetRadius(), SenseEntityPresence::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
     , leftAntenna_(*this, -0.6,  GetRadius() * 3.5, GetRadius() * 5, SenseEntityDistance::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
     , rightAntenna_(*this, 0.6,  GetRadius() * 3.5, GetRadius() * 5, SenseEntityDistance::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
-    , echoLocator_(*this, GetRadius() * 2, 0.0)
+    , echoLocator_(*this, GetRadius() * 2, 0.0, {})
     , compass_(*this)
     , rand_(*this, 1)
 {
@@ -89,3 +89,31 @@ void Swimmer::DrawImpl(QPainter& paint)
     paint.restore();
 }
 
+std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
+{
+    return {
+        std::make_shared<GenePigment>(),
+        std::make_shared<GenePigment>(),
+        std::make_shared<GenePigment>(),
+        std::make_shared<GenePigment>(),
+    };
+}
+
+void Swimmer::ApplyGenome()
+{
+    double a, r, g, b;
+    genome_->ForEach([&](const Gene& gene)
+    {
+        if (auto* pigment = dynamic_cast<const GenePigment*>(&gene)) {
+            a += pigment->a_;
+            r += pigment->r_;
+            g += pigment->g_;
+            b += pigment->b_;
+        }
+    });
+
+    tempPigments_.setRgbF(std::clamp(r, 0.0, 1.0),
+                          std::clamp(g, 0.0, 1.0),
+                          std::clamp(b, 0.0, 1.0),
+                          std::clamp(a, 0.0, 1.0));
+}

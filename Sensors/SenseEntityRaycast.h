@@ -7,7 +7,7 @@
 
 class SenseEntityRaycast : public Sense {
 public:
-    SenseEntityRaycast(Entity& owner, double maxDistance, double angle);
+    SenseEntityRaycast(Entity& owner, double maxDistance, double angle, const std::vector<Trait>&& toDetect);
 
     virtual std::string_view GetName() const override { return "SenseEntityRaycast"; }
     virtual void Draw(QPainter& paint) const override;
@@ -15,6 +15,7 @@ public:
 private:
     double rayCastDistance_;
     double rayCastAngle_;
+    std::vector<Trait> toDetect_;
 
     virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& /*environment*/) override;
 

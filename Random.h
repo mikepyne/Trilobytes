@@ -20,6 +20,11 @@ public:
         return Random::Number(0.0, EoBE::Tau);
     }
 
+    static bool Boolean()
+    {
+        return static_cast<bool>(Random::Number(0u, 1u));
+    }
+
     template<typename NumericType>
     static NumericType Number(NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
     {
