@@ -4,8 +4,9 @@
 
 #include <QPainter>
 
-Egg::Egg(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain, unsigned hatchingDelay)
+Egg::Egg(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain, std::shared_ptr<Genome> genome, unsigned hatchingDelay)
     : Entity(std::move(energy), x, y, 7, QColor::fromRgb(125, 57, 195))
+    , genome_(genome)
     , brain_(std::move(brain))
     , hatchingDelay_(hatchingDelay)
 {
@@ -16,7 +17,13 @@ void Egg::TickImpl(EntityContainerInterface& container)
     if (hatchingDelay_ > 0) {
         hatchingDelay_--;
     } else {
-        container.AddEntity(std::make_shared<Swimmer>(TakeEnergy(GetEnergy()), GetX(), GetY(), std::move(brain_)));
+        // cross with self for now
+        std::shared_ptr<Genome> genome = Genome::CreateGenome(*genome_, *genome_);
+        if (genome) {
+            container.AddEntity(std::make_shared<Swimmer>(TakeEnergy(GetEnergy()), GetX(), GetY(), std::move(brain_), genome));
+        } else {
+            UseEnergy(GetEnergy());
+        }
     }
 }
 

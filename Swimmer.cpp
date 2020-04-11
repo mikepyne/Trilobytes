@@ -9,12 +9,13 @@
 #include <math.h>
 
 Swimmer::Swimmer(EnergyPool&& energy, double x, double y)
-    : Swimmer(std::move(energy), x, y, NeuralNetwork(3, 7))
+    : Swimmer(std::move(energy), x, y, NeuralNetwork(3, 7), std::make_shared<Genome>(CreateDefaultGenome()))
 {
 }
 
-Swimmer::Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain)
+Swimmer::Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain, std::shared_ptr<Genome> genome)
     : Entity(std::move(energy), x, y, 6.0, QColor::fromRgb(15, 15, 235))
+    , genome_(std::move(genome))
     , brain_(std::move(brain))
     , taste_(*this, 0.0, 0.0, GetRadius(), SenseEntityPresence::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
     , leftAntenna_(*this, -0.6,  GetRadius() * 3.5, GetRadius() * 5, SenseEntityDistance::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
@@ -24,6 +25,7 @@ Swimmer::Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain)
     , rand_(*this, 1)
 {
     SetSpeed(0.5);
+    ApplyGenome();
 }
 
 Swimmer::~Swimmer()
@@ -32,7 +34,7 @@ Swimmer::~Swimmer()
 
 std::shared_ptr<Entity> Swimmer::GiveBirth()
 {
-    return std::make_shared<Egg>(TakeEnergy(100_mj), GetX(), GetY(), brain_.Mutated(), Random::Poisson(50u));
+    return std::make_shared<Egg>(TakeEnergy(100_mj), GetX(), GetY(), brain_.Mutated(), genome_, Random::Poisson(50u));
 }
 
 void Swimmer::TickImpl(EntityContainerInterface& container)
@@ -72,6 +74,8 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
 void Swimmer::DrawImpl(QPainter& paint)
 {
     paint.save();
+    paint.drawEllipse({GetX(), GetY()}, GetRadius(), GetRadius());
+    paint.setBrush(tempPigments_);
     paint.drawEllipse({GetX(), GetY()}, GetRadius(), GetRadius());
     paint.restore();
     paint.save();
