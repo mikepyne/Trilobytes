@@ -10,6 +10,12 @@
 
 class Random {
 public:
+    static void Seed()
+    {
+        static std::random_device rand;
+        entropy_.seed(rand());
+    }
+
     static void Seed(const std::mt19937::result_type& seed)
     {
         entropy_.seed(seed);
