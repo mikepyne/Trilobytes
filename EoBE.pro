@@ -18,6 +18,10 @@ SOURCES += \
     EnergyPool.cpp \
     Entity.cpp \
     FoodPellet.cpp \
+    Genome/ChromosomePair.cpp \
+    Genome/Gene.cpp \
+    Genome/GenePigment.cpp \
+    Genome/Genome.cpp \
     LineGraph.cpp \
     NeuralNetwork.cpp \
     QuadTree.cpp \
@@ -42,6 +46,10 @@ HEADERS += \
     Entity.h \
     EntityContainerInterface.h \
     FoodPellet.h \
+    Genome/ChromosomePair.h \
+    Genome/Gene.h \
+    Genome/GenePigment.h \
+    Genome/Genome.h \
     LineGraph.h \
     MainWindow.h \
     NeuralNetwork.h \
