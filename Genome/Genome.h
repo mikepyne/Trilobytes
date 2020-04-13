@@ -8,16 +8,16 @@
 #include <memory>
 #include <functional>
 
-// TODO Genome scale mutations (chromosome duplications, polyploidy, chromosome fusing and fragmenting)
 class Genome {
 public:
     // Create a single Chromosome pair with the following genes
     Genome(std::vector<std::shared_ptr<Gene>>&& genes);
     Genome(std::vector<ChromosomePair>&& chromosomes);
 
-    static std::shared_ptr<Genome> CreateGenome(const Genome& aGenome, const Genome& bGenome);
+    static std::shared_ptr<Genome> CreateOffspring(const Genome& aGenome, const Genome& bGenome);
 
     void ForEach(const std::function<void(const Gene& gene)>& action) const;
+    void Mutate();
 
 private:
     std::vector<ChromosomePair> chromosomes_;

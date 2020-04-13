@@ -41,6 +41,12 @@ public:
         }
     }
 
+    void SetRange(const T& first, const T& last)
+    {
+        first_ = first;
+        last_ = last;
+    }
+
     bool operator>(const Range<T>& other) const { return first_ > other.first_ || (first_ == other.first_ && last_ > other.last_); }
     bool operator<(const Range<T>& other) const { return first_ < other.first_ || (first_ == other.first_ && last_ < other.last_); }
     bool operator==(const Range<T>& other) const { return first_ == other.first_ && last_ == other.last_; }
@@ -48,8 +54,8 @@ public:
     bool operator<=(const Range<T>& other) const { return *this < other || *this == other; }
 
 private:
-    const T first_;
-    const T last_;
+    T first_;
+    T last_;
 };
 
 ///

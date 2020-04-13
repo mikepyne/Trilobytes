@@ -18,7 +18,7 @@ void Egg::TickImpl(EntityContainerInterface& container)
         hatchingDelay_--;
     } else {
         // cross with self for now
-        std::shared_ptr<Genome> genome = Genome::CreateGenome(*genome_, *genome_);
+        std::shared_ptr<Genome> genome = Genome::CreateOffspring(*genome_, *genome_);
         if (genome) {
             container.AddEntity(std::make_shared<Swimmer>(TakeEnergy(GetEnergy()), GetX(), GetY(), std::move(brain_), genome));
         } else {
