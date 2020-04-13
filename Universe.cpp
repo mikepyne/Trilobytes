@@ -1,7 +1,7 @@
 #include "Universe.h"
 
 #include "Swimmer.h"
-#include "Seed.h"
+#include "FeedDispenser.h"
 #include "FoodPellet.h"
 #include "Random.h"
 #include "MainWindow.h"
@@ -15,6 +15,18 @@ Universe::Universe(QWidget* parent)
     , rootNode_({0, 0, 1000, 1000})
 {
     setFocusPolicy(Qt::StrongFocus);
+
+    unsigned cols = 3;
+    unsigned rows = 3;
+    double gap = 500.0;
+    uint64_t maxPellets = energy_.Quantity() / 25_mj;
+    for (unsigned i = 0; i < cols; i++) {
+        for (unsigned j = 0; j < rows; j++) {
+            double x = (i * gap) - (((cols - 1) * gap) / 2.0);
+            double y = (j * gap) - (((rows - 1) * gap) / 2.0);
+            feedDispensers_.emplace_back(energy_, rootNode_, x, y, gap / 5, maxPellets / (cols * rows), 1);
+        }
+    }
 
     /*
      * QT hack to get this running in the QT event loop (necessary for
@@ -101,6 +113,12 @@ void Universe::paintEvent(QPaintEvent*)
     p.translate(simX_ + (width() / 2), simY_ + (height() / 2));
     p.scale(simScale_, simScale_);
 
+    if (spawnFood_) {
+        for (auto& dispenser : feedDispensers_) {
+            dispenser.Draw(p);
+        }
+    }
+
     rootNode_.Draw(p);
 }
 
@@ -120,11 +138,8 @@ void Universe::Thread()
     }
 
     if (spawnFood_) {
-        while (energy_.Quantity() > 30) {
-            double foodX = Random::Number(-500, 500);
-            double foodY = Random::Number(-500, 500);
-            unsigned delay = Random::Number(0u, 1000u);
-            rootNode_.AddEntity(std::make_shared<Seed>(energy_.CreateChild(25_mj), foodX, foodY, delay));
+        for (auto& dispenser : feedDispensers_) {
+            dispenser.Tick();
         }
     }
 

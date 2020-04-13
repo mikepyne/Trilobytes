@@ -4,6 +4,7 @@
 #include "QuadTree.h"
 #include "EnergyPool.h"
 #include "LineGraph.h"
+#include "FeedDispenser.h"
 
 #include <QScrollArea>
 #include <QTimer>
@@ -49,8 +50,8 @@ private:
     bool respawn_ = true;
 
     EnergyPool& energy_;
-
     QuadTree rootNode_;
+    std::vector<FeedDispenser> feedDispensers_;
 
     void Thread();
 };

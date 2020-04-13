@@ -17,6 +17,7 @@ SOURCES += \
     Egg.cpp \
     EnergyPool.cpp \
     Entity.cpp \
+    FeedDispenser.cpp \
     FoodPellet.cpp \
     Genome/ChromosomePair.cpp \
     Genome/Gene.cpp \
@@ -26,7 +27,6 @@ SOURCES += \
     NeuralNetwork.cpp \
     QuadTree.cpp \
     Random.cpp \
-    Seed.cpp \
     Sensors/Sense.cpp \
     Sensors/SenseEntityDistance.cpp \
     Sensors/SenseEntityPresence.cpp \
@@ -45,6 +45,7 @@ HEADERS += \
     EnergyPool.h \
     Entity.h \
     EntityContainerInterface.h \
+    FeedDispenser.h \
     FoodPellet.h \
     Genome/ChromosomePair.h \
     Genome/Gene.h \
@@ -55,7 +56,6 @@ HEADERS += \
     NeuralNetwork.h \
     QuadTree.h \
     Random.h \
-    Seed.h \
     Sensors/Sense.h \
     Sensors/SenseEntityDistance.h \
     Sensors/SenseEntityPresence.h \

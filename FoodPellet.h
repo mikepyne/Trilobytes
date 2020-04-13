@@ -4,10 +4,14 @@
 #include "Entity.h"
 
 #include <QPainter>
+
+class FeedDispenser;
+
 class FoodPellet : public Entity {
 public:
-    FoodPellet(EnergyPool&& energy, double x, double y)
+    FoodPellet(FeedDispenser& spawner, EnergyPool&& energy, double x, double y)
         : Entity(std::move(energy), x, y, 2.5, QColor::fromRgb(15, 235, 15))
+        , spawner_(spawner)
     {
     }
 
@@ -18,6 +22,8 @@ public:
     virtual std::string_view GetName() const override { return "FoodPellet"; }
 
 private:
+    FeedDispenser& spawner_;
+
     virtual void TickImpl(EntityContainerInterface& /*container*/) override final
     {
     }
