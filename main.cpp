@@ -4,9 +4,11 @@
 
 #include <QApplication>
 
+#include <time.h>
+
 int main(int argc, char *argv[])
 {
-    Random::Seed();
+    Random::Seed(static_cast<unsigned long>(time(nullptr)));
 
     QApplication a(argc, argv);
     MainWindow w;

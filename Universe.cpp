@@ -16,16 +16,14 @@ Universe::Universe(QWidget* parent)
 {
     setFocusPolicy(Qt::StrongFocus);
 
-    unsigned cols = 3;
-    unsigned rows = 3;
-    double gap = 500.0;
+    unsigned count = 50;
+    double xRange = 1500;
+    double yRange = 1500;
     uint64_t maxPellets = energy_.Quantity() / 25_mj;
-    for (unsigned i = 0; i < cols; i++) {
-        for (unsigned j = 0; j < rows; j++) {
-            double x = (i * gap) - (((cols - 1) * gap) / 2.0);
-            double y = (j * gap) - (((rows - 1) * gap) / 2.0);
-            feedDispensers_.emplace_back(energy_, rootNode_, x, y, gap / 5, maxPellets / (cols * rows), 1);
-        }
+    for (unsigned i = 0; i < count; i++) {
+        double x = Random::Number(-xRange / 2, xRange / 2);
+        double y = Random::Number(-yRange / 2, yRange / 2);
+        feedDispensers_.emplace_back(energy_, rootNode_, x, y, Random::Number(50, 100), maxPellets / count, Random::Number(0, 5));
     }
 
     /*

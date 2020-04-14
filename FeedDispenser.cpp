@@ -15,6 +15,9 @@ FeedDispenser::FeedDispenser(EnergyPool& energyPool, QuadTree& entityContainer, 
     , spawnStdDeviation_(spawnStdDeviation)
     , maxPelletCount_(maxPelletCount)
     , averageTicksBetweenPellets_(averageTicksBetweenPellets)
+    , xVelocity_(0)
+    , yVelocity_(0)
+    , stepsRemaining_(0)
     , currentPelletCount_(0)
     , ticksTillNext_(0)
 {
@@ -51,4 +54,19 @@ void FeedDispenser::Tick()
 void FeedDispenser::PelletEaten()
 {
     --currentPelletCount_;
+    if (stepsRemaining_ == 0) {
+        double xDestination = Random::Number<double>(-1500, 1500);
+        double yDestination = Random::Number<double>(-1500, 1500);
+        double xDistance = xDestination - x_;
+        double yDistance = yDestination - y_;
+        double distance = std::sqrt((xDistance * xDistance) + (yDistance * yDistance));
+        double speed = 0.01;
+        stepsRemaining_ = static_cast<unsigned>(std::round(distance / speed));
+        xVelocity_ = xDistance / stepsRemaining_;
+        yVelocity_ = yDistance / stepsRemaining_;
+    } else {
+        x_ += xVelocity_;
+        y_ += yVelocity_;
+        --stepsRemaining_;
+    }
 }

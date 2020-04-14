@@ -21,6 +21,9 @@ private:
     double spawnStdDeviation_;
     unsigned maxPelletCount_;
     unsigned averageTicksBetweenPellets_;
+    double xVelocity_;
+    double yVelocity_;
+    unsigned stepsRemaining_;
 
     unsigned currentPelletCount_;
     unsigned ticksTillNext_;
