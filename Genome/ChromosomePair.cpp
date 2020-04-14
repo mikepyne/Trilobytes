@@ -1,6 +1,7 @@
 #include "ChromosomePair.h"
 
 #include "Random.h"
+#include "GeneFactory.h"
 
 ChromosomePair::ChromosomePair(std::vector<std::shared_ptr<Gene> >&& genes)
     : aChromosomeRange_(Random::Number<unsigned>(), Random::Number<unsigned>())
@@ -141,6 +142,14 @@ void ChromosomePair::Mutate()
         if (Random::Number(0.0, 1.0) < (1.0 / 1000)) {
             std::shared_ptr<Gene>& randomGene = RandomGene();
             randomGene.reset();
+        }
+
+        // gene addition
+        if (Random::Number(0.0, 1.0) < (1.0 / 1000)) {
+            std::shared_ptr<Gene> randomGene = GeneFactory::Random();
+            bool addToA = Random::Boolean();
+            size_t randomLocation = Random::Number<size_t>(addToA ? aChromosomeRange_.Min() : bChromosomeRange_.Min(), addToA ? aChromosomeRange_.Max() : bChromosomeRange_.Max());
+            addToA ? chromosomePair_[randomLocation].first = randomGene : chromosomePair_[randomLocation].second = randomGene;
         }
 
         // gene transposition

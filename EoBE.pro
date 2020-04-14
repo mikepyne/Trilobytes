@@ -21,6 +21,7 @@ SOURCES += \
     FoodPellet.cpp \
     Genome/ChromosomePair.cpp \
     Genome/Gene.cpp \
+    Genome/GeneFactory.cpp \
     Genome/GenePigment.cpp \
     Genome/Genome.cpp \
     LineGraph.cpp \
@@ -49,6 +50,7 @@ HEADERS += \
     FoodPellet.h \
     Genome/ChromosomePair.h \
     Genome/Gene.h \
+    Genome/GeneFactory.h \
     Genome/GenePigment.h \
     Genome/Genome.h \
     LineGraph.h \
