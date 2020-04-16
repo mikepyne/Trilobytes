@@ -128,10 +128,10 @@ void Universe::Thread()
 
     if (respawn_) {
         respawn_ = false;
-        for (auto n : std::vector<double>(30, 0.0)) {
-            double swimmerX = Random::Number(-500, 500);
-            double swimmerY = Random::Number(-500, 500);
-            rootNode_.AddEntity(std::make_shared<Swimmer>(energy_.CreateChild(300_mj), n + swimmerX, swimmerY));
+        for (auto feeder : feedDispensers_) {
+            double swimmerX = feeder.GetX() + Random::Number(-feeder.GetRadius(), feeder.GetRadius());
+            double swimmerY = feeder.GetY() + Random::Number(-feeder.GetRadius(), feeder.GetRadius());
+            rootNode_.AddEntity(std::make_shared<Swimmer>(energy_.CreateChild(300_mj), swimmerX, swimmerY));
         }
     }
 

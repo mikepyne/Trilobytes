@@ -26,12 +26,12 @@ FeedDispenser::FeedDispenser(EnergyPool& energyPool, QuadTree& entityContainer, 
 void FeedDispenser::Draw(QPainter& paint)
 {
     paint.save();
-    paint.setPen(QColor(0, 0, 0, 0));
-    auto gradient = QRadialGradient(x_, y_, spawnStdDeviation_ * 3);
+    paint.setPen(QColor(0, 205, 90, 255));
+    auto gradient = QRadialGradient(x_, y_, GetRadius());
     gradient.setColorAt(0.0, QColor(0, 255, 100, 100));
     gradient.setColorAt(1.0, QColor(0, 255, 100, 10));
     paint.setBrush(gradient);
-    paint.drawEllipse({x_, y_}, spawnStdDeviation_ * 3, spawnStdDeviation_ * 3);
+    paint.drawEllipse({x_, y_}, GetRadius(), GetRadius());
     paint.restore();
 }
 

@@ -13,6 +13,10 @@ public:
     void Tick();
     void PelletEaten();
 
+    double GetX() const { return x_; }
+    double GetY() const { return y_; }
+    double GetRadius() const { return spawnStdDeviation_ * 3; }
+
 private:
     EnergyPool& energyPool_;
     QuadTree& entityContainer_;
