@@ -181,13 +181,13 @@ void ChromosomePair::Mutate()
         if (geneA != nullptr && (location < aChromosomeRange_.Min() || location > aChromosomeRange_.Max())) {
             // trim genes outside of their chromosome range
             geneA = nullptr;
-        } else if (geneA != nullptr && Random::Number(0.0, 1.0) < (1.0 / 1000)) {
+        } else if (geneA != nullptr && Random::Number(0.0, 1.0) < geneA->GetMutationProbability()) {
             geneA = geneA->Mutate();
         }
         if (geneB != nullptr && (location < bChromosomeRange_.Min() || location > bChromosomeRange_.Max())) {
             // trim genes outside of their chromosome range
             geneB = nullptr;
-        } else if (geneB != nullptr && Random::Number(0.0, 1.0) < (1.0 / 1000)) {
+        } else if (geneB != nullptr && Random::Number(0.0, 1.0) < geneB->GetMutationProbability()) {
             geneB = geneB->Mutate();
         }
     }

@@ -12,7 +12,7 @@ public:
     const double b_;
 
     GenePigment();
-    GenePigment(double a, double r, double g, double b);
+    GenePigment(double a, double r, double g, double b, double mutationProbability);
     virtual ~GenePigment() override;
 
 protected:

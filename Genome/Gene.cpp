@@ -1,7 +1,8 @@
 #include "Gene.h"
 
-Gene::Gene(double dominance)
+Gene::Gene(double dominance, double mutationProbability)
     : dominance_(dominance)
+    , mutationProbability_(mutationProbability)
 {
 }
 
