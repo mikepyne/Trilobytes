@@ -55,8 +55,8 @@ void FeedDispenser::PelletEaten()
 {
     --currentPelletCount_;
     if (stepsRemaining_ == 0) {
-        double xDestination = Random::Number<double>(-1500, 1500);
-        double yDestination = Random::Number<double>(-1500, 1500);
+        double xDestination = Random::Number<double>(-1500 / 2, 1500 / 2);
+        double yDestination = Random::Number<double>(-1500 / 2, 1500 / 2);
         double xDistance = xDestination - x_;
         double yDistance = yDestination - y_;
         double distance = std::sqrt((xDistance * xDistance) + (yDistance * yDistance));
