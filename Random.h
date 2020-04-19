@@ -93,6 +93,20 @@ public:
     }
 
     template<typename NumericType>
+    static std::vector<NumericType> DualPeakGaussians(typename std::vector<NumericType>::size_type count, NumericType meanPeakOne, NumericType standardDeviationPeakOne, NumericType meanPeakTwo, NumericType standardDeviationPeakTwo)
+    {
+        static std::normal_distribution<NumericType> distributionOne;
+        static std::normal_distribution<NumericType> distributionTwo;
+        distributionOne.param(typename std::normal_distribution<NumericType>::param_type(meanPeakOne, standardDeviationPeakOne));
+        distributionTwo.param(typename std::normal_distribution<NumericType>::param_type(meanPeakTwo, standardDeviationPeakTwo));
+
+        std::vector<NumericType> rands;
+        rands.reserve(count);
+        std::generate_n(std::back_inserter(rands), count, [&](){ return Random::Boolean() ? Generate(distributionOne) : Generate(distributionTwo); });
+        return rands;
+    }
+
+    template<typename NumericType>
     static std::vector<NumericType> Poissons(typename std::vector<NumericType>::size_type count, NumericType mean = std::numeric_limits<NumericType>::min())
     {
         static std::poisson_distribution<NumericType> distribution;

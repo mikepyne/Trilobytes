@@ -20,11 +20,16 @@ public:
     using Node = std::vector<InputWeight>;
     using Layer = std::vector<Node>;
 
+    enum class InitialWeights : bool {
+        Random,
+        PassThrough,
+    };
+
     /**
      * Creates a rectangular network of the specified width and height, with
      * random edge weights between 0.0 and 1.0.
      */
-    NeuralNetwork(unsigned layerCount, unsigned width);
+    NeuralNetwork(unsigned layerCount, unsigned width, InitialWeights initialWeights);
 
     unsigned GetOutputCount() const { return outputs_.size(); }
 
@@ -46,6 +51,7 @@ private:
     NeuralNetwork(std::vector<Layer>&& layers);
 
     std::vector<Layer> CreateRandomLayers(unsigned layerCount, unsigned width);
+    std::vector<Layer> CreatePassThroughLayers(unsigned layerCount, unsigned width);
 };
 
 #endif // NEURALNETWORK_H

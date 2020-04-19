@@ -51,13 +51,13 @@ private:
          * Applies the action to every entity that is contained within the specified
          * collision rectangle.
          */
-        virtual void ForEachIn(const Rect& collide, const std::function<void(Entity&)>& action) const override final;
+        virtual void ForEachCollidingWith(const Rect& collide, const std::function<void(Entity&)>& action) const override final;
 
         /**
          * Applies the action to every entity that is contained within the specified
          * collision circle.
          */
-        virtual void ForEachIn(const Circle& collide, const std::function<void(Entity&)>& action) const override final;
+        virtual void ForEachCollidingWith(const Circle& collide, const std::function<void(Entity&)>& action) const override final;
 
         /**
          * Historesis allows for leeway in count so a single entity repeatedly
@@ -79,8 +79,8 @@ private:
         std::vector<std::shared_ptr<Entity>> RecursivelyCollectEntities();
 
         /**
-         * Applies the action to every entity that is contained within the specified
-         * collision shape.
+         * Applies the action to every entity that collides with the specified
+         * shape.
          */
         template <typename Shape>
         void ForEachInRecursive(const Shape& collide, const std::function<void(Entity&)>& action) const
@@ -113,6 +113,5 @@ private:
 
     void ExpandRoot();
 };
-
 
 #endif // QUADTREE_H

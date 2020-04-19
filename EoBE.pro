@@ -29,6 +29,7 @@ SOURCES += \
     QuadTree.cpp \
     Random.cpp \
     Sensors/Sense.cpp \
+    Sensors/SenseEntitiesInArea.cpp \
     Sensors/SenseEntityDistance.cpp \
     Sensors/SenseEntityPresence.cpp \
     Sensors/SenseEntityRaycast.cpp \
@@ -59,6 +60,7 @@ HEADERS += \
     QuadTree.h \
     Random.h \
     Sensors/Sense.h \
+    Sensors/SenseEntitiesInArea.h \
     Sensors/SenseEntityDistance.h \
     Sensors/SenseEntityPresence.h \
     Sensors/SenseEntityRaycast.h \

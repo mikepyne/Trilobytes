@@ -9,7 +9,7 @@
 #include <math.h>
 
 Swimmer::Swimmer(EnergyPool&& energy, double x, double y)
-    : Swimmer(std::move(energy), x, y, NeuralNetwork(3, 7), std::make_shared<Genome>(CreateDefaultGenome()))
+    : Swimmer(std::move(energy), x, y, NeuralNetwork(3, 7, NeuralNetwork::InitialWeights::Random), std::make_shared<Genome>(CreateDefaultGenome()))
 {
 }
 
@@ -18,8 +18,8 @@ Swimmer::Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain,
     , genome_(std::move(genome))
     , brain_(std::move(brain))
     , taste_(*this, 0.0, 0.0, GetRadius(), SenseEntityPresence::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
-    , leftAntenna_(*this, -0.6,  GetRadius() * 3.5, GetRadius() * 5, SenseEntityDistance::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
-    , rightAntenna_(*this, 0.6,  GetRadius() * 3.5, GetRadius() * 5, SenseEntityDistance::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
+    , leftAntenna_(*this, GetRadius() * 5, GetRadius() * 3.5, -0.6, 1.0, { {1.0, Trait::Green}, })
+    , rightAntenna_(*this, GetRadius() * 5, GetRadius() * 3.5, 0.6, 1.0, { {1.0, Trait::Green}, })
     , echoLocator_(*this, GetRadius() * 2, 0.0, {})
     , compass_(*this)
     , rand_(*this, 1)
@@ -47,7 +47,7 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
     auto compass = compass_.Tick(container, {});
     auto rand = rand_.Tick(container, {});
 
-    auto& out = brain_.ForwardPropogate({ taste[0], leftSmell[0], rightSmell[0], echo[0], compass[0], compass[1], rand[0] });
+    auto& out = brain_.ForwardPropogate({ taste[0], leftSmell[1], rightSmell[1], echo[0], compass[0], compass[1], rand[0] });
     double newBearing = GetBearing();
     newBearing += (out[1]);
     if (newBearing < 0.0) {
@@ -59,7 +59,7 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
 
     UseEnergy(333_uj); // TODO remove this, entities will use energy based on what they are doing (well maybe a small base usage would deter couch potatoes...)
 
-    container.ForEachIn(Circle{ GetX(), GetY(), GetRadius() }, [&](Entity& other) -> void
+    container.ForEachCollidingWith(Circle{ GetX(), GetY(), GetRadius() }, [&](Entity& other) -> void
     {
         if (FoodPellet* f = dynamic_cast<FoodPellet*>(&other)) {
             FeedOn(*f, f->GetEnergy());
@@ -86,9 +86,9 @@ void Swimmer::DrawImpl(QPainter& paint)
     compass_.Draw(paint);
     paint.restore();
     paint.save();
+    paint.setPen(QColor(0, 0, 0));
+    paint.setBrush(QColor(0, 0, 0, 0));
     leftAntenna_.Draw(paint);
-    paint.restore();
-    paint.save();
     rightAntenna_.Draw(paint);
     paint.restore();
 }

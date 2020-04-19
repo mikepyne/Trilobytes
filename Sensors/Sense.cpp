@@ -6,7 +6,7 @@
 
 Sense::Sense(Entity& owner, unsigned inputs, unsigned hiddenLayers)
     : owner_(owner)
-    , network_(hiddenLayers, inputs)
+    , network_(hiddenLayers, inputs, NeuralNetwork::InitialWeights::PassThrough)
     , inputs_(inputs, 0)
 {
 }

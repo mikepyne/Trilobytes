@@ -24,7 +24,7 @@ void SenseEntityDistance::PrimeInputs(std::vector<double>& inputs, const EntityC
     Point senseCentre = ApplyOffset(owner_.GetLocation(), owner_.GetBearing() + angleOffset_, distanceOffset_);
     auto& [ x, y ] = senseCentre;
 
-    entities.ForEachIn(Circle{ x, y, range_ }, [&](Entity& e)
+    entities.ForEachCollidingWith(Circle{ x, y, range_ }, [&](Entity& e)
     {
         double distanceSquare = GetDistanceSquare(e.GetLocation(), senseCentre);
         double smellWeight = 1.0 - (distanceSquare * (1.0 / (std::pow(range_ + 1, 2.0))));

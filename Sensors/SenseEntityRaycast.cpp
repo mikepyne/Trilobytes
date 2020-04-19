@@ -20,21 +20,21 @@ void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityCo
 {
     Line rayCastLine = GetLine();
     Entity* nearestEntity = nullptr;
-    double distanceToNearestSquare = 0.0;
+    double distanceToNearest = 0.0;
     entities.ForEachCollidingWith(rayCastLine, [&](Entity& e)
     {
         // don't detect ourself
         if (&e != &owner_) {
-            double distanceSquare = GetDistanceSquare(owner_.GetLocation(), e.GetLocation());
-            if (nearestEntity == nullptr || distanceSquare < distanceToNearestSquare) {
+            double distance = std::sqrt(GetDistanceSquare(owner_.GetLocation(), e.GetLocation())) - e.GetRadius();
+            if (nearestEntity == nullptr || distance < distanceToNearest) {
                 nearestEntity = &e;
-                distanceToNearestSquare = distanceSquare;
+                distanceToNearest = distance;
             }
         }
     });
 
     if (nearestEntity != nullptr) {
-        inputs[0] = std::sqrt(distanceToNearestSquare) / rayCastDistance_;
+        inputs[0] = distanceToNearest / rayCastDistance_;
         for (unsigned i = 0; i < toDetect_.size(); i++) {
             inputs[i + 1] = nearestEntity->GetTrait(toDetect_[i]);
         }

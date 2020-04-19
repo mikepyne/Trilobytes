@@ -250,21 +250,21 @@ void QuadTree::Quad::ForEachCollidingWith(const Line& collide, const std::functi
     }
 }
 
-void QuadTree::Quad::ForEachIn(const Rect& collide, const std::function<void (Entity&)>& action) const
+void QuadTree::Quad::ForEachCollidingWith(const Rect& collide, const std::function<void (Entity&)>& action) const
 {
     if (Contains(rect_, collide) || (!parent_ && Collides(rect_, collide))) {
         ForEachInRecursive(collide, action);
     } else if (parent_){
-        parent_->ForEachIn(collide, action);
+        parent_->ForEachCollidingWith(collide, action);
     }
 }
 
-void QuadTree::Quad::ForEachIn(const Circle& collide, const std::function<void (Entity&)>& action) const
+void QuadTree::Quad::ForEachCollidingWith(const Circle& collide, const std::function<void (Entity&)>& action) const
 {
     if (Contains(rect_, collide) || (!parent_ && Collides(rect_, collide))) {
         ForEachInRecursive(collide, action);
     } else if (parent_){
-        parent_->ForEachIn(collide, action);
+        parent_->ForEachCollidingWith(collide, action);
     }
 }
 
@@ -293,8 +293,6 @@ void QuadTree::Quad::Rebalance(const uint64_t targetCount, uint64_t historesis)
     }
 }
 
-
-
 bool QuadTree::Quad::AreAllChildrenLeafQuads()
 {
     for (auto& child : children_) {
@@ -318,3 +316,4 @@ std::vector<std::shared_ptr<Entity> > QuadTree::Quad::RecursivelyCollectEntities
     }
     return allEntities;
 }
+

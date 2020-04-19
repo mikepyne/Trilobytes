@@ -23,7 +23,7 @@ void SenseEntityPresence::PrimeInputs(std::vector<double>& inputs, const EntityC
     Point senseCentre = ApplyOffset(owner_.GetLocation(), owner_.GetBearing() + angleOffset_, distanceOffset_);
     auto& [ x, y ] = senseCentre;
 
-    entities.ForEachIn(Circle{ x, y, range_ }, [&](Entity& e)
+    entities.ForEachCollidingWith(Circle{ x, y, range_ }, [&](Entity& e)
     {
         if (auto optional = entityFilter_(e); optional.has_value()) {
             auto [ index, value ] = optional.value();

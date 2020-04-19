@@ -8,6 +8,7 @@
 #include "Sensors/SenseEntityRaycast.h"
 #include "Sensors/SenseEntityPresence.h"
 #include "Sensors/SenseEntityDistance.h"
+#include "Sensors/SenseEntitiesInArea.h"
 #include "Sensors/SenseMagneticField.h"
 #include "Sensors/SenseRandom.h"
 
@@ -29,8 +30,8 @@ private:
     std::shared_ptr<Genome> genome_;
     NeuralNetwork brain_;
     SenseEntityPresence taste_;
-    SenseEntityDistance leftAntenna_;
-    SenseEntityDistance rightAntenna_;
+    SenseEntitiesInArea leftAntenna_;
+    SenseEntitiesInArea rightAntenna_;
     SenseEntityRaycast echoLocator_;
     SenseMagneticField compass_;
     SenseRandom rand_;
