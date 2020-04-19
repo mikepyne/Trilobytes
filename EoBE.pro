@@ -30,7 +30,6 @@ SOURCES += \
     Random.cpp \
     Sensors/Sense.cpp \
     Sensors/SenseEntitiesInArea.cpp \
-    Sensors/SenseEntityDistance.cpp \
     Sensors/SenseEntityPresence.cpp \
     Sensors/SenseEntityRaycast.cpp \
     Sensors/SenseMagneticField.cpp \
@@ -61,7 +60,6 @@ HEADERS += \
     Random.h \
     Sensors/Sense.h \
     Sensors/SenseEntitiesInArea.h \
-    Sensors/SenseEntityDistance.h \
     Sensors/SenseEntityPresence.h \
     Sensors/SenseEntityRaycast.h \
     Sensors/SenseMagneticField.h \
