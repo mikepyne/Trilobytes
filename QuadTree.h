@@ -41,23 +41,10 @@ private:
 
         const Rect& GetRect();
 
-        /**
-         * Applies the action to every entity that collides with the specified
-         * line.
-         */
-        virtual void ForEachCollidingWith(const Line& collide, const std::function<void (Entity&)>& action) const override;
-
-        /**
-         * Applies the action to every entity that is contained within the specified
-         * collision rectangle.
-         */
-        virtual void ForEachCollidingWith(const Rect& collide, const std::function<void(Entity&)>& action) const override final;
-
-        /**
-         * Applies the action to every entity that is contained within the specified
-         * collision circle.
-         */
-        virtual void ForEachCollidingWith(const Circle& collide, const std::function<void(Entity&)>& action) const override final;
+        virtual void ForEachCollidingWith(const Point& collide, const std::function<void (Entity&)>& action) const override { ForEachCollidingWith<Point>(collide, action); }
+        virtual void ForEachCollidingWith(const Line& collide, const std::function<void (Entity&)>& action) const override { ForEachCollidingWith<Line>(collide, action); }
+        virtual void ForEachCollidingWith(const Rect& collide, const std::function<void(Entity&)>& action) const override final { ForEachCollidingWith<Rect>(collide, action); }
+        virtual void ForEachCollidingWith(const Circle& collide, const std::function<void(Entity&)>& action) const override final { ForEachCollidingWith<Circle>(collide, action); }
 
         /**
          * Historesis allows for leeway in count so a single entity repeatedly
@@ -100,6 +87,20 @@ private:
                         child->ForEachInRecursive(collide, action);
                     }
                 }
+            }
+        }
+
+        /**
+         * Applies the action to every entity that is contained within the specified
+         * collision shape.
+         */
+        template <typename Shape>
+        void ForEachCollidingWith(const Shape& collide, const std::function<void(Entity&)>& action) const
+        {
+            if (Contains(rect_, collide) || (!parent_ && Collides(rect_, collide))) {
+                ForEachInRecursive(collide, action);
+            } else if (parent_){
+                parent_->ForEachCollidingWith(collide, action);
             }
         }
     };

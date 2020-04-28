@@ -17,7 +17,7 @@ Swimmer::Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain,
     : Entity(std::move(energy), x, y, 6.0, QColor::fromRgb(15, 15, 235))
     , genome_(std::move(genome))
     , brain_(std::move(brain))
-    , taste_(*this, 0.0, 0.0, GetRadius(), SenseEntityPresence::MakeCustomFilter<FoodPellet>(0, { 1.0 }))
+    , taste_(*this, 0.0, 0.0, 1.0, { {1.0, Trait::Green}, })
     , leftAntenna_(*this, GetRadius() * 5, GetRadius() * 3.5, -0.6, 1.0, { {1.0, Trait::Green}, })
     , rightAntenna_(*this, GetRadius() * 5, GetRadius() * 3.5, 0.6, 1.0, { {1.0, Trait::Green}, })
     , echoLocator_(*this, GetRadius() * 2, 0.0, {})
@@ -47,7 +47,7 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
     auto compass = compass_.Tick(container, {});
     auto rand = rand_.Tick(container, {});
 
-    auto& out = brain_.ForwardPropogate({ taste[0], leftSmell[1], rightSmell[1], echo[0], compass[0], compass[1], rand[0] });
+    auto& out = brain_.ForwardPropogate({ taste[1], leftSmell[1], rightSmell[1], echo[0], compass[0], compass[1], rand[0] });
     double newBearing = GetBearing();
     newBearing += (out[1]);
     if (newBearing < 0.0) {

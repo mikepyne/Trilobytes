@@ -150,19 +150,9 @@ inline bool Collides(const Line& l, const Rect& r)
         || Collides(l, { { r.bottom, r.right }, { r.bottom, r.left } });
 }
 
-inline bool Collides(const Circle& c, const Line& l)
-{
-    return Collides(l, c);
-}
-
 inline bool Collides(const Circle& c1, const Circle& c2)
 {
     return (std::pow(c1.x - c2.x, 2.0) + std::pow(c1.y - c2.y, 2.0)) <= std::pow(c1.radius + c2.radius, 2.0);
-}
-
-inline bool Collides(const Rect& r, const Line& l)
-{
-    return Collides(l, r);
 }
 
 inline bool Collides(const Rect& r1, const Rect& r2)
@@ -208,6 +198,27 @@ inline bool Collides(const Rect& r, const Circle& c)
         }
     }
     return false;
+}
+
+/**
+ * Generically allow Collide and Contain to be synonymous when one or more of
+ * the types is a Point
+ */
+template <typename Shape>
+inline bool Collides(const Shape& s, const Point& p)
+{
+    return Contains(s, p);
+}
+
+/**
+ * Prevent need to specify collision functions twice. See
+ * https://stackoverflow.com/questions/61485764/call-a-function-that-is-specifically-not-templated
+ */
+template<typename Shape1, typename Shape2>
+auto Collides(Shape1 a, Shape2 b) -> decltype(::Collides(b, a))
+{
+    // Uses SFINAE to prevent recursive calling
+    return Collides(b, a);
 }
 
 #endif // SHAPEH

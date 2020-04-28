@@ -6,8 +6,7 @@
 #include "Genome/Genome.h"
 #include "Genome/GenePigment.h"
 #include "Sensors/SenseEntityRaycast.h"
-#include "Sensors/SenseEntityPresence.h"
-#include "Sensors/SenseEntityDistance.h"
+#include "Sensors/SenseEntitiesTouching.h"
 #include "Sensors/SenseEntitiesInArea.h"
 #include "Sensors/SenseMagneticField.h"
 #include "Sensors/SenseRandom.h"
@@ -29,7 +28,7 @@ protected:
 private:
     std::shared_ptr<Genome> genome_;
     NeuralNetwork brain_;
-    SenseEntityPresence taste_;
+    SenseEntitiesTouching taste_;
     SenseEntitiesInArea leftAntenna_;
     SenseEntitiesInArea rightAntenna_;
     SenseEntityRaycast echoLocator_;

@@ -241,33 +241,6 @@ const Rect& QuadTree::Quad::GetRect()
     return rect_;
 }
 
-void QuadTree::Quad::ForEachCollidingWith(const Line& collide, const std::function<void (Entity&)>& action) const
-{
-    if (Contains(rect_, collide) || (!parent_ && Collides(rect_, collide))) {
-        ForEachInRecursive(collide, action);
-    } else if (parent_){
-        parent_->ForEachCollidingWith(collide, action);
-    }
-}
-
-void QuadTree::Quad::ForEachCollidingWith(const Rect& collide, const std::function<void (Entity&)>& action) const
-{
-    if (Contains(rect_, collide) || (!parent_ && Collides(rect_, collide))) {
-        ForEachInRecursive(collide, action);
-    } else if (parent_){
-        parent_->ForEachCollidingWith(collide, action);
-    }
-}
-
-void QuadTree::Quad::ForEachCollidingWith(const Circle& collide, const std::function<void (Entity&)>& action) const
-{
-    if (Contains(rect_, collide) || (!parent_ && Collides(rect_, collide))) {
-        ForEachInRecursive(collide, action);
-    } else if (parent_){
-        parent_->ForEachCollidingWith(collide, action);
-    }
-}
-
 void QuadTree::Quad::Rebalance(const uint64_t targetCount, uint64_t historesis)
 {
     assert(enteringEntities_.empty());
