@@ -12,7 +12,6 @@
 #include <QPainter>
 
 #include <iomanip>
-#include <iomanip>
 #include <math.h>
 
 class Universe : public QWidget {

@@ -4,6 +4,9 @@
 #include <string>
 #include <sstream>
 #include <string_view>
+#include <vector>
+#include <functional>
+#include <assert.h>
 
 namespace EoBE {
 
@@ -61,6 +64,51 @@ private:
 ///
 /// Helpers
 ///
+
+template <typename T1, typename T2>
+void IterateBoth(std::vector<T1>& a, std::vector<T2>& b, std::function<void(T1& a, T2& b)>&& action)
+{
+    assert(a.size() == b.size());
+    auto aIter = a.begin();
+    auto bIter = b.begin();
+    for (; aIter != a.end() && bIter != b.end() ; ++aIter, ++bIter) {
+        action(*aIter, *bIter);
+    }
+}
+
+template <typename T1, typename T2>
+void IterateBoth(const std::vector<T1>& a, const std::vector<T2>& b, std::function<void(const T1& a, const T2& b)>&& action)
+{
+    assert(a.size() == b.size());
+    auto aIter = a.begin();
+    auto bIter = b.begin();
+    for (; aIter != a.end() && bIter != b.end() ; ++aIter, ++bIter) {
+        action(*aIter, *bIter);
+    }
+}
+
+template <typename T1, typename T2>
+void IterateBoth(const std::vector<T1>& a, std::vector<T2>& b, std::function<void(const T1& a, T2& b)>&& action)
+{
+    assert(a.size() == b.size());
+    auto aIter = a.begin();
+    auto bIter = b.begin();
+    for (; aIter != a.end() && bIter != b.end() ; ++aIter, ++bIter) {
+        action(*aIter, *bIter);
+    }
+}
+
+template <typename T1, typename T2>
+void IterateBoth(std::vector<T1>& a, const std::vector<T2>& b, std::function<void(T1& a, const T2& b)>&& action)
+{
+    assert(a.size() == b.size());
+    auto aIter = a.begin();
+    auto bIter = b.begin();
+    for (; aIter != a.end() && bIter != b.end() ; ++aIter, ++bIter) {
+        action(*aIter, *bIter);
+    }
+}
+
 // credit https://stackoverflow.com/users/3624760/lyberta
 template <typename T>
 constexpr std::string_view TypeName()

@@ -2,8 +2,8 @@
 
 #include <QPainter>
 
-SenseEntitiesTouching::SenseEntitiesTouching(Entity& owner, double offsetDistance, double offsetAngle, double genericDetectionWeight, const std::vector<std::pair<double, Trait> >&& toDetect)
-    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u))
+SenseEntitiesTouching::SenseEntitiesTouching(Entity& owner, unsigned outputCount, double offsetDistance, double offsetAngle, double genericDetectionWeight, const std::vector<std::pair<double, Trait> >&& toDetect)
+    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u), outputCount)
     , offsetDistance_(offsetDistance)
     , offsetAngle_(offsetAngle)
     , genericDetectionWeight_(genericDetectionWeight)

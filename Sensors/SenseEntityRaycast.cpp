@@ -2,8 +2,8 @@
 
 #include <QPainter>
 
-SenseEntityRaycast::SenseEntityRaycast(Entity& owner, double maxDistance, double angle, const std::vector<Trait>&& toDetect)
-    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u))
+SenseEntityRaycast::SenseEntityRaycast(Entity& owner, unsigned outputCount, double maxDistance, double angle, const std::vector<Trait>&& toDetect)
+    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u), outputCount)
     , rayCastDistance_(maxDistance)
     , rayCastAngle_(angle)
     , toDetect_(toDetect)

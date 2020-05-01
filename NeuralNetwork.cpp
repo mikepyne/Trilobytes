@@ -6,17 +6,16 @@ NeuralNetwork::NeuralNetwork(unsigned layerCount, unsigned width, NeuralNetwork:
 {
 }
 
-const std::vector<double>& NeuralNetwork::ForwardPropogate(const std::vector<double>& inputs)
+void NeuralNetwork::ForwardPropogate(std::vector<double>& toPropogate)
 {
     static std::vector<double> previousNodeValues;
 
     // about to swap with previousNodeValues so we can return outputs at the end
     // also allows to skip propogation when no hidden layers
-    outputs_ = inputs;
     for (auto& layer : layers_) {
-        std::swap(outputs_, previousNodeValues);
+        std::swap(toPropogate, previousNodeValues);
         // We'll reuse this vector for the output of each layer
-        outputs_.assign(layer.size(), 0.0);
+        toPropogate.assign(layer.size(), 0.0);
 
         size_t nodeIndex = 0;
         for (auto& node : layer) {
@@ -27,11 +26,10 @@ const std::vector<double>& NeuralNetwork::ForwardPropogate(const std::vector<dou
                 ++edgeIndex;
             }
             // tanh is our sigma function
-            outputs_[nodeIndex] = std::tanh(nodeValue);
+            toPropogate[nodeIndex] = std::tanh(nodeValue);
             nodeIndex++;
         }
     }
-    return outputs_;
 }
 
 NeuralNetwork NeuralNetwork::Mutated()

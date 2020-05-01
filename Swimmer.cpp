@@ -17,12 +17,12 @@ Swimmer::Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain,
     : Entity(std::move(energy), x, y, 6.0, QColor::fromRgb(15, 15, 235))
     , genome_(std::move(genome))
     , brain_(std::move(brain))
-    , taste_(*this, 0.0, 0.0, 1.0, { {1.0, Trait::Green}, })
-    , leftAntenna_(*this, GetRadius() * 5, GetRadius() * 3.5, -0.6, 1.0, { {1.0, Trait::Green}, })
-    , rightAntenna_(*this, GetRadius() * 5, GetRadius() * 3.5, 0.6, 1.0, { {1.0, Trait::Green}, })
-    , echoLocator_(*this, GetRadius() * 2, 0.0, {})
-    , compass_(*this)
-    , rand_(*this, 1)
+    , taste_(*this, brain_.GetInputCount(), 0.0, 0.0, 1.0, { {1.0, Trait::Green}, })
+    , leftAntenna_(*this, brain_.GetInputCount(), GetRadius() * 5, GetRadius() * 3.5, -0.6, 1.0, { {1.0, Trait::Green}, })
+    , rightAntenna_(*this, brain_.GetInputCount(), GetRadius() * 5, GetRadius() * 3.5, 0.6, 1.0, { {1.0, Trait::Green}, })
+    , echoLocator_(*this, brain_.GetInputCount(), GetRadius() * 2, 0.0, {})
+    , compass_(*this, brain_.GetInputCount())
+    , rand_(*this, 1, brain_.GetInputCount())
 {
     SetSpeed(0.5);
     ApplyGenome();
@@ -40,16 +40,17 @@ std::shared_ptr<Entity> Swimmer::GiveBirth()
 void Swimmer::TickImpl(EntityContainerInterface& container)
 {
     // TODO bearing should JUMP at Pi to -Pi (not Tau to 0), also makes maths and normalising easier
-    auto taste = taste_.Tick(container, {});
-    auto leftSmell = leftAntenna_.Tick(container, {});
-    auto rightSmell = rightAntenna_.Tick(container, {});
-    auto echo = echoLocator_.Tick(container, {});
-    auto compass = compass_.Tick(container, {});
-    auto rand = rand_.Tick(container, {});
+    std::vector<double> sensoryOutput(brain_.GetInputCount(), 0.0);
+    taste_.Tick(sensoryOutput, container, {});
+    leftAntenna_.Tick(sensoryOutput, container, {});
+    rightAntenna_.Tick(sensoryOutput, container, {});
+    echoLocator_.Tick(sensoryOutput, container, {});
+    compass_.Tick(sensoryOutput, container, {});
+    rand_.Tick(sensoryOutput, container, {});
 
-    auto& out = brain_.ForwardPropogate({ taste[1], leftSmell[1], rightSmell[1], echo[0], compass[0], compass[1], rand[0] });
+    brain_.ForwardPropogate(sensoryOutput);
     double newBearing = GetBearing();
-    newBearing += (out[1]);
+    newBearing += (sensoryOutput[1]);
     if (newBearing < 0.0) {
         newBearing += EoBE::Tau;
     } else if (newBearing > EoBE::Tau) {
@@ -57,7 +58,7 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
     }
     SetBearing(newBearing);
 
-    UseEnergy(333_uj); // TODO remove this, entities will use energy based on what they are doing (well maybe a small base usage would deter couch potatoes...)
+    UseEnergy(200_uj); // TODO remove this, entities will use energy based on what they are doing (well maybe a small base usage would deter couch potatoes...)
 
     container.ForEachCollidingWith(Circle{ GetX(), GetY(), GetRadius() }, [&](Entity& other) -> void
     {

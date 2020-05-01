@@ -26,6 +26,7 @@ SOURCES += \
     Genome/Genome.cpp \
     LineGraph.cpp \
     NeuralNetwork.cpp \
+    NeuralNetworkConnector.cpp \
     QuadTree.cpp \
     Random.cpp \
     Sensors/Sense.cpp \
@@ -56,6 +57,7 @@ HEADERS += \
     LineGraph.h \
     MainWindow.h \
     NeuralNetwork.h \
+    NeuralNetworkConnector.h \
     QuadTree.h \
     Random.h \
     Sensors/Sense.h \

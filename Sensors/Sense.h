@@ -6,6 +6,7 @@ class EntityContainerInterface;
 class QPainter;
 
 #include "NeuralNetwork.h"
+#include "NeuralNetworkConnector.h"
 
 #include <string_view>
 
@@ -21,11 +22,11 @@ public:
     /**
      * Instantiates with a random neural network
      */
-    Sense(Entity& owner, unsigned inputs, unsigned hiddenLayers);
+    Sense(Entity& owner, unsigned inputs, unsigned hiddenLayers, unsigned outputs);
     virtual ~Sense();
 
     virtual void Draw(QPainter& paint) const;
-    virtual const std::vector<double>& Tick(const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) final;
+    virtual void Tick(std::vector<double>& outputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) final;
 
     virtual std::string_view GetName() const = 0;
     unsigned GetOutputCount() const { return network_.GetOutputCount(); }
@@ -35,6 +36,7 @@ protected:
 
 private:
     NeuralNetwork network_;
+    NeuralNetworkConnector senseToBrainConnector_;
     std::vector<double> inputs_;
 
     virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) = 0;

@@ -6,8 +6,8 @@
 
 #include <QPainter>
 
-SenseMagneticField::SenseMagneticField(Entity& owner)
-    : Sense(owner, 2, 1)
+SenseMagneticField::SenseMagneticField(Entity& owner, unsigned outputCount)
+    : Sense(owner, 2, 1, outputCount)
     , lastVector_(0.0)
     , lastDistance_(0.0)
 {

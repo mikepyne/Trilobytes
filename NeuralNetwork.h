@@ -31,7 +31,8 @@ public:
      */
     NeuralNetwork(unsigned layerCount, unsigned width, InitialWeights initialWeights);
 
-    unsigned GetOutputCount() const { return outputs_.size(); }
+    unsigned GetInputCount() const { return layers_.front().size(); }
+    unsigned GetOutputCount() const { return layers_.back().size(); }
 
     /**
      * Inputs should be between 0.0 and 1.0 inclusive. Returns the final node
@@ -40,13 +41,12 @@ public:
      * OPTIMISATION Perhaps nodes storing their value instead of populating
      * vectors could improve performance by reducting copying
      */
-    const std::vector<double>& ForwardPropogate(const std::vector<double>& inputs);
+    void ForwardPropogate(std::vector<double>& inputs);
 
     NeuralNetwork Mutated();
 
 private:
     std::vector<Layer> layers_;
-    std::vector<double> outputs_;
 
     NeuralNetwork(std::vector<Layer>&& layers);
 

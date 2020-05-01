@@ -2,8 +2,8 @@
 
 #include <QPainter>
 
-SenseEntitiesInArea::SenseEntitiesInArea(Entity& owner, double maxDistance, double offsetDistance, double offsetAngle, double senseDistanceWeight, const std::vector<std::pair<double, Trait>>&& toDetect)
-    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u))
+SenseEntitiesInArea::SenseEntitiesInArea(Entity& owner, unsigned outputCount, double maxDistance, double offsetDistance, double offsetAngle, double senseDistanceWeight, const std::vector<std::pair<double, Trait>>&& toDetect)
+    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u), outputCount)
     , senseRadius_(maxDistance)
     , offsetDistance_(offsetDistance)
     , offsetAngle_(offsetAngle)

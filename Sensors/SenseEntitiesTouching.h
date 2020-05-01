@@ -9,7 +9,7 @@ class QPainter;
 
 class SenseEntitiesTouching : public Sense {
     public:
-        SenseEntitiesTouching(Entity& owner, double offsetDistance, double offsetAngle, double genericDetectionWeight, const std::vector<std::pair<double, Trait>>&& toDetect);
+        SenseEntitiesTouching(Entity& owner, unsigned outputCount, double offsetDistance, double offsetAngle, double genericDetectionWeight, const std::vector<std::pair<double, Trait>>&& toDetect);
 
         virtual std::string_view GetName() const override { return "SenseEntitiesTouching"; }
         virtual void Draw(QPainter& paint) const override;

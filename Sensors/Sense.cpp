@@ -4,9 +4,10 @@
 
 #include <QPainter>
 
-Sense::Sense(Entity& owner, unsigned inputs, unsigned hiddenLayers)
+Sense::Sense(Entity& owner, unsigned inputs, unsigned hiddenLayers, unsigned outputs)
     : owner_(owner)
     , network_(hiddenLayers, inputs, NeuralNetwork::InitialWeights::PassThrough)
+    , senseToBrainConnector_(inputs, outputs)
     , inputs_(inputs, 0)
 {
 }
@@ -20,9 +21,10 @@ void Sense::Draw(QPainter& /*paint*/) const
     // Nothing to draw
 }
 
-const std::vector<double>& Sense::Tick(const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef& environment)
+void Sense::Tick(std::vector<double>& outputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef& environment)
 {
     PrimeInputs(inputs_, entities, environment);
-    return network_.ForwardPropogate(inputs_);
+    network_.ForwardPropogate(inputs_);
+    senseToBrainConnector_.PassForward(inputs_, outputs);
 }
 
