@@ -23,6 +23,7 @@ void SenseMagneticField::Draw(QPainter& paint) const
     endX += std::sin(bearing) * distance;
     endY += std::cos(bearing) * distance;
 
+    paint.setPen(QColor::fromRgb(0, 0, 0));
     paint.drawLine(owner_.GetX(), owner_.GetY(), endX, endY);
 }
 

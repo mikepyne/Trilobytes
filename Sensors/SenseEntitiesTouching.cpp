@@ -13,6 +13,8 @@ SenseEntitiesTouching::SenseEntitiesTouching(Entity& owner, unsigned outputCount
 void SenseEntitiesTouching::Draw(QPainter& paint) const
 {
     Point location = ApplyOffset(owner_.GetLocation(), offsetAngle_ + owner_.GetBearing(), offsetDistance_);
+    paint.setPen(QColor::fromRgb(255, 0, 0));
+    paint.setBrush(QColor::fromRgb(0, 0, 0, 0));
     paint.drawEllipse(QPointF(location.x, location.y), 1.0, 1.0);
 }
 

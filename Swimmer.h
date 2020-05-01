@@ -28,12 +28,7 @@ protected:
 private:
     std::shared_ptr<Genome> genome_;
     NeuralNetwork brain_;
-    SenseEntitiesTouching taste_;
-    SenseEntitiesInArea leftAntenna_;
-    SenseEntitiesInArea rightAntenna_;
-    SenseEntityRaycast echoLocator_;
-    SenseMagneticField compass_;
-    SenseRandom rand_;
+    std::vector<std::shared_ptr<Sense>> senses_;
 
     // TODO pre-calculate colour and remove from Entity base class
     QColor tempPigments_;

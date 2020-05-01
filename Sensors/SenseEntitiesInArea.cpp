@@ -15,6 +15,8 @@ SenseEntitiesInArea::SenseEntitiesInArea(Entity& owner, unsigned outputCount, do
 void SenseEntitiesInArea::Draw(QPainter& paint) const
 {
     Circle c = GetArea();
+    paint.setPen(QColor::fromRgb(0, 0, 0));
+    paint.setBrush(QColor::fromRgb(0, 0, 0, 0));
     paint.drawEllipse(QPointF(c.x, c.y), senseRadius_, senseRadius_);
 }
 

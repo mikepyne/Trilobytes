@@ -13,6 +13,7 @@ SenseEntityRaycast::SenseEntityRaycast(Entity& owner, unsigned outputCount, doub
 void SenseEntityRaycast::Draw(QPainter& paint) const
 {
     auto l = GetLine();
+    paint.setPen(QColor::fromRgb(0, 0, 0));
     paint.drawLine(QLineF(l.a.x, l.a.y, l.b.x, l.b.y));
 }
 
