@@ -31,7 +31,6 @@ SOURCES += \
     Sensors/Sense.cpp \
     Sensors/SenseEntitiesInArea.cpp \
     Sensors/SenseEntitiesTouching.cpp \
-    Sensors/SenseEntityPresence.cpp \
     Sensors/SenseEntityRaycast.cpp \
     Sensors/SenseMagneticField.cpp \
     Sensors/SenseRandom.cpp \
