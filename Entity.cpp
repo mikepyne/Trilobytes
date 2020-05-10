@@ -67,6 +67,8 @@ double Entity::GetTrait(Trait trait)
         return energy_.Quantity();
     case Trait::Age :
         return age_;
+    case Trait::Size :
+        return radius_;
     }
     assert(false && "Entity::GetTrait, unimplemented trait.");
     return 0.0;

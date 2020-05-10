@@ -17,6 +17,7 @@ enum class Trait {
     Blue,
     Energy,
     Age,
+    Size,
 };
 
 class Entity {

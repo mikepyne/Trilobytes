@@ -25,6 +25,12 @@ public:
         return static_cast<bool>(Random::Number(0u, 1u));
     }
 
+    template <typename T>
+    static void Shuffle(std::vector<T>& toShuffle)
+    {
+        std::shuffle(std::begin(toShuffle), std::end(toShuffle), entropy_);
+    }
+
     template<typename NumericType>
     static NumericType Number(NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
     {

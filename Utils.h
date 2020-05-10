@@ -6,6 +6,8 @@
 #include <string_view>
 #include <vector>
 #include <functional>
+#include <cmath>
+#include <iostream>
 #include <assert.h>
 
 namespace EoBE {
@@ -68,7 +70,6 @@ private:
 template <typename T1, typename T2>
 void IterateBoth(std::vector<T1>& a, std::vector<T2>& b, std::function<void(T1& a, T2& b)>&& action)
 {
-    assert(a.size() == b.size());
     auto aIter = a.begin();
     auto bIter = b.begin();
     for (; aIter != a.end() && bIter != b.end() ; ++aIter, ++bIter) {
@@ -79,7 +80,6 @@ void IterateBoth(std::vector<T1>& a, std::vector<T2>& b, std::function<void(T1& 
 template <typename T1, typename T2>
 void IterateBoth(const std::vector<T1>& a, const std::vector<T2>& b, std::function<void(const T1& a, const T2& b)>&& action)
 {
-    assert(a.size() == b.size());
     auto aIter = a.begin();
     auto bIter = b.begin();
     for (; aIter != a.end() && bIter != b.end() ; ++aIter, ++bIter) {
@@ -90,7 +90,6 @@ void IterateBoth(const std::vector<T1>& a, const std::vector<T2>& b, std::functi
 template <typename T1, typename T2>
 void IterateBoth(const std::vector<T1>& a, std::vector<T2>& b, std::function<void(const T1& a, T2& b)>&& action)
 {
-    assert(a.size() == b.size());
     auto aIter = a.begin();
     auto bIter = b.begin();
     for (; aIter != a.end() && bIter != b.end() ; ++aIter, ++bIter) {
@@ -101,12 +100,52 @@ void IterateBoth(const std::vector<T1>& a, std::vector<T2>& b, std::function<voi
 template <typename T1, typename T2>
 void IterateBoth(std::vector<T1>& a, const std::vector<T2>& b, std::function<void(T1& a, const T2& b)>&& action)
 {
-    assert(a.size() == b.size());
     auto aIter = a.begin();
     auto bIter = b.begin();
     for (; aIter != a.end() && bIter != b.end() ; ++aIter, ++bIter) {
         action(*aIter, *bIter);
     }
+}
+
+template <typename T>
+std::vector<T> CreateSeries(T firstValue, uint64_t count, std::function<T(const T& previous)>&& nextValue = [](const T& previous){ return previous + 1; })
+{
+    std::vector<T> series;
+    series.resize(count);
+    std::generate_n(std::begin(series), count, [&]() -> T
+    {
+        T temp = firstValue;
+        firstValue = nextValue(temp);
+        return temp;
+    });
+    return series;
+}
+
+template <typename T>
+std::vector<T> CreateSeries(T firstValue, T lastValue, uint64_t count)
+{
+    assert(count >= 2);
+    long double soFar = firstValue;
+    long double increment = (lastValue - firstValue) / (count - 1);
+    return CreateSeries<T>(soFar, count, [&](const T& /*prev*/) -> T
+    {
+        soFar += increment;
+        if constexpr (std::is_integral<T>::value) {
+            return static_cast<T>(std::round(soFar));
+        } else {
+            return static_cast<T>(soFar);
+        }
+    });
+}
+
+template <typename T>
+void Print(const std::vector<T>& v, std::ostream& out)
+{
+    out << "{ ";
+    for (const auto& i : v) {
+        out << i << " ";
+    }
+    out << "}" << std::endl;
 }
 
 // credit https://stackoverflow.com/users/3624760/lyberta
