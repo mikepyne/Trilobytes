@@ -20,6 +20,8 @@ public:
     virtual std::string_view GetName() const override { return "Swimmer"; }
 
     std::shared_ptr<Entity> GiveBirth();
+    unsigned GetBrainInputCount() const { return brain_.GetInputCount(); }
+    unsigned GetBrainOutputCount() const { return brain_.GetOutputCount(); }
 
 protected:
     virtual void TickImpl(EntityContainerInterface& container) override final;
@@ -30,7 +32,7 @@ private:
     NeuralNetwork brain_;
     std::vector<std::shared_ptr<Sense>> senses_;
 
-    // TODO pre-calculate colour and remove from Entity base class
+    // TODO pre-calculate colour and set colour in Entity base class
     QColor tempPigments_;
 
     static std::vector<std::shared_ptr<Gene>> CreateDefaultGenome();

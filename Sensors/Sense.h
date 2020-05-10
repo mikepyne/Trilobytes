@@ -1,7 +1,7 @@
 #ifndef SENSE_H
 #define SENSE_H
 
-class Entity;
+class Swimmer;
 class EntityContainerInterface;
 class QPainter;
 
@@ -22,7 +22,7 @@ public:
     /**
      * Instantiates with a random neural network
      */
-    Sense(Entity& owner, unsigned inputs, unsigned hiddenLayers, unsigned outputs);
+    Sense(Swimmer& owner, unsigned inputs, unsigned hiddenLayers);
     virtual ~Sense();
 
     virtual void Draw(QPainter& paint) const;
@@ -32,7 +32,7 @@ public:
     unsigned GetOutputCount() const { return network_.GetOutputCount(); }
 
 protected:
-    Entity& owner_;
+    Swimmer& owner_;
 
 private:
     NeuralNetwork network_;

@@ -2,8 +2,8 @@
 
 #include "Random.h"
 
-SenseRandom::SenseRandom(Entity& owner, unsigned inputCount, unsigned outputCount)
-    : Sense(owner, inputCount, 0, outputCount)
+SenseRandom::SenseRandom(Swimmer& owner, unsigned inputCount)
+    : Sense(owner, inputCount, 0)
 {
 }
 

@@ -1,14 +1,15 @@
 #include "Sense.h"
 
+#include "Swimmer.h"
 #include "EntityContainerInterface.h"
 
 #include <QPainter>
 
-Sense::Sense(Entity& owner, unsigned inputs, unsigned hiddenLayers, unsigned outputs)
+Sense::Sense(Swimmer& owner, unsigned sensoryInputCount, unsigned hiddenLayers)
     : owner_(owner)
-    , network_(hiddenLayers, inputs, NeuralNetwork::InitialWeights::PassThrough)
-    , senseToBrainConnector_(inputs, outputs)
-    , inputs_(inputs, 0)
+    , network_(hiddenLayers, sensoryInputCount, NeuralNetwork::InitialWeights::PassThrough)
+    , senseToBrainConnector_(sensoryInputCount, owner.GetBrainInputCount())
+    , inputs_(sensoryInputCount, 0)
 {
 }
 

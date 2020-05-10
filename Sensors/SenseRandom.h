@@ -5,7 +5,7 @@
 
 class SenseRandom : public Sense {
 public:
-    SenseRandom(Entity& owner, unsigned inputCount, unsigned outputCount);
+    SenseRandom(Swimmer& owner, unsigned inputCount);
     virtual std::string_view GetName() const override { return "Random"; }
 
 private:

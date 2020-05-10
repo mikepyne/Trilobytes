@@ -1,9 +1,11 @@
 #include "SenseEntitiesInArea.h"
 
+#include "Swimmer.h"
+
 #include <QPainter>
 
-SenseEntitiesInArea::SenseEntitiesInArea(Entity& owner, unsigned outputCount, double maxDistance, double offsetDistance, double offsetAngle, double senseDistanceWeight, const std::vector<std::pair<double, Trait>>&& toDetect)
-    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u), outputCount)
+SenseEntitiesInArea::SenseEntitiesInArea(Swimmer& owner, double maxDistance, double offsetDistance, double offsetAngle, double senseDistanceWeight, const std::vector<std::pair<double, Trait>>&& toDetect)
+    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u))
     , senseRadius_(maxDistance)
     , offsetDistance_(offsetDistance)
     , offsetAngle_(offsetAngle)

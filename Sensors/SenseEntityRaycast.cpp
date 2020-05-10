@@ -1,9 +1,11 @@
 #include "SenseEntityRaycast.h"
 
+#include "Swimmer.h"
+
 #include <QPainter>
 
-SenseEntityRaycast::SenseEntityRaycast(Entity& owner, unsigned outputCount, double maxDistance, double angle, const std::vector<Trait>&& toDetect)
-    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u), outputCount)
+SenseEntityRaycast::SenseEntityRaycast(Swimmer& owner, double maxDistance, double angle, const std::vector<Trait>&& toDetect)
+    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u))
     , rayCastDistance_(maxDistance)
     , rayCastAngle_(angle)
     , toDetect_(toDetect)

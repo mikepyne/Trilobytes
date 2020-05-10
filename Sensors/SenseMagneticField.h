@@ -5,7 +5,7 @@
 
 class SenseMagneticField : public Sense {
 public:
-    SenseMagneticField(Entity& owner, unsigned outputCount);
+    SenseMagneticField(Swimmer& owner);
 
     virtual std::string_view GetName() const override { return "MagneticField"; }
     virtual void Draw(QPainter& paint) const override;

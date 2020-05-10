@@ -5,11 +5,12 @@
 
 #include "Entity.h"
 
+class Swimmer;
 class QPainter;
 
 class SenseEntitiesInArea : public Sense {
 public:
-    SenseEntitiesInArea(Entity& owner, unsigned outputCount, double maxDistance, double offsetDistance, double offsetAngle, double senseDistanceWeight, const std::vector<std::pair<double, Trait>>&& toDetect);
+    SenseEntitiesInArea(Swimmer& owner, double maxDistance, double offsetDistance, double offsetAngle, double senseDistanceWeight, const std::vector<std::pair<double, Trait>>&& toDetect);
 
     virtual std::string_view GetName() const override { return "SenseEntitiesInArea"; }
     virtual void Draw(QPainter& paint) const override;

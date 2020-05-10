@@ -1,9 +1,11 @@
 #include "SenseEntitiesTouching.h"
 
+#include "Swimmer.h"
+
 #include <QPainter>
 
-SenseEntitiesTouching::SenseEntitiesTouching(Entity& owner, unsigned outputCount, double offsetDistance, double offsetAngle, double genericDetectionWeight, const std::vector<std::pair<double, Trait> >&& toDetect)
-    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u), outputCount)
+SenseEntitiesTouching::SenseEntitiesTouching(Swimmer& owner, double offsetDistance, double offsetAngle, double genericDetectionWeight, const std::vector<std::pair<double, Trait> >&& toDetect)
+    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u))
     , offsetDistance_(offsetDistance)
     , offsetAngle_(offsetAngle)
     , genericDetectionWeight_(genericDetectionWeight)

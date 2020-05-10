@@ -18,12 +18,12 @@ Swimmer::Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain,
     , genome_(std::move(genome))
     , brain_(std::move(brain))
     , senses_({
-              std::make_shared<SenseEntitiesTouching>(*this, brain_.GetInputCount(), 0.0, 0.0, 1.0, std::vector<std::pair<double, Trait>>{ {1.0, Trait::Green}, }),
-              std::make_shared<SenseEntitiesInArea>(*this, brain_.GetInputCount(), GetRadius() * 5, GetRadius() * 3.5, -0.6, 1.0, std::vector<std::pair<double, Trait>>{ {1.0, Trait::Green}, }),
-              std::make_shared<SenseEntitiesInArea>(*this, brain_.GetInputCount(), GetRadius() * 5, GetRadius() * 3.5, 0.6, 1.0, std::vector<std::pair<double, Trait>>{ {1.0, Trait::Green}, }),
-              std::make_shared<SenseEntityRaycast>(*this, brain_.GetInputCount(), GetRadius() * 2, 0.0, std::vector<Trait>{}),
-              std::make_shared<SenseMagneticField>(*this, brain_.GetInputCount()),
-              std::make_shared<SenseRandom>(*this, 1, brain_.GetInputCount()),
+              std::make_shared<SenseEntitiesTouching>(*this, 0.0, 0.0, 1.0, std::vector<std::pair<double, Trait>>{ {1.0, Trait::Green}, }),
+              std::make_shared<SenseEntitiesInArea>(*this, GetRadius() * 5, GetRadius() * 3.5, -0.6, 1.0, std::vector<std::pair<double, Trait>>{/* {1.0, Trait::Green},*/ }),
+              std::make_shared<SenseEntitiesInArea>(*this, GetRadius() * 5, GetRadius() * 3.5, 0.6, 1.0, std::vector<std::pair<double, Trait>>{ /*{1.0, Trait::Green}, */}),
+              std::make_shared<SenseEntityRaycast>(*this, GetRadius() * 2, 0.0, std::vector<Trait>{}),
+              std::make_shared<SenseMagneticField>(*this),
+              std::make_shared<SenseRandom>(*this, 1),
               })
 {
     SetSpeed(0.5);
