@@ -16,15 +16,16 @@ Universe::Universe(QWidget* parent)
 {
     setFocusPolicy(Qt::StrongFocus);
 
-    unsigned count = 50;
-    double xRange = 1500;
-    double yRange = 1500;
-    uint64_t maxPellets = energy_.Quantity() / 25_mj;
-    for (unsigned i = 0; i < count; i++) {
-        double x = Random::Number(-xRange / 2, xRange / 2);
-        double y = Random::Number(-yRange / 2, yRange / 2);
-        feedDispensers_.emplace_back(energy_, rootNode_, x, y, Random::Number(50, 100), maxPellets / count, Random::Number(0, 5));
-    }
+//    unsigned count = 50;
+//    double xRange = 1500;
+//    double yRange = 1500;
+//    uint64_t maxPellets = energy_.Quantity() / 25_mj;
+//    for (unsigned i = 0; i < count; i++) {
+//        double x = Random::Number(-xRange / 2, xRange / 2);
+//        double y = Random::Number(-yRange / 2, yRange / 2);
+//        feedDispensers_.emplace_back(energy_, rootNode_, x, y, Random::Number(50, 100), maxPellets / count, Random::Number(0, 5));
+//    }
+    feedDispensers_.emplace_back(energy_, rootNode_, 0, 0, 250, energy_.Quantity() / 25_mj, 2);
 
     /*
      * QT hack to get this running in the QT event loop (necessary for
@@ -38,7 +39,7 @@ Universe::Universe(QWidget* parent)
     {
         this->Thread();
     });
-    timer->start(1);
+    timer->start(0);
 
     rootNode_.SetEntityCapacity(25, 5);
 }
@@ -58,16 +59,30 @@ void Universe::wheelEvent(QWheelEvent* event)
     simY_ *= d;
 }
 
-void Universe::mouseReleaseEvent(QMouseEvent*)
+void Universe::mouseReleaseEvent(QMouseEvent* event)
 {
-    dragging_ = false;
+    if (event->button() == Qt::LeftButton || event->button() == Qt::MiddleButton) {
+        dragging_ = false;
+    }
 }
 
 void Universe::mousePressEvent(QMouseEvent* event)
 {
-    dragging_ = true;
-    dragX_ = event->x();
-    dragY_ = event->y();
+    if (event->button() == Qt::LeftButton || event->button() == Qt::MiddleButton) {
+        dragging_ = true;
+        dragX_ = event->x();
+        dragY_ = event->y();
+    } else if (event->button() == Qt::RightButton) {
+        Point local = TransformLocalToSimCoords({ static_cast<double>(event->x()), static_cast<double>(event->y()) });
+        rootNode_.ForEachCollidingWith(local, [&](Entity& e)
+        {
+            if (Swimmer* swimmer = dynamic_cast<Swimmer*>(&e); swimmer != nullptr) {
+                MainWindow* mainWindow = dynamic_cast<MainWindow*>(parentWidget()->parentWidget());
+                assert(mainWindow);
+                mainWindow->SetSwimmerToInspect(*swimmer);
+            }
+        });
+    }
 }
 
 void Universe::mouseMoveEvent(QMouseEvent* event)
@@ -124,39 +139,73 @@ void Universe::Thread()
 {
     if (!pauseSim_) {
         rootNode_.Tick();
-    }
 
-    if (respawn_) {
-        respawn_ = false;
-        for (auto feeder : feedDispensers_) {
-            double swimmerX = feeder.GetX() + Random::Number(-feeder.GetRadius(), feeder.GetRadius());
-            double swimmerY = feeder.GetY() + Random::Number(-feeder.GetRadius(), feeder.GetRadius());
-            rootNode_.AddEntity(std::make_shared<Swimmer>(energy_.CreateChild(300_mj), swimmerX, swimmerY));
-        }
-    }
-
-    if (spawnFood_) {
-        for (auto& dispenser : feedDispensers_) {
-            dispenser.Tick();
-        }
-    }
-
-    static uint64_t tick = 0;
-    if (++tick % 100 == 0) {
-        uint64_t foodEnergy = 0;
-        uint64_t swimmerEnergy = 0;
-        rootNode_.ForEach([&](const Entity& e) -> void
-        {
-            if (const auto* f = dynamic_cast<const FoodPellet*>(&e)) {
-                foodEnergy += f->GetEnergy();
-            } else if (const auto* s = dynamic_cast<const Swimmer*>(&e)) {
-                swimmerEnergy += s->GetEnergy();
+        if (respawn_) {
+            respawn_ = false;
+            for (auto feeder : feedDispensers_) {
+                double swimmerX = feeder.GetX() + Random::Number(-feeder.GetRadius() / 3, feeder.GetRadius() / 3);
+                double swimmerY = feeder.GetY() + Random::Number(-feeder.GetRadius() / 3, feeder.GetRadius() / 3);
+                for (unsigned i = 0; i < std::max(1u, 25 / feedDispensers_.size()); i++) {
+                    rootNode_.AddEntity(std::make_shared<Swimmer>(energy_.CreateChild(300_mj), swimmerX, swimmerY));
+                }
             }
-        });
-        emit OnFoodEnergySampled(foodEnergy);
-        emit OnSwimmerEnergySampled(swimmerEnergy);
+        }
+
+        if (spawnFood_) {
+            for (auto& dispenser : feedDispensers_) {
+                dispenser.Tick();
+            }
+        }
+
+        static uint64_t tick = 0;
+        if (++tick % 100 == 0) {
+            uint64_t foodEnergy = 0;
+            uint64_t swimmerEnergy = 0;
+            rootNode_.ForEach([&](const Entity& e) -> void
+            {
+                if (const auto* f = dynamic_cast<const FoodPellet*>(&e)) {
+                    foodEnergy += f->GetEnergy();
+                } else if (const auto* s = dynamic_cast<const Swimmer*>(&e)) {
+                    swimmerEnergy += s->GetEnergy();
+                }
+            });
+            emit OnFoodEnergySampled(foodEnergy);
+            emit OnSwimmerEnergySampled(swimmerEnergy);
+        }
     }
 
     // QT paint call
     update();
+}
+
+Point Universe::TransformLocalToSimCoords(const Point& local)
+{
+    double x = local.x;
+    double y = local.y;
+    // Sim is centred on screen
+    x -= (width() / 2);
+    y -= (height() / 2);
+    // Sim is transformed
+    x -= simX_;
+    y -= simY_;
+    // Sim is scaled
+    x /= simScale_;
+    y /= simScale_;
+    return { x, y };
+}
+
+Point Universe::TransformSimToLocalCoords(const Point& sim)
+{
+    double x = sim.x;
+    double y = sim.y;
+    // Sim is scaled
+    x *= simScale_;
+    y *= simScale_;
+    // Sim is transformed
+    x += simX_;
+    y += simY_;
+    // Sim is centred on screen
+    x += (width() / 2);
+    y += (height() / 2);
+    return { x, y };
 }

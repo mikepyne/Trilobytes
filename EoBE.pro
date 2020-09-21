@@ -28,6 +28,7 @@ SOURCES += \
     LineGraph.cpp \
     NeuralNetwork.cpp \
     NeuralNetworkConnector.cpp \
+    NeuralNetworkInspector.cpp \
     QuadTree.cpp \
     Random.cpp \
     Sensors/Sense.cpp \
@@ -60,6 +61,7 @@ HEADERS += \
     MainWindow.h \
     NeuralNetwork.h \
     NeuralNetworkConnector.h \
+    NeuralNetworkInspector.h \
     QuadTree.h \
     Random.h \
     Sensors/Sense.h \

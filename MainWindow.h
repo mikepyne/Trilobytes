@@ -8,13 +8,16 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
-{
+class Swimmer;
+
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    void SetSwimmerToInspect(Swimmer& swimmer);
 
 private:
     Ui::MainWindow *ui;

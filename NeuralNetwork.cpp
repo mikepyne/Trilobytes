@@ -32,6 +32,29 @@ void NeuralNetwork::ForwardPropogate(std::vector<double>& toPropogate)
     }
 }
 
+std::vector<size_t> NeuralNetwork::GetLayerWidths() const
+{
+    std::vector<size_t> layerWidths;
+    layerWidths.resize(layers_.size());
+    for (auto& layer : layers_) {
+        layerWidths.push_back(layer.size());
+    }
+    return layerWidths;
+}
+
+void NeuralNetwork::ForEach(const std::function<void (unsigned, unsigned, const NeuralNetwork::Node&)>& perNode) const
+{
+    unsigned layerIndex = 1;
+    for (const auto& layer : layers_) {
+        unsigned nodeIndex = 0;
+        for (const auto& node : layer) {
+            perNode(nodeIndex, layerIndex, node);
+            nodeIndex++;
+        }
+        layerIndex++;
+    }
+}
+
 NeuralNetwork NeuralNetwork::Mutated()
 {
     size_t layerCount = layers_.size();
@@ -65,7 +88,9 @@ std::vector<NeuralNetwork::Layer> NeuralNetwork::CreateRandomLayers(unsigned lay
     // First layer doesn't need input weights, as it will be assigned a value by the ForwardPropogate() func
     for (auto& layer : layers) {
         for (auto& node : layer) {
-            node = Random::DualPeakGaussians(width, -0.1, 0.25, 0.1, 0.25);
+            double mean = 0.75;
+            double stdDev = 0.25;
+            node = Random::DualPeakGaussians(width, -mean, stdDev, mean, stdDev);
         }
     }
 
@@ -83,8 +108,8 @@ std::vector<NeuralNetwork::Layer> NeuralNetwork::CreatePassThroughLayers(unsigne
             for (unsigned inputColumn = 0; inputColumn < node.size(); inputColumn++) {
                 node[inputColumn] = (inputColumn == nodeColumn ? 1.0 : 0.0);
             }
+            nodeColumn++;
         }
-        nodeColumn++;
     }
 
     return layers;

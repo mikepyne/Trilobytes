@@ -14,9 +14,21 @@ public:
     void Reset();
 
 protected:
-    virtual void paintEvent(QPaintEvent* event) override;
+    virtual void wheelEvent(QWheelEvent* event) override final;
+    virtual void mouseReleaseEvent(QMouseEvent* event) override final;
+    virtual void mousePressEvent(QMouseEvent* event) override final;
+    virtual void mouseMoveEvent(QMouseEvent* event) override final;
+
+    virtual void paintEvent(QPaintEvent* event) override final;
 
 private:
+    double graphX_ = 0.0;
+    double graphY_ = 0.0;
+    double graphScale_ = 1.0;
+    double dragX_;
+    double dragY_;
+    bool dragging_ = false;
+
     std::map<QRgb, std::vector<double>> plots_;
 };
 

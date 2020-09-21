@@ -1,6 +1,8 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
+#include "Swimmer.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -14,3 +16,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::SetSwimmerToInspect(Swimmer& swimmer)
+{
+    ui->inspector->SetSwimmer(swimmer);
+}

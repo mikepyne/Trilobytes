@@ -13,13 +13,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+  <widget class="QWidget" name="mainWindowLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <widget class="Universe" name="universe" native="true"/>
-    </item>
-    <item>
-     <widget class="LineGraph" name="graph" native="true"/>
     </item>
    </layout>
   </widget>
@@ -34,6 +31,60 @@
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="settingsDockWidget">
+   <property name="features">
+    <set>QDockWidget::DockWidgetMovable</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="settingsDockWidgetLayout">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QWidget" name="widget" native="true"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="graphDockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllDockWidgetAreas</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="graphDockWidgetLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="LineGraph" name="graph" native="true"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="inspectorDockWidget">
+   <property name="features">
+    <set>QDockWidget::DockWidgetMovable</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="inspectorDockWidgetLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="NeuralNetworkInspector" name="inspector" native="true"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
@@ -46,6 +97,12 @@
    <class>LineGraph</class>
    <extends>QWidget</extends>
    <header>LineGraph.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>NeuralNetworkInspector</class>
+   <extends>QWidget</extends>
+   <header>NeuralNetworkInspector.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

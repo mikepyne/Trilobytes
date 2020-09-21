@@ -23,6 +23,9 @@ public:
     unsigned GetBrainInputCount() const { return brain_.GetInputCount(); }
     unsigned GetBrainOutputCount() const { return brain_.GetOutputCount(); }
 
+    const NeuralNetwork& InspectBrain() { return brain_; };
+    const std::vector<std::shared_ptr<Sense>>& InspectSenses() { return senses_; };
+
 protected:
     virtual void TickImpl(EntityContainerInterface& container) override final;
     virtual void DrawImpl(QPainter& paint) override final;

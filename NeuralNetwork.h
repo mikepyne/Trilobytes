@@ -43,6 +43,9 @@ public:
      */
     void ForwardPropogate(std::vector<double>& inputs);
 
+    void ForEach(const std::function<void(unsigned, unsigned, const Node&)>& perNode) const;
+    std::vector<size_t> GetLayerWidths() const;
+
     NeuralNetwork Mutated();
 
 private:

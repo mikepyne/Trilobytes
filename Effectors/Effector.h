@@ -30,4 +30,4 @@ private:
     virtual void PerformActions(const std::vector<double>& actionValues, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) = 0;
 };
 
-#endif // EFFECTOR_H
+#endif // EFFECTOR_H

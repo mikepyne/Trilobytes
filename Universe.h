@@ -28,7 +28,7 @@ signals:
 
 protected:
     virtual void wheelEvent(QWheelEvent* event) override final;
-    virtual void mouseReleaseEvent(QMouseEvent* /*event*/) override final;
+    virtual void mouseReleaseEvent(QMouseEvent* event) override final;
     virtual void mousePressEvent(QMouseEvent* event) override final;
     virtual void mouseMoveEvent(QMouseEvent* event) override final;
 
@@ -53,6 +53,9 @@ private:
     std::vector<FeedDispenser> feedDispensers_;
 
     void Thread();
+
+    Point TransformLocalToSimCoords(const Point& local);
+    Point TransformSimToLocalCoords(const Point& sim);
 };
 
 #endif // UNIVERSE_H

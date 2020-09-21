@@ -1,12 +1,13 @@
 #include "LineGraph.h"
 
+#include <QMouseEvent>
+
 #include <cmath>
 #include <limits>
 
 LineGraph::LineGraph(QWidget* parent)
     : QWidget(parent)
 {
-    setFixedWidth(100);
 }
 
 void LineGraph::PushBack(QRgb colour, double datum)
@@ -23,9 +24,42 @@ void LineGraph::Reset()
     }
 }
 
+void LineGraph::wheelEvent(QWheelEvent* event)
+{
+    double d = 1.0 + (0.001 * double(event->angleDelta().y()));
+    graphScale_ *= d;
+    graphX_ *= d;
+    graphY_ *= d;
+}
+
+void LineGraph::mouseReleaseEvent(QMouseEvent*)
+{
+    dragging_ = false;
+}
+
+void LineGraph::mousePressEvent(QMouseEvent* event)
+{
+    dragging_ = true;
+    dragX_ = event->x();
+    dragY_ = event->y();
+}
+
+void LineGraph::mouseMoveEvent(QMouseEvent* event)
+{
+    if (dragging_) {
+        graphX_ += (event->x() - dragX_);
+        graphY_ += (event->y() - dragY_);
+        dragX_ = event->x();
+        dragY_ = event->y();
+    }
+}
+
 void LineGraph::paintEvent(QPaintEvent* /*event*/)
 {
     QPainter paint(this);
+    paint.translate(graphX_, graphY_);
+    paint.scale(graphScale_, graphScale_);
+
 
     double max = std::numeric_limits<double>::lowest();
     size_t count = 0;

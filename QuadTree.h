@@ -23,6 +23,16 @@ public:
     void SetEntityCapacity(uint64_t target, uint64_t leeway);
     void ForEach(const std::function<void(const Entity&)>& action) const;
 
+    /**
+     * Applies the action to every entity that is contained within the specified
+     * collision shape.
+     */
+    template <typename Shape>
+    void ForEachCollidingWith(const Shape& collide, const std::function<void(Entity&)>& action) const
+    {
+        root_->ForEachCollidingWith(collide, action);
+    }
+
 private:
     class Quad : private EntityContainerInterface {
     public:
@@ -43,8 +53,8 @@ private:
 
         virtual void ForEachCollidingWith(const Point& collide, const std::function<void (Entity&)>& action) const override { ForEachCollidingWith<Point>(collide, action); }
         virtual void ForEachCollidingWith(const Line& collide, const std::function<void (Entity&)>& action) const override { ForEachCollidingWith<Line>(collide, action); }
-        virtual void ForEachCollidingWith(const Rect& collide, const std::function<void(Entity&)>& action) const override final { ForEachCollidingWith<Rect>(collide, action); }
-        virtual void ForEachCollidingWith(const Circle& collide, const std::function<void(Entity&)>& action) const override final { ForEachCollidingWith<Circle>(collide, action); }
+        virtual void ForEachCollidingWith(const Rect& collide, const std::function<void (Entity&)>& action) const override final { ForEachCollidingWith<Rect>(collide, action); }
+        virtual void ForEachCollidingWith(const Circle& collide, const std::function<void (Entity&)>& action) const override final { ForEachCollidingWith<Circle>(collide, action); }
 
         /**
          * Historesis allows for leeway in count so a single entity repeatedly
