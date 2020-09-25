@@ -1,11 +1,14 @@
 #ifndef NEURALNETWORKINSPECTOR_H
 #define NEURALNETWORKINSPECTOR_H
 
-#include "Swimmer.h"
+#include "Shape.h"
 
 #include <QWidget>
 
 #include <memory>
+
+class Swimmer;
+class NeuralNetwork;
 
 class NeuralNetworkInspector : public QWidget {
     Q_OBJECT
@@ -19,24 +22,28 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent* event) override;
     virtual void mouseMoveEvent(QMouseEvent* event) override;
     virtual void wheelEvent(QWheelEvent* event) override;
-
     virtual void paintEvent(QPaintEvent* event) override;
+    virtual void resizeEvent(QResizeEvent* event) override;
 
 private:
     struct Node {
-        unsigned x;
+        double x;
+        double y;
         // Nodes are arranged from 0 -> 1 on the x & y axis
-        std::vector<std::pair<std::pair<unsigned, unsigned>, double>> connections;
+        std::vector<std::pair<std::reference_wrapper<Node>, double>> connections;
     };
 
     struct Group {
-        std::vector<std::vector<Node>> nodes;
+        std::string name;
+        QRect area;
+        std::map<std::pair<unsigned, unsigned>, Node> nodes;
+        unsigned horizontalNodes;
+        unsigned verticalNodes;
     };
 
-    std::map<std::pair<unsigned, unsigned>, Node> nodes_;
-
-    unsigned horizontalNodes_ = 0;
-    unsigned verticalNodes_ = 0;
+    std::vector<Group> sensorGroups_;
+    Group brainGroup_;
+    std::vector<Group> effectorGroups_;
 
     double viewX_ = 0.0;
     double viewY_ = 0.0;
@@ -45,8 +52,11 @@ private:
     double dragY_;
     bool dragging_ = false;
 
-    void PaintNetwork(QRect area, QPainter& p);
+    Group CreateGroup(const NeuralNetwork& network, const std::string& name);
 
+    void LayoutGroups();
+    void LayoutGroup(Group& group, QRect area);
+    void PaintGroup(const Group& group, QPainter& p) const;
 };
 
 #endif // NEURALNETWORKINSPECTOR_H

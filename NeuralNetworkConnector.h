@@ -26,6 +26,8 @@ public:
 
     void PassForward(const std::vector<double>& inputValues, std::vector<double>& outputValues);
 
+    const std::vector<std::vector<double>>& Inspect() const { return weights_; }
+
 private:
     std::vector<std::vector<double>> weights_;
 };

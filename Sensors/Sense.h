@@ -1,7 +1,6 @@
 #ifndef SENSE_H
 #define SENSE_H
 
-class Swimmer;
 class EntityContainerInterface;
 class QPainter;
 
@@ -9,6 +8,8 @@ class QPainter;
 #include "NeuralNetworkConnector.h"
 
 #include <string_view>
+
+class Swimmer;
 
 /**
  * All senses contain a small Neural network which is propogated each tick.
@@ -30,6 +31,9 @@ public:
 
     virtual std::string_view GetName() const = 0;
     unsigned GetOutputCount() const { return network_.GetOutputCount(); }
+
+    const NeuralNetwork& Inspect() const { return network_; }
+    const NeuralNetworkConnector& InspectConnection() const { return senseToBrainConnector_; }
 
 protected:
     Swimmer& owner_;

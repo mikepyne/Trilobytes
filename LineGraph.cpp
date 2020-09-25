@@ -30,6 +30,7 @@ void LineGraph::wheelEvent(QWheelEvent* event)
     graphScale_ *= d;
     graphX_ *= d;
     graphY_ *= d;
+    update();
 }
 
 void LineGraph::mouseReleaseEvent(QMouseEvent*)
@@ -51,6 +52,7 @@ void LineGraph::mouseMoveEvent(QMouseEvent* event)
         graphY_ += (event->y() - dragY_);
         dragX_ = event->x();
         dragY_ = event->y();
+        update();
     }
 }
 
