@@ -2,8 +2,8 @@
 
 #include "Random.h"
 
-SenseRandom::SenseRandom(Swimmer& owner, unsigned inputCount)
-    : Sense(owner, inputCount, 0)
+SenseRandom::SenseRandom(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner)
+    : Sense(network, outputConnections, owner)
 {
 }
 

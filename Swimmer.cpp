@@ -1,33 +1,31 @@
 #include "Swimmer.h"
+
 #include "Random.h"
 #include "FoodPellet.h"
 #include "Utils.h"
 #include "Egg.h"
+#include "Genome/GeneBrain.h"
+#include "Genome/GenePigment.h"
+#include "Genome/GeneSenseEntitiesInArea.h"
+#include "Genome/GeneSenseRandom.h"
+#include "Genome/GeneSenseMagneticField.h"
 
 #include <QPainter>
 
 #include <math.h>
 
-Swimmer::Swimmer(EnergyPool&& energy, double x, double y)
-    : Swimmer(std::move(energy), x, y, NeuralNetwork(3, 7, NeuralNetwork::InitialWeights::Random), std::make_shared<Genome>(CreateDefaultGenome()))
+Swimmer::Swimmer(EnergyPool&& energy, const Transform& transform)
+    : Swimmer(std::move(energy), transform, std::make_shared<Genome>(CreateDefaultGenome()))
 {
 }
 
-Swimmer::Swimmer(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain, std::shared_ptr<Genome> genome)
-    : Entity(std::move(energy), x, y, 6.0, QColor::fromRgb(15, 15, 235))
-    , genome_(std::move(genome))
-    , brain_(std::move(brain))
-    , senses_({
-              std::make_shared<SenseEntitiesTouching>(*this, 0.0, 0.0, 1.0, std::vector<std::pair<double, Trait>>{ {1.0, Trait::Green}, }),
-              std::make_shared<SenseEntitiesInArea>(*this, GetRadius() * 5, GetRadius() * 3.5, -0.6, 1.0, std::vector<std::pair<double, Trait>>{/* {1.0, Trait::Green},*/ }),
-              std::make_shared<SenseEntitiesInArea>(*this, GetRadius() * 5, GetRadius() * 3.5, 0.6, 1.0, std::vector<std::pair<double, Trait>>{ /*{1.0, Trait::Green}, */}),
-              std::make_shared<SenseEntityRaycast>(*this, GetRadius() * 2, 0.0, std::vector<Trait>{}),
-              std::make_shared<SenseMagneticField>(*this),
-              std::make_shared<SenseRandom>(*this, 1),
-              })
+Swimmer::Swimmer(EnergyPool&& energy, const Transform& transform, std::shared_ptr<Genome> genome)
+    : Entity(std::move(energy), transform, 6.0, genome->GetPhenoType(*this).colour)
+    , genome_(genome)
+    , brain_(genome->GetPhenoType(*this).brain)
+    , senses_(genome->GetPhenoType(*this).senses)
 {
     SetSpeed(0.5);
-    ApplyGenome();
 }
 
 Swimmer::~Swimmer()
@@ -36,30 +34,33 @@ Swimmer::~Swimmer()
 
 std::shared_ptr<Entity> Swimmer::GiveBirth()
 {
-    return std::make_shared<Egg>(TakeEnergy(100_mj), GetX(), GetY(), brain_.Mutated(), genome_, Random::Poisson(50u));
+    return std::make_shared<Egg>(TakeEnergy(100_mj), GetTransform(), genome_, Random::Poisson(50u));
 }
 
 void Swimmer::TickImpl(EntityContainerInterface& container)
 {
     // TODO bearing should JUMP at Pi to -Pi (not Tau to 0), also makes maths and normalising easier
-    std::vector<double> sensoryOutput(brain_.GetInputCount(), 0.0);
-    for (auto& sense : senses_) {
-        sense->Tick(sensoryOutput, container, {});
-    }
+    // In the event that the brain gene is lost, or it evolves to be 0 wide
+    if (brain_ && brain_->GetInputCount() > 0) {
+        std::vector<double> sensoryOutput(brain_->GetInputCount(), 0.0);
+        for (auto& sense : senses_) {
+            sense->Tick(sensoryOutput, container, {});
+        }
 
-    brain_.ForwardPropogate(sensoryOutput);
-    double newBearing = GetBearing();
-    newBearing += (sensoryOutput[1]);
-    if (newBearing < 0.0) {
-        newBearing += EoBE::Tau;
-    } else if (newBearing > EoBE::Tau) {
-        newBearing -= EoBE::Tau;
+        brain_->ForwardPropogate(sensoryOutput);
+        double newBearing = GetTransform().rotation;
+        newBearing += (sensoryOutput[0]);
+        if (newBearing < 0.0) {
+            newBearing += EoBE::Tau;
+        } else if (newBearing > EoBE::Tau) {
+            newBearing -= EoBE::Tau;
+        }
+        SetBearing(newBearing);
     }
-    SetBearing(newBearing);
 
     UseEnergy(200_uj); // TODO remove this, entities will use energy based on what they are doing (well maybe a small base usage would deter couch potatoes...)
 
-    container.ForEachCollidingWith(Circle{ GetX(), GetY(), GetRadius() }, [&](Entity& other) -> void
+    container.ForEachCollidingWith(Circle{ GetTransform().x, GetTransform().y, GetRadius() }, [&](Entity& other) -> void
     {
         if (FoodPellet* f = dynamic_cast<FoodPellet*>(&other)) {
             FeedOn(*f, f->GetEnergy());
@@ -74,9 +75,9 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
 void Swimmer::DrawImpl(QPainter& paint)
 {
     paint.save();
-    paint.drawEllipse({GetX(), GetY()}, GetRadius(), GetRadius());
-    paint.setBrush(tempPigments_);
-    paint.drawEllipse({GetX(), GetY()}, GetRadius(), GetRadius());
+    paint.drawEllipse({ GetTransform().x, GetTransform().y }, GetRadius(), GetRadius());
+    paint.setBrush(GetColour());
+    paint.drawEllipse({ GetTransform().x, GetTransform().y }, GetRadius(), GetRadius());
     paint.restore();
 
     for (auto& sense : senses_) {
@@ -88,29 +89,20 @@ void Swimmer::DrawImpl(QPainter& paint)
 
 std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
 {
+    // TODO create genes for the following
+//              std::make_shared<SenseEntitiesTouching>(*this, 0.0, 0.0, 1.0, std::vector<std::pair<double, Trait>>{ /*{1.0, Trait::Green},*/ }),
+//              std::make_shared<SenseEntityRaycast>(*this, GetRadius() * 2, 0.0, std::vector<Trait>{}),
+
+    unsigned brainWidth = 7;
     return {
         std::make_shared<GenePigment>(),
         std::make_shared<GenePigment>(),
         std::make_shared<GenePigment>(),
         std::make_shared<GenePigment>(),
+        std::make_shared<GeneBrain>(3, brainWidth, 0.5),
+        std::make_shared<GeneSenseEntitiesInArea>(std::vector<std::pair<double, Trait>>{ {1.0, Trait::Green}, }, 0, brainWidth, Transform{ 0, 24,  0.6}, 20, 1.0),
+        std::make_shared<GeneSenseEntitiesInArea>(std::vector<std::pair<double, Trait>>{ {1.0, Trait::Green}, }, 0, brainWidth, Transform{ 0, 24, -0.6}, 20, 1.0),
+        std::make_shared<GeneSenseRandom>(1, brainWidth),
+        std::make_shared<GeneSenseMagneticField>(brainWidth),
     };
-}
-
-void Swimmer::ApplyGenome()
-{
-    double a, r, g, b;
-    genome_->ForEach([&](const Gene& gene)
-    {
-        if (auto* pigment = dynamic_cast<const GenePigment*>(&gene)) {
-            a += pigment->a_;
-            r += pigment->r_;
-            g += pigment->g_;
-            b += pigment->b_;
-        }
-    });
-
-    tempPigments_.setRgbF(std::clamp(r, 0.0, 1.0),
-                          std::clamp(g, 0.0, 1.0),
-                          std::clamp(b, 0.0, 1.0),
-                          std::clamp(a, 0.0, 1.0));
 }

@@ -8,6 +8,7 @@ class QPainter;
 #include "NeuralNetworkConnector.h"
 
 #include <string_view>
+#include <memory>
 
 class Swimmer;
 
@@ -23,24 +24,24 @@ public:
     /**
      * Instantiates with a random neural network
      */
-    Sense(Swimmer& owner, unsigned inputs, unsigned hiddenLayers);
+    Sense(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner);
     virtual ~Sense();
 
     virtual void Draw(QPainter& paint) const;
     virtual void Tick(std::vector<double>& outputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) final;
 
     virtual std::string_view GetName() const = 0;
-    unsigned GetOutputCount() const { return network_.GetOutputCount(); }
+    unsigned GetOutputCount() const { return network_->GetOutputCount(); }
 
-    const NeuralNetwork& Inspect() const { return network_; }
-    const NeuralNetworkConnector& InspectConnection() const { return senseToBrainConnector_; }
+    const NeuralNetwork& Inspect() const { return *network_; }
+    const NeuralNetworkConnector& InspectConnection() const { return *outputConnections_; }
 
 protected:
-    Swimmer& owner_;
+    const Swimmer& owner_;
 
 private:
-    NeuralNetwork network_;
-    NeuralNetworkConnector senseToBrainConnector_;
+    std::shared_ptr<NeuralNetwork> network_;
+    std::shared_ptr<NeuralNetworkConnector> outputConnections_;
     std::vector<double> inputs_;
 
     virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) = 0;

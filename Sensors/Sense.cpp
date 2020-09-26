@@ -5,11 +5,11 @@
 
 #include <QPainter>
 
-Sense::Sense(Swimmer& owner, unsigned sensoryInputCount, unsigned hiddenLayers)
+Sense::Sense(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner)
     : owner_(owner)
-    , network_(hiddenLayers, sensoryInputCount, NeuralNetwork::InitialWeights::PassThrough)
-    , senseToBrainConnector_(sensoryInputCount, owner.GetBrainInputCount())
-    , inputs_(sensoryInputCount, 0)
+    , network_(network)
+    , outputConnections_(outputConnections)
+    , inputs_(outputConnections->GetInputCount(), 0.0)
 {
 }
 
@@ -25,7 +25,7 @@ void Sense::Draw(QPainter& /*paint*/) const
 void Sense::Tick(std::vector<double>& outputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef& environment)
 {
     PrimeInputs(inputs_, entities, environment);
-    network_.ForwardPropogate(inputs_);
-    senseToBrainConnector_.PassForward(inputs_, outputs);
+    network_->ForwardPropogate(inputs_);
+    outputConnections_->PassForward(inputs_, outputs);
 }
 

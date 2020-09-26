@@ -5,17 +5,15 @@
 
 #include <QPainter>
 
-Entity::Entity(EnergyPool&& energy, double x, double y, double radius, QColor colour)
-    : Entity(std::move(energy), x, y, radius, Random::Bearing(), 0.0, colour)
+Entity::Entity(EnergyPool&& energy, const Transform& transform, double radius, QColor colour)
+    : Entity(std::move(energy), transform, radius, 0.0, colour)
 {
 }
 
-Entity::Entity(EnergyPool&& energy, double x, double y, double radius, double bearing, double speed, QColor colour)
+Entity::Entity(EnergyPool&& energy, const Transform& transform, double radius, double speed, QColor colour)
     : energy_(std::move(energy))
-    , x_(x)
-    , y_(y)
+    , transform_(transform)
     , radius_(radius)
-    , bearing_(bearing)
     , speed_(speed)
     , age_(0)
     , colour_(colour)
@@ -82,7 +80,7 @@ void Entity::SetColour(double red, double green, double blue)
 
 void Entity::SetBearing(double bearing)
 {
-    bearing_ = bearing;
+    transform_.rotation = bearing;
     // TODO use energy to do this
 }
 
@@ -99,8 +97,8 @@ bool Entity::Move()
     // TODO perhaps overlapping entities could exchange some inertia? penalty for collisions?
 
     if (speed_ > 0) {
-        x_ += std::sin(bearing_) * speed_;
-        y_ += -(std::cos(bearing_) * speed_);
+        transform_.x += std::sin(transform_.rotation) * speed_;
+        transform_.y += -(std::cos(transform_.rotation) * speed_);
         return true;
     }
     return false;

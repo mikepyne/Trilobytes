@@ -8,7 +8,7 @@
 
 class Egg : public Entity {
 public:
-    Egg(EnergyPool&& energy, double x, double y, NeuralNetwork&& brain, std::shared_ptr<Genome> genome, unsigned hatchingDelay);
+    Egg(EnergyPool&& energy, const Transform& transform, std::shared_ptr<Genome> genome, unsigned hatchingDelay);
 
     virtual std::string_view GetName() const override { return "Egg"; }
 
@@ -18,7 +18,6 @@ protected:
 
 private:
     std::shared_ptr<Genome> genome_;
-    NeuralNetwork brain_;
     unsigned hatchingDelay_;
 };
 

@@ -4,8 +4,8 @@
 
 #include <QPainter>
 
-SenseEntityRaycast::SenseEntityRaycast(Swimmer& owner, double maxDistance, double angle, const std::vector<Trait>&& toDetect)
-    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u))
+SenseEntityRaycast::SenseEntityRaycast(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double maxDistance, double angle, const std::vector<Trait>&& toDetect)
+    : Sense(network, outputConnections, owner)
     , rayCastDistance_(maxDistance)
     , rayCastAngle_(angle)
     , toDetect_(toDetect)
@@ -46,7 +46,7 @@ void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityCo
 
 Line SenseEntityRaycast::GetLine() const
 {
-    Point begin = ApplyOffset(owner_.GetLocation(), rayCastAngle_ + owner_.GetBearing(), owner_.GetRadius());
-    Point end = ApplyOffset(begin, rayCastAngle_ + owner_.GetBearing(), rayCastDistance_);
+    Point begin = ApplyOffset(owner_.GetLocation(), rayCastAngle_ + owner_.GetTransform().rotation, owner_.GetRadius());
+    Point end = ApplyOffset(begin, rayCastAngle_ + owner_.GetTransform().rotation, rayCastDistance_);
     return { begin, end };
 }

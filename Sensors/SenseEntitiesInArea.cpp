@@ -4,11 +4,10 @@
 
 #include <QPainter>
 
-SenseEntitiesInArea::SenseEntitiesInArea(Swimmer& owner, double maxDistance, double offsetDistance, double offsetAngle, double senseDistanceWeight, const std::vector<std::pair<double, Trait>>&& toDetect)
-    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u))
+SenseEntitiesInArea::SenseEntitiesInArea(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double maxDistance, const Transform& transform, double senseDistanceWeight, const std::vector<std::pair<double, Trait>>&& toDetect)
+    : Sense(network, outputConnections, owner)
     , senseRadius_(maxDistance)
-    , offsetDistance_(offsetDistance)
-    , offsetAngle_(offsetAngle)
+    , transform_(transform)
     , senseDistanceWeight_(senseDistanceWeight)
     , toDetect_(std::move(toDetect))
 {
@@ -17,8 +16,8 @@ SenseEntitiesInArea::SenseEntitiesInArea(Swimmer& owner, double maxDistance, dou
 void SenseEntitiesInArea::Draw(QPainter& paint) const
 {
     Circle c = GetArea();
-    paint.setPen(QColor::fromRgb(0, 0, 0));
-    paint.setBrush(QColor::fromRgb(0, 0, 0, 0));
+    paint.setPen(Qt::black);
+    paint.setBrush(Qt::NoBrush);
     paint.drawEllipse(QPointF(c.x, c.y), senseRadius_, senseRadius_);
 }
 
@@ -50,6 +49,6 @@ void SenseEntitiesInArea::PrimeInputs(std::vector<double>& inputs, const EntityC
 
 Circle SenseEntitiesInArea::GetArea() const
 {
-    Point centre = ApplyOffset(owner_.GetLocation(), offsetAngle_ + owner_.GetBearing(), offsetDistance_);
+    Point centre = ApplyOffset(owner_.GetLocation(), transform_.rotation + owner_.GetTransform().rotation, std::sqrt(GetDistanceSquare({ 0, 0 }, { transform_.x, transform_.y })));
     return { centre.x, centre.y, senseRadius_ };
 }

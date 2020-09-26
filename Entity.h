@@ -3,6 +3,7 @@
 
 #include "Shape.h"
 #include "EnergyPool.h"
+#include "Transform.h"
 #include "EntityContainerInterface.h"
 
 #include <QColor>
@@ -25,18 +26,17 @@ public:
     /**
      * Places stationary entity at coordinates with random bearing.
      */
-    Entity(EnergyPool&& energy, double x, double y, double radius, QColor colour);
-    Entity(EnergyPool&& energy, double x, double y, double radius, double bearing, double speed, QColor colour);
+    Entity(EnergyPool&& energy, const Transform& transform, double radius, QColor colour);
+    Entity(EnergyPool&& energy, const Transform& transform, double radius, double speed, QColor colour);
     virtual ~Entity();
 
     virtual std::string_view GetName() const = 0;
 
-    const double& GetX() const { return x_; }
-    const double& GetY() const { return y_; }
+    const Transform& GetTransform() const { return transform_; }
+    [[deprecated]]Point GetLocation() const { return { transform_.x, transform_.y }; } // TODO get rid of this
     const double& GetRadius() const { return radius_; }
-    const double& GetBearing() const { return bearing_; }
-    Point GetLocation() const { return { x_, y_ }; }
     uint64_t GetEnergy() const { return energy_.Quantity(); }
+    const QColor& GetColour() const { return colour_; }
 
     bool Alive() const;
     void FeedOn(Entity& other, uint64_t quantity);
@@ -66,10 +66,8 @@ protected:
 private:
     // Instance variables
     EnergyPool energy_; // TODO consider tracking energy used recenty via some sort of low pass filtered heat variable that decays over time
-    double x_;
-    double y_;
+    Transform transform_;
     double radius_;
-    double bearing_;
     double speed_;
     uint64_t age_;
 

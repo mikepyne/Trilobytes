@@ -2,6 +2,7 @@
 #define GENOME_H
 
 #include "Gene.h"
+#include "Phenotype.h"
 #include "ChromosomePair.h"
 
 #include <vector>
@@ -16,11 +17,14 @@ public:
 
     static std::shared_ptr<Genome> CreateOffspring(const Genome& aGenome, const Genome& bGenome);
 
-    void ForEach(const std::function<void(const Gene& gene)>& action) const;
+    Phenotype GetPhenoType(const Swimmer& owner) const;
+
     void Mutate();
 
 private:
     std::vector<ChromosomePair> chromosomes_;
+
+    void ForEach(const std::function<void(const Gene& gene)>& action) const;
 };
 
 #endif // GENOME_H

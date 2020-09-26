@@ -1,8 +1,14 @@
 #include "NeuralNetwork.h"
 
+#include <memory>
 
 NeuralNetwork::NeuralNetwork(unsigned layerCount, unsigned width, NeuralNetwork::InitialWeights initialWeights)
     : NeuralNetwork(initialWeights == InitialWeights::Random ? CreateRandomLayers(layerCount, width) : CreatePassThroughLayers(layerCount, width))
+{
+}
+
+NeuralNetwork::NeuralNetwork(std::vector<NeuralNetwork::Layer>&& layers)
+    : layers_(std::move(layers))
 {
 }
 
@@ -55,7 +61,7 @@ void NeuralNetwork::ForEach(const std::function<void (unsigned, unsigned, const 
     }
 }
 
-NeuralNetwork NeuralNetwork::Mutated()
+std::shared_ptr<NeuralNetwork> NeuralNetwork::Mutated()
 {
     size_t layerCount = layers_.size();
     std::vector<Layer> layers;
@@ -67,19 +73,16 @@ NeuralNetwork NeuralNetwork::Mutated()
                 double newEdge = edge;
                 // i.e average 3 mutations per child
                 if (Random::Number(0u, layerCount * layer.size() * layer.size()) < 3) {
-                    edge += Random::Gaussian(-0.5, 0.5);
+                    edge += Random::Gaussian(0.0, 1.0);
                 }
                 layers.back().back().push_back(newEdge);
             }
         }
     }
-    return NeuralNetwork(std::move(layers));
+    return std::make_shared<NeuralNetwork>(std::move(layers));
 }
 
-NeuralNetwork::NeuralNetwork(std::vector<NeuralNetwork::Layer>&& layers)
-    : layers_(std::move(layers))
-{
-}
+
 
 std::vector<NeuralNetwork::Layer> NeuralNetwork::CreateRandomLayers(unsigned layerCount, unsigned width)
 {

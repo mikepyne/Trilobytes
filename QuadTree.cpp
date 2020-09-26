@@ -252,7 +252,7 @@ void QuadTree::Quad::Rebalance(const uint64_t targetCount, uint64_t historesis)
         children_ = CreateChildren(rect_, baseTree_, this);
         for (auto entity : entities_) {
             for (auto& child : children_) {
-                if (Contains(child->rect_, Point{ entity->GetX(), entity->GetY() })) {
+                if (Contains(child->rect_, Point{ entity->GetTransform().x, entity->GetTransform().y })) {
                     child->entities_.push_back(entity);
                     continue;
                 }

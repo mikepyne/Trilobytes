@@ -180,6 +180,7 @@ void NeuralNetworkInspector::PaintGroup(const Group& group, QPainter& p) const
 
     // Draw the Nodes over the top
     for (auto& [ nodeCoordinates, node ] : group.nodes) {
+        (void) nodeCoordinates; // unused
         // Draw the Node
         p.setPen(Qt::PenStyle::NoPen);
         p.setBrush(QColor(25, 25, 255));

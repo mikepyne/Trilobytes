@@ -35,6 +35,16 @@ std::shared_ptr<Genome> Genome::CreateOffspring(const Genome& aGenome, const Gen
     return {};
 }
 
+Phenotype Genome::GetPhenoType(const Swimmer& owner) const
+{
+    Phenotype phenotype;
+    ForEach([&](const Gene& gene)
+    {
+        gene.ExpressGene(owner, phenotype);
+    });
+    return phenotype;
+}
+
 void Genome::ForEach(const std::function<void (const Gene&)>& action) const {
     for (const ChromosomePair& chromosome : chromosomes_) {
         chromosome.ForEach(action);

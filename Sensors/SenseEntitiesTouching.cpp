@@ -4,8 +4,8 @@
 
 #include <QPainter>
 
-SenseEntitiesTouching::SenseEntitiesTouching(Swimmer& owner, double offsetDistance, double offsetAngle, double genericDetectionWeight, const std::vector<std::pair<double, Trait> >&& toDetect)
-    : Sense(owner, 1 + toDetect.size(), std::min(toDetect.size(), 3u))
+SenseEntitiesTouching::SenseEntitiesTouching(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double offsetDistance, double offsetAngle, double genericDetectionWeight, const std::vector<std::pair<double, Trait> >&& toDetect)
+    : Sense(network, outputConnections, owner)
     , offsetDistance_(offsetDistance)
     , offsetAngle_(offsetAngle)
     , genericDetectionWeight_(genericDetectionWeight)
@@ -14,7 +14,7 @@ SenseEntitiesTouching::SenseEntitiesTouching(Swimmer& owner, double offsetDistan
 
 void SenseEntitiesTouching::Draw(QPainter& paint) const
 {
-    Point location = ApplyOffset(owner_.GetLocation(), offsetAngle_ + owner_.GetBearing(), offsetDistance_);
+    Point location = ApplyOffset(owner_.GetLocation(), offsetAngle_ + owner_.GetTransform().rotation, offsetDistance_);
     paint.setPen(QColor::fromRgb(255, 0, 0));
     paint.setBrush(QColor::fromRgb(0, 0, 0, 0));
     paint.drawEllipse(QPointF(location.x, location.y), 1.0, 1.0);
@@ -26,7 +26,7 @@ void SenseEntitiesTouching::PrimeInputs(std::vector<double>& inputs, const Entit
         input = 0.0;
     }
 
-    Point location = ApplyOffset(owner_.GetLocation(), offsetAngle_ + owner_.GetBearing(), offsetDistance_);
+    Point location = ApplyOffset(owner_.GetLocation(), offsetAngle_ + owner_.GetTransform().rotation, offsetDistance_);
     entities.ForEachCollidingWith(location, [&](Entity& e)
     {
         // don't detect ourself

@@ -2,23 +2,20 @@
 #define SENSEENTITIESINAREA_H
 
 #include "Sense.h"
-
+#include "Shape.h"
+#include "Transform.h"
 #include "Entity.h"
-
-class Swimmer;
-class QPainter;
 
 class SenseEntitiesInArea : public Sense {
 public:
-    SenseEntitiesInArea(Swimmer& owner, double maxDistance, double offsetDistance, double offsetAngle, double senseDistanceWeight, const std::vector<std::pair<double, Trait>>&& toDetect);
+    SenseEntitiesInArea(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double maxDistance, const Transform& transform, double senseDistanceWeight, const std::vector<std::pair<double, Trait>>&& toDetect);
 
     virtual std::string_view GetName() const override { return "SenseEntitiesInArea"; }
     virtual void Draw(QPainter& paint) const override;
 
 private:
     double senseRadius_;
-    double offsetDistance_;
-    double offsetAngle_;
+    Transform transform_;
     double senseDistanceWeight_;
     std::vector<std::pair<double, Trait>> toDetect_;
 

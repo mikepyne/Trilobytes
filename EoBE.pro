@@ -22,8 +22,12 @@ SOURCES += \
     FoodPellet.cpp \
     Genome/ChromosomePair.cpp \
     Genome/Gene.cpp \
+    Genome/GeneBrain.cpp \
     Genome/GeneFactory.cpp \
     Genome/GenePigment.cpp \
+    Genome/GeneSenseEntitiesInArea.cpp \
+    Genome/GeneSenseMagneticField.cpp \
+    Genome/GeneSenseRandom.cpp \
     Genome/Genome.cpp \
     LineGraph.cpp \
     NeuralNetwork.cpp \
@@ -38,6 +42,7 @@ SOURCES += \
     Sensors/SenseMagneticField.cpp \
     Sensors/SenseRandom.cpp \
     Swimmer.cpp \
+    Transform.cpp \
     Universe.cpp \
     Utils.cpp \
     main.cpp \
@@ -54,9 +59,14 @@ HEADERS += \
     FoodPellet.h \
     Genome/ChromosomePair.h \
     Genome/Gene.h \
+    Genome/GeneBrain.h \
     Genome/GeneFactory.h \
     Genome/GenePigment.h \
+    Genome/GeneSenseEntitiesInArea.h \
+    Genome/GeneSenseMagneticField.h \
+    Genome/GeneSenseRandom.h \
     Genome/Genome.h \
+    Genome/Phenotype.h \
     LineGraph.h \
     MainWindow.h \
     NeuralNetwork.h \
@@ -72,6 +82,7 @@ HEADERS += \
     Sensors/SenseRandom.h \
     Shape.h \
     Swimmer.h \
+    Transform.h \
     Universe.h \
     Utils.h
 

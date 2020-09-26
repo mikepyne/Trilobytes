@@ -87,7 +87,7 @@ private:
             }
             if (children_.empty()) {
                 for (auto& entity : entities_) {
-                    if (Collides(collide, Circle{ entity->GetX(), entity->GetY(), entity->GetRadius() })) {
+                    if (Collides(collide, Circle{ entity->GetTransform().x, entity->GetTransform().y, entity->GetRadius() })) {
                         action(*entity);
                     }
                 }

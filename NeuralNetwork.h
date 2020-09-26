@@ -8,6 +8,7 @@
 #include <vector>
 #include <algorithm>
 #include <assert.h>
+#include <memory>
 
 /**
  * A basic NeuralNetwork with no backward propogation. The sigma function
@@ -30,6 +31,7 @@ public:
      * random edge weights between 0.0 and 1.0.
      */
     NeuralNetwork(unsigned layerCount, unsigned width, InitialWeights initialWeights);
+    NeuralNetwork(std::vector<Layer>&& layers);
 
     unsigned GetInputCount() const { return layers_.front().size(); }
     unsigned GetOutputCount() const { return layers_.back().size(); }
@@ -46,12 +48,10 @@ public:
     void ForEach(const std::function<void(unsigned, unsigned, const Node&)>& perNode) const;
     std::vector<size_t> GetLayerWidths() const;
 
-    NeuralNetwork Mutated();
+    std::shared_ptr<NeuralNetwork> Mutated();
 
 private:
     std::vector<Layer> layers_;
-
-    NeuralNetwork(std::vector<Layer>&& layers);
 
     std::vector<Layer> CreateRandomLayers(unsigned layerCount, unsigned width);
     std::vector<Layer> CreatePassThroughLayers(unsigned layerCount, unsigned width);

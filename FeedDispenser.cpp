@@ -41,7 +41,7 @@ void FeedDispenser::Tick()
         if (currentPelletCount_ < maxPelletCount_) {
             double foodX = Random::Gaussian(x_, spawnStdDeviation_);
             double foodY = Random::Gaussian(y_, spawnStdDeviation_);
-            entityContainer_.AddEntity(std::make_shared<FoodPellet>(*this, energyPool_.CreateChild(25_mj), foodX, foodY));
+            entityContainer_.AddEntity(std::make_shared<FoodPellet>(*this, energyPool_.CreateChild(25_mj), Transform{ foodX, foodY, 0 }));
 
             ++currentPelletCount_;
             ticksTillNext_ = averageTicksBetweenPellets_;
