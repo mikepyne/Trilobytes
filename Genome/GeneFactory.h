@@ -7,7 +7,7 @@
 
 class GeneFactory {
 public:
-    static std::shared_ptr<Gene> Random();
+    static std::shared_ptr<Gene> Random(unsigned brainWidth);
 };
 
 #endif // GENEFACTORY_H

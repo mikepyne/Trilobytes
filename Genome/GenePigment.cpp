@@ -30,8 +30,8 @@ std::shared_ptr<Gene> GenePigment::Mutate() const
                                          std::clamp(r_ + Random::Number(-0.1, 0.1), 0.0, 1.0),
                                          std::clamp(g_ + Random::Number(-0.1, 0.1), 0.0, 1.0),
                                          std::clamp(b_ + Random::Number(-0.1, 0.1), 0.0, 1.0),
-                                         GetDominance() + Random::Gaussian(0.0, 1.0),
-                                         GetMutationProbability() + Random::Gaussian(0.0, 0.01));
+                                         GetMutatedDominance(),
+                                         GetMutatedMutationProbability());
 }
 
 void GenePigment::ExpressGene(const Swimmer& /*owner*/, Phenotype& target) const

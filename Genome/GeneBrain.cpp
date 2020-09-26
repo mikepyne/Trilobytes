@@ -15,7 +15,7 @@ GeneBrain::GeneBrain(const std::shared_ptr<NeuralNetwork>& brain, double dominan
 
 std::shared_ptr<Gene> GeneBrain::Mutate() const
 {
-    return std::make_shared<GeneBrain>(brain_->Mutated(), GetDominance(), GetMutationProbability() + Random::Number(-0.01, 0.01));
+    return std::make_shared<GeneBrain>(brain_->Mutated(), GetMutatedDominance(), GetMutatedMutationProbability());
 }
 
 void GeneBrain::ExpressGene(const Swimmer& /*owner*/, Phenotype& target) const

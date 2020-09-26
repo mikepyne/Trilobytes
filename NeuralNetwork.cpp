@@ -12,7 +12,7 @@ NeuralNetwork::NeuralNetwork(std::vector<NeuralNetwork::Layer>&& layers)
 {
 }
 
-void NeuralNetwork::ForwardPropogate(std::vector<double>& toPropogate)
+void NeuralNetwork::ForwardPropogate(std::vector<double>& toPropogate) const
 {
     static std::vector<double> previousNodeValues;
 
@@ -61,7 +61,7 @@ void NeuralNetwork::ForEach(const std::function<void (unsigned, unsigned, const 
     }
 }
 
-std::shared_ptr<NeuralNetwork> NeuralNetwork::Mutated()
+std::shared_ptr<NeuralNetwork> NeuralNetwork::Mutated() const
 {
     size_t layerCount = layers_.size();
     std::vector<Layer> layers;
@@ -73,7 +73,7 @@ std::shared_ptr<NeuralNetwork> NeuralNetwork::Mutated()
                 double newEdge = edge;
                 // i.e average 3 mutations per child
                 if (Random::Number(0u, layerCount * layer.size() * layer.size()) < 3) {
-                    edge += Random::Gaussian(0.0, 1.0);
+                    newEdge += Random::Gaussian(0.0, 1.0);
                 }
                 layers.back().back().push_back(newEdge);
             }

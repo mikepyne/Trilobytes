@@ -17,7 +17,7 @@ GeneSenseMagneticField::GeneSenseMagneticField(const std::shared_ptr<NeuralNetwo
 
 std::shared_ptr<Gene> GeneSenseMagneticField::Mutate() const
 {
-    return std::make_shared<GeneSenseMagneticField>(network_->Mutated(), outputConnections_, GetDominance(), GetMutationProbability());
+    return std::make_shared<GeneSenseMagneticField>(network_->Mutated(), outputConnections_->Mutated(), GetMutatedDominance(), GetMutatedMutationProbability());
 }
 
 void GeneSenseMagneticField::ExpressGene(const Swimmer& owner, Phenotype& target) const

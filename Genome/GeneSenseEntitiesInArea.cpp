@@ -26,19 +26,20 @@ std::shared_ptr<Gene> GeneSenseEntitiesInArea::Mutate() const
     double mutatedDistanceWeight = distanceWeight_;
     std::vector<std::pair<double, Trait>> mutatedToDetect = toDetect_;
 
-    mutatedRadius         += Random::Number(-0.1, 0.1);
-    // mutatedTransform.x...; TODO
-    mutatedDistanceWeight += Random::Number(-0.1, 0.1);
+    mutatedRadius += Random::Gaussian(0.0, 0.5);
+    mutatedTransform.y += Random::Gaussian(0.0, 0.5);
+    mutatedTransform.rotation += Random::Gaussian(0.0, 0.01);
+    mutatedDistanceWeight += Random::Gaussian(0.0, 0.5);
     // mutatedToDetect; TODO
 
     return std::make_shared<GeneSenseEntitiesInArea>(std::move(mutatedToDetect),
                                                      network_->Mutated(),
-                                                     outputConnections_,
+                                                     outputConnections_->Mutated(),
                                                      mutatedTransform,
                                                      mutatedRadius,
                                                      mutatedDistanceWeight,
-                                                     GetDominance(),
-                                                     GetMutationProbability()); // TODO mutate the mutation probability?
+                                                     GetMutatedDominance(),
+                                                     GetMutatedMutationProbability());
 }
 
 void GeneSenseEntitiesInArea::ExpressGene(const Swimmer& owner, Phenotype& target) const

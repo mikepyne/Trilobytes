@@ -18,7 +18,7 @@ GeneSenseRandom::GeneSenseRandom(const std::shared_ptr<NeuralNetwork>& network, 
 std::shared_ptr<Gene> GeneSenseRandom::Mutate() const
 {
     // TODO allow changing of number of random inputs
-    return std::make_shared<GeneSenseRandom>(network_->Mutated(), outputConnections_, GetDominance(), GetMutationProbability());
+    return std::make_shared<GeneSenseRandom>(network_->Mutated(), outputConnections_->Mutated(), GetMutatedDominance(), GetMutatedMutationProbability());
 }
 
 void GeneSenseRandom::ExpressGene(const Swimmer& owner, Phenotype& target) const

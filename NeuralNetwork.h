@@ -43,12 +43,12 @@ public:
      * OPTIMISATION Perhaps nodes storing their value instead of populating
      * vectors could improve performance by reducting copying
      */
-    void ForwardPropogate(std::vector<double>& inputs);
+    void ForwardPropogate(std::vector<double>& inputs) const;
 
     void ForEach(const std::function<void(unsigned, unsigned, const Node&)>& perNode) const;
     std::vector<size_t> GetLayerWidths() const;
 
-    std::shared_ptr<NeuralNetwork> Mutated();
+    std::shared_ptr<NeuralNetwork> Mutated() const;
 
 private:
     std::vector<Layer> layers_;

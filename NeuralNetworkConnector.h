@@ -2,6 +2,7 @@
 #define NEURALNETWORKCONNECTOR_H
 
 #include <vector>
+#include <memory>
 
 /**
  * No hidden layers, used to pass forward the output of one neural network into
@@ -23,12 +24,15 @@ public:
      *                to PassForward
      */
     NeuralNetworkConnector(unsigned inputs, unsigned outputs);
+    NeuralNetworkConnector(std::vector<std::vector<double> >&& weights);
 
     void PassForward(const std::vector<double>& inputValues, std::vector<double>& outputValues);
 
     unsigned GetInputCount() const { return weights_.size(); }
     unsigned GetOutputCount() const { return weights_.front().size(); }
     const std::vector<std::vector<double>>& Inspect() const { return weights_; }
+
+    std::shared_ptr<NeuralNetworkConnector> Mutated() const;
 
 private:
     std::vector<std::vector<double>> weights_;

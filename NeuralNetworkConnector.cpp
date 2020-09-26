@@ -27,6 +27,11 @@ NeuralNetworkConnector::NeuralNetworkConnector(unsigned inputs, unsigned outputs
     });
 }
 
+NeuralNetworkConnector::NeuralNetworkConnector(std::vector<std::vector<double>>&& weights)
+    : weights_(std::move(weights))
+{
+}
+
 void NeuralNetworkConnector::PassForward(const std::vector<double>& inputValues, std::vector<double>& outputValues)
 {
     assert(inputValues.size() == weights_.size() && outputValues.size() == weights_.at(0).size());
@@ -37,4 +42,35 @@ void NeuralNetworkConnector::PassForward(const std::vector<double>& inputValues,
             output += input * inputWeight;
         });
     });
+}
+
+std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::Mutated() const
+{
+    std::vector<std::vector<double>> newWeights = weights_;
+
+    double percent = Random::Percent();
+    if (percent > 10) {
+        // 90% Chance mutate a single connection
+        if (newWeights.size() > 0) {
+            unsigned input = Random::Number<size_t>(0, newWeights.size() - 1);
+            if (newWeights.at(input).size() > 0) {
+                unsigned output = Random::Number<size_t>(0, newWeights.at(input).size() - 1);
+                newWeights.at(input).at(output) += Random::Gaussian(0.0, 0.2);
+            }
+        }
+    } else if (percent > 2) {
+        // 8% Chance mutate all connections
+        for (auto& input : newWeights) {
+            for (auto& output : input) {
+                output += Random::Gaussian(0.0, 0.1);
+            }
+        }
+    } else {
+        // 2% Chance shuffle connections
+        for (auto& input : newWeights) {
+            Random::Shuffle(input);
+        }
+    }
+
+    return std::make_shared<NeuralNetworkConnector>(std::move(newWeights));
 }

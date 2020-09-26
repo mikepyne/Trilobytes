@@ -22,6 +22,8 @@ public:
     // TODO (maybe...) Splice (implement a function that will create a new Gene by splicing two parent genes together)
     double GetDominance() const { return dominance_; }
     double GetMutationProbability() const { return mutationProbability_; }
+    double GetMutatedDominance() const;
+    double GetMutatedMutationProbability() const;
 
 private:
     double dominance_;

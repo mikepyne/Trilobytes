@@ -146,7 +146,8 @@ void ChromosomePair::Mutate()
 
         // gene addition
         if (Random::Number(0.0, 1.0) < (1.0 / 1000)) {
-            std::shared_ptr<Gene> randomGene = GeneFactory::Random();
+            unsigned brainWidth = 7; // FIXME
+            std::shared_ptr<Gene> randomGene = GeneFactory::Random(brainWidth);
             bool addToA = Random::Boolean();
             size_t randomLocation = Random::Number<size_t>(addToA ? aChromosomeRange_.Min() : bChromosomeRange_.Min(), addToA ? aChromosomeRange_.Max() : bChromosomeRange_.Max());
             addToA ? chromosomePair_[randomLocation].first = randomGene : chromosomePair_[randomLocation].second = randomGene;

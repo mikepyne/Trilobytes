@@ -47,6 +47,11 @@ public:
         }
     }
 
+    static double Percent()
+    {
+        return Number(0.0, 100.0);
+    }
+
     template<typename NumericType>
     static NumericType Gaussian(NumericType mean = std::numeric_limits<NumericType>::min(), NumericType standardDeviation = static_cast<NumericType>(1.0))
     {
@@ -122,6 +127,12 @@ public:
         rands.reserve(count);
         std::generate_n(std::back_inserter(rands), count, [&](){ return Generate(distribution); });
         return rands;
+    }
+
+    template<typename Container>
+    static void Shuffle(Container& toShuffle)
+    {
+        std::shuffle(std::begin(toShuffle), std::end(toShuffle), entropy_);
     }
 
 private:

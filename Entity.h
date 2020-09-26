@@ -9,6 +9,7 @@
 #include <QColor>
 
 #include <string_view>
+#include <array>
 
 class QPainter;
 
@@ -20,6 +21,8 @@ enum class Trait {
     Age,
     Size,
 };
+
+constexpr std::array traits = { Trait::Red, Trait::Green, Trait::Blue, Trait::Energy, Trait::Age, Trait::Size };
 
 class Entity {
 public:
