@@ -12,15 +12,7 @@ SenseEntitiesTouching::SenseEntitiesTouching(const std::shared_ptr<NeuralNetwork
 {
 }
 
-void SenseEntitiesTouching::Draw(QPainter& paint) const
-{
-    Point location = ApplyOffset(owner_.GetLocation(), offsetAngle_ + owner_.GetTransform().rotation, offsetDistance_);
-    paint.setPen(QColor::fromRgb(255, 0, 0));
-    paint.setBrush(QColor::fromRgb(0, 0, 0, 0));
-    paint.drawEllipse(QPointF(location.x, location.y), 1.0, 1.0);
-}
-
-void SenseEntitiesTouching::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef& /*environment*/)
+void SenseEntitiesTouching::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef& /*environment*/) const
 {
     for (auto& input : inputs) {
         input = 0.0;
@@ -38,4 +30,12 @@ void SenseEntitiesTouching::PrimeInputs(std::vector<double>& inputs, const Entit
             }
         }
     });
+}
+
+void SenseEntitiesTouching::Draw(QPainter& paint) const
+{
+    Point location = ApplyOffset(owner_.GetLocation(), offsetAngle_ + owner_.GetTransform().rotation, offsetDistance_);
+    paint.setPen(QColor::fromRgb(255, 0, 0));
+    paint.setBrush(QColor::fromRgb(0, 0, 0, 0));
+    paint.drawEllipse(QPointF(location.x, location.y), 1.0, 1.0);
 }

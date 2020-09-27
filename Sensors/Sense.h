@@ -27,10 +27,12 @@ public:
     Sense(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner);
     virtual ~Sense();
 
+    virtual std::string_view GetName() const = 0;
+    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) const = 0;
+
     virtual void Draw(QPainter& paint) const;
     virtual void Tick(std::vector<double>& outputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) final;
 
-    virtual std::string_view GetName() const = 0;
     unsigned GetOutputCount() const { return network_->GetOutputCount(); }
 
     const NeuralNetwork& Inspect() const { return *network_; }
@@ -43,8 +45,6 @@ private:
     std::shared_ptr<NeuralNetwork> network_;
     std::shared_ptr<NeuralNetworkConnector> outputConnections_;
     std::vector<double> inputs_;
-
-    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) = 0;
 };
 
 #endif // SENSE_H

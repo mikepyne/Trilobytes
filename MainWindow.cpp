@@ -16,7 +16,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::SetSwimmerToInspect(Swimmer& swimmer)
+void MainWindow::SetSwimmerToInspect(Swimmer& swimmer, EntityContainerInterface& container)
 {
-    ui->inspector->SetSwimmer(swimmer);
+    ui->inspector->SetSwimmer(swimmer, container);
 }

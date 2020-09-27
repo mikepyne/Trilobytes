@@ -78,7 +78,7 @@ void Universe::mousePressEvent(QMouseEvent* event)
             if (Swimmer* swimmer = dynamic_cast<Swimmer*>(&e); swimmer != nullptr) {
                 MainWindow* mainWindow = dynamic_cast<MainWindow*>(parentWidget()->parentWidget());
                 assert(mainWindow);
-                mainWindow->SetSwimmerToInspect(*swimmer);
+                mainWindow->SetSwimmerToInspect(*swimmer, rootNode_.GetContainer());
             }
         });
     }

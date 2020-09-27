@@ -9,6 +9,7 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class Swimmer;
+class EntityContainerInterface;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -17,7 +18,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void SetSwimmerToInspect(Swimmer& swimmer);
+    void SetSwimmerToInspect(Swimmer& swimmer, EntityContainerInterface& container);
 
 private:
     Ui::MainWindow *ui;

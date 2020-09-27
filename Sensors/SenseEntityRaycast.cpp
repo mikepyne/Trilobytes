@@ -12,14 +12,7 @@ SenseEntityRaycast::SenseEntityRaycast(const std::shared_ptr<NeuralNetwork>& net
 {
 }
 
-void SenseEntityRaycast::Draw(QPainter& paint) const
-{
-    auto l = GetLine();
-    paint.setPen(QColor::fromRgb(0, 0, 0));
-    paint.drawLine(QLineF(l.a.x, l.a.y, l.b.x, l.b.y));
-}
-
-void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef&)
+void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef&) const
 {
     Line rayCastLine = GetLine();
     Entity* nearestEntity = nullptr;
@@ -42,6 +35,13 @@ void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityCo
             inputs[i + 1] = nearestEntity->GetTrait(toDetect_[i]);
         }
     }
+}
+
+void SenseEntityRaycast::Draw(QPainter& paint) const
+{
+    auto l = GetLine();
+    paint.setPen(QColor::fromRgb(0, 0, 0));
+    paint.drawLine(QLineF(l.a.x, l.a.y, l.b.x, l.b.y));
 }
 
 Line SenseEntityRaycast::GetLine() const

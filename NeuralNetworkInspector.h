@@ -9,13 +9,14 @@
 
 class Swimmer;
 class NeuralNetwork;
+class EntityContainerInterface;
 
 class NeuralNetworkInspector : public QWidget {
     Q_OBJECT
 public:
     explicit NeuralNetworkInspector(QWidget *parent);
 
-    void SetSwimmer(Swimmer& toInspect);
+    void SetSwimmer(Swimmer& toInspect, EntityContainerInterface& container);
 
 protected:
     virtual void mousePressEvent(QMouseEvent* event) override;
@@ -29,6 +30,7 @@ private:
     struct Node {
         double x;
         double y;
+        double value;
         // Nodes are arranged from 0 -> 1 on the x & y axis
         std::vector<std::pair<std::reference_wrapper<Node>, double>> connections;
     };
@@ -57,6 +59,8 @@ private:
     void LayoutGroups();
     void LayoutGroup(Group& group, QRect area);
     void PaintGroup(const Group& group, QPainter& p) const;
+
+    void ForwardPropogate();
 };
 
 #endif // NEURALNETWORKINSPECTOR_H

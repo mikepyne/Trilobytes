@@ -13,7 +13,7 @@ std::shared_ptr<Gene> GeneFactory::Random(unsigned brainWidth)
     case 0 :
         return std::make_shared<GenePigment>();
     case 1 :
-        return std::make_shared<GeneBrain>(Random::Number(0, 5), brainWidth, Random::Number(0.0, 1.0));
+        return std::make_shared<GeneBrain>(Random::Number(1, 5), brainWidth, Random::Number(0.0, 1.0));
     case 2 : {
         std::vector<std::pair<double, Trait>> additionalTraits;
         for (auto& trait : traits) {

@@ -11,6 +11,8 @@ class SenseEntitiesTouching : public Sense {
         SenseEntitiesTouching(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double offsetDistance, double offsetAngle, double genericDetectionWeight, const std::vector<std::pair<double, Trait>>&& toDetect);
 
         virtual std::string_view GetName() const override { return "SenseEntitiesTouching"; }
+        virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) const override;
+
         virtual void Draw(QPainter& paint) const override;
 
     private:
@@ -18,8 +20,6 @@ class SenseEntitiesTouching : public Sense {
         double offsetAngle_;
         double genericDetectionWeight_;
         std::vector<std::pair<double, Trait>> toDetect_;
-
-        virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) override;
 };
 
 #endif // SENSEENTITIESTOUCHING_H

@@ -1,6 +1,7 @@
 #include "NeuralNetworkInspector.h"
 
 #include "Swimmer.h"
+#include "EntityContainerInterface.h"
 #include "NeuralNetwork.h"
 
 #include <QMouseEvent>
@@ -11,7 +12,7 @@ NeuralNetworkInspector::NeuralNetworkInspector(QWidget* parent)
 {
 }
 
-void NeuralNetworkInspector::SetSwimmer(Swimmer& toInspect)
+void NeuralNetworkInspector::SetSwimmer(Swimmer& toInspect, EntityContainerInterface& container)
 {
     sensorGroups_.clear();
     effectorGroups_.clear();
@@ -19,7 +20,7 @@ void NeuralNetworkInspector::SetSwimmer(Swimmer& toInspect)
 
     // TODO low priority, make groups movable and resizable and hideable
 
-    brainGroup_ = CreateGroup(toInspect.InspectBrain(), "brain");
+    brainGroup_ = CreateGroup(toInspect.InspectBrain(), "Brain");
 
     for (auto& sense : toInspect.InspectSenses()) {
         sensorGroups_.push_back(CreateGroup(sense->Inspect(), std::string(sense->GetName())));
@@ -38,15 +39,24 @@ void NeuralNetworkInspector::SetSwimmer(Swimmer& toInspect)
                     senseGroup.verticalNodes = 1;
                     senseGroup.nodes[{ 0, 0 }];
                 }
-                senseGroup.nodes[{ neuronIndex, senseGroup.verticalNodes - 1 }].connections.push_back({ brainGroup_.nodes[{ weightIndex, 0 }], weight });
+                Node& node = senseGroup.nodes[{ neuronIndex, senseGroup.verticalNodes - 1 }];
+                node.connections.push_back({ brainGroup_.nodes[{ weightIndex, 0 }], weight });
+                node.value = 0;
                 ++weightIndex;
             }
             ++neuronIndex;
+        }
+
+        std::vector<double> inputs(senseGroup.horizontalNodes);
+        sense->PrimeInputs(inputs, container, {});
+        for (unsigned x = 0; x < senseGroup.horizontalNodes; ++x) {
+            senseGroup.nodes[{ x, 0 }].value = inputs.at(x);
         }
     }
 
     // TODO add the effectors, and connect to brain
 
+    ForwardPropogate();
     LayoutGroups();
     update();
 }
@@ -137,12 +147,12 @@ void NeuralNetworkInspector::LayoutGroups()
 {
     if (width() != 0 && height() != 0) {
         QRect screen = rect();
-        LayoutGroup(brainGroup_, screen.adjusted(0, height() / 2, 0, 0));
+        LayoutGroup(brainGroup_, screen.adjusted(5, (height() / 2) + 5, -5, -5));
 
         unsigned index = 0;
         for (auto& group : sensorGroups_) {
             qreal senseWidth = static_cast<qreal>(width() / sensorGroups_.size());
-            LayoutGroup(group, screen.adjusted(index * senseWidth, 0, -(screen.width() - (senseWidth * (index + 1))), -height() / 2));
+            LayoutGroup(group, screen.adjusted((index * senseWidth) + 5, 5, -(screen.width() - (senseWidth * (index + 1))) - 5, (-height() / 2) - 5));
             ++index;
         }
     }
@@ -162,21 +172,23 @@ void NeuralNetworkInspector::PaintGroup(const Group& group, QPainter& p) const
 {
     p.setPen(Qt::black);
     p.setBrush(Qt::NoBrush);
-    p.drawRect(group.area);
+    p.drawRect(group.area);p.setClipRect(rect());
+
+    p.drawText(group.area.topLeft() + QPoint(2, 10), QString(group.name.c_str()));
 
     // Draw the connections
     for (auto& [ nodeCoordinates, node ] : group.nodes) {
         (void) nodeCoordinates; // unused
         p.setBrush(Qt::BrushStyle::NoBrush);
         for (auto& [ target, strength ] : node.connections) {
-            QPen pen(QColor(strength > 0 ? 0 : 255, 0, 0));
+            unsigned opacity = std::clamp(std::abs(node.value) * 200, 0.0, 255.0);
+            QPen pen(QColor(strength > 0 ? 0 : 255, 0, 0, opacity));
             pen.setWidthF((std::abs(strength) / 1.5) * 10);
             p.setPen(pen);
 
             p.drawLine(QPointF{ node.x, node.y }, QPointF{ target.get().x, target.get().y });
         }
     }
-    p.drawText(group.area.topLeft(), QString(group.name.c_str()));
 
     // Draw the Nodes over the top
     for (auto& [ nodeCoordinates, node ] : group.nodes) {
@@ -184,6 +196,31 @@ void NeuralNetworkInspector::PaintGroup(const Group& group, QPainter& p) const
         // Draw the Node
         p.setPen(Qt::PenStyle::NoPen);
         p.setBrush(QColor(25, 25, 255));
-        p.drawEllipse(QPointF(node.x, node.y), 15.0, 15.0);
+        double scale = node.value / 2;
+        p.drawEllipse(QPointF(node.x, node.y), 15.0 * scale, 15.0 * scale);
     }
+}
+
+void NeuralNetworkInspector::ForwardPropogate()
+{
+    auto propogateGroup = [](Group& group)
+    {
+        for (unsigned y = 0; y < group.verticalNodes; ++y) {
+            for (unsigned x = 0; x < group.horizontalNodes; ++x) {
+                Node& node = group.nodes.at({ x, y });
+                if (y != 0) {
+                    // Don't normalise inputs
+                    node.value = std::tanh(node.value);
+                }
+                for (auto& [ connectedNode, strength ] : node.connections) {
+                    connectedNode.get().value += node.value * strength;
+                }
+            }
+        }
+    };
+
+    for (auto& group : sensorGroups_) {
+        propogateGroup(group);
+    }
+    propogateGroup(brainGroup_);
 }

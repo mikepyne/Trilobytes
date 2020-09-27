@@ -18,6 +18,7 @@ public:
     void Tick();
     void Draw(QPainter& paint);
 
+    EntityContainerInterface& GetContainer() { return *root_; }
     void AddEntity(const std::shared_ptr<Entity>& entity);
     uint64_t EntityCount();
     void SetEntityCapacity(uint64_t target, uint64_t leeway);
@@ -34,7 +35,7 @@ public:
     }
 
 private:
-    class Quad : private EntityContainerInterface {
+    class Quad : public EntityContainerInterface {
     public:
         Quad(const Rect& area, QuadTree& owner, Quad* parent);
         Quad(const Rect& area, QuadTree& owner, std::vector<std::shared_ptr<Quad>>&& children);

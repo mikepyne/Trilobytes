@@ -13,15 +13,7 @@ SenseEntitiesInArea::SenseEntitiesInArea(const std::shared_ptr<NeuralNetwork>& n
 {
 }
 
-void SenseEntitiesInArea::Draw(QPainter& paint) const
-{
-    Circle c = GetArea();
-    paint.setPen(Qt::black);
-    paint.setBrush(Qt::NoBrush);
-    paint.drawEllipse(QPointF(c.x, c.y), senseRadius_, senseRadius_);
-}
-
-void SenseEntitiesInArea::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef& /*environment*/)
+void SenseEntitiesInArea::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef& environment) const
 {
     for (auto& input : inputs) {
         input = 0.0;
@@ -45,6 +37,14 @@ void SenseEntitiesInArea::PrimeInputs(std::vector<double>& inputs, const EntityC
             }
         }
     });
+}
+
+void SenseEntitiesInArea::Draw(QPainter& paint) const
+{
+    Circle c = GetArea();
+    paint.setPen(Qt::black);
+    paint.setBrush(Qt::NoBrush);
+    paint.drawEllipse(QPointF(c.x, c.y), senseRadius_, senseRadius_);
 }
 
 Circle SenseEntitiesInArea::GetArea() const
