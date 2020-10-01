@@ -2,13 +2,12 @@
 #define EGG_H
 
 #include "Entity.h"
-#include "EnergyPool.h"
 #include "Genome/Genome.h"
 #include "NeuralNetwork.h"
 
 class Egg : public Entity {
 public:
-    Egg(EnergyPool&& energy, const Transform& transform, std::shared_ptr<Genome> genome, unsigned hatchingDelay);
+    Egg(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, unsigned hatchingDelay);
 
     virtual std::string_view GetName() const override { return "Egg"; }
 

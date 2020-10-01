@@ -4,8 +4,8 @@
 
 #include <QPainter>
 
-Egg::Egg(EnergyPool&& energy, const Transform& transform, std::shared_ptr<Genome> genome, unsigned hatchingDelay)
-    : Entity(std::move(energy), transform, 7, QColor::fromRgb(125, 57, 195))
+Egg::Egg(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, unsigned hatchingDelay)
+    : Entity(energy, transform, 7, QColor::fromRgb(125, 57, 195))
     , genome_(genome)
     , hatchingDelay_(hatchingDelay)
 {
@@ -19,10 +19,9 @@ void Egg::TickImpl(EntityContainerInterface& container)
         // cross with self for now
         std::shared_ptr<Genome> genome = Genome::CreateOffspring(*genome_, *genome_);
         if (genome) {
-            container.AddEntity(std::make_shared<Swimmer>(TakeEnergy(GetEnergy()), GetTransform(), genome));
-        } else {
-            UseEnergy(GetEnergy());
+            container.AddEntity(std::make_shared<Swimmer>(GetEnergy(), GetTransform(), genome));
         }
+        Terminate();
     }
 }
 

@@ -9,7 +9,7 @@ class QPainter;
 
 class FoodPellet : public Entity {
 public:
-    FoodPellet(FeedDispenser& spawner, EnergyPool&& energy, const Transform& transform);
+    FoodPellet(FeedDispenser& spawner, Energy energy, const Transform& transform);
     virtual ~FoodPellet() override final;
 
     virtual std::string_view GetName() const override { return "FoodPellet"; }
@@ -17,7 +17,7 @@ public:
 private:
     FeedDispenser& spawner_;
 
-    virtual void TickImpl(EntityContainerInterface& container) override final;
+    virtual void TickImpl(EntityContainerInterface& /*container*/) override final {}
     virtual void DrawImpl(QPainter& paint) override final;
 };
 

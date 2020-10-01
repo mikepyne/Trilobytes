@@ -1,72 +1,62 @@
 #include "FeedDispenser.h"
 
 #include "Random.h"
-#include "EnergyPool.h"
+#include "Energy.h"
 #include "FoodPellet.h"
 #include "QuadTree.h"
 
 #include <QPainter>
 
-FeedDispenser::FeedDispenser(EnergyPool& energyPool, QuadTree& entityContainer, double x, double y, double spawnStdDeviation, unsigned maxPelletCount, unsigned averageTicksBetweenPellets)
-    : energyPool_(energyPool)
-    , entityContainer_(entityContainer)
+
+FeedDispenser::FeedDispenser(QuadTree& entityContainer, double x, double y, double radius, double pelletDensity)
+    : entityContainer_(entityContainer)
     , x_(x)
     , y_(y)
-    , spawnStdDeviation_(spawnStdDeviation)
-    , maxPelletCount_(maxPelletCount)
-    , averageTicksBetweenPellets_(averageTicksBetweenPellets)
-    , xVelocity_(0)
-    , yVelocity_(0)
-    , stepsRemaining_(0)
-    , currentPelletCount_(0)
+    , radius_(radius)
+    , maxPellets_(std::pow(EoBE::Pi * radius_, 2.0) * pelletDensity)
     , ticksTillNext_(0)
+    , currentPelletCount_(0)
 {
+    while(currentPelletCount_ < maxPellets_ / 4) {
+        SpawnPellet();
+    }
 }
 
 void FeedDispenser::Draw(QPainter& paint)
 {
     paint.save();
     paint.setPen(QColor(0, 205, 90, 255));
-    auto gradient = QRadialGradient(x_, y_, GetRadius());
-    gradient.setColorAt(0.0, QColor(0, 255, 100, 100));
-    gradient.setColorAt(1.0, QColor(0, 255, 100, 10));
-    paint.setBrush(gradient);
+    paint.setBrush(QColor(0, 205, 90, 190).lighter());
     paint.drawEllipse({x_, y_}, GetRadius(), GetRadius());
     paint.restore();
 }
 
 void FeedDispenser::Tick()
 {
-    if (ticksTillNext_ == 0) {
-        if (currentPelletCount_ < maxPelletCount_) {
-            double foodX = Random::Gaussian(x_, spawnStdDeviation_);
-            double foodY = Random::Gaussian(y_, spawnStdDeviation_);
-            entityContainer_.AddEntity(std::make_shared<FoodPellet>(*this, energyPool_.CreateChild(25_mj), Transform{ foodX, foodY, 0 }));
-
-            ++currentPelletCount_;
-            ticksTillNext_ = averageTicksBetweenPellets_;
-        }
-    } else {
-        --ticksTillNext_;
+    while (ticksTillNext_ <= 0 && currentPelletCount_ < maxPellets_) {
+        SpawnPellet();
     }
+    ticksTillNext_ -= 1.0;
 }
 
 void FeedDispenser::PelletEaten()
 {
     --currentPelletCount_;
-    if (stepsRemaining_ == 0) {
-        double xDestination = Random::Number<double>(-1500 / 2, 1500 / 2);
-        double yDestination = Random::Number<double>(-1500 / 2, 1500 / 2);
-        double xDistance = xDestination - x_;
-        double yDistance = yDestination - y_;
-        double distance = std::sqrt((xDistance * xDistance) + (yDistance * yDistance));
-        double speed = 0.01;
-        stepsRemaining_ = static_cast<unsigned>(std::round(distance / speed));
-        xVelocity_ = xDistance / stepsRemaining_;
-        yVelocity_ = yDistance / stepsRemaining_;
-    } else {
-        x_ += xVelocity_;
-        y_ += yVelocity_;
-        --stepsRemaining_;
+    //    ticksTillNext_ -= currentPelletCount_ / maxPellets_;
+}
+
+void FeedDispenser::SpawnPellet()
+{
+    double rotation = Random::Number(0.0, EoBE::Tau);
+    double distance = std::sqrt(Random::Number(0.0, 1.0)) * radius_;
+    double foodX = x_ + distance * std::cos(rotation);
+    double foodY = y_ + distance * std::sin(rotation);
+    if (entityContainer_.SelectEntities(Point{ foodX, foodY }).empty()) {
+        entityContainer_.AddEntity(std::make_shared<FoodPellet>(*this, 50_mj, Transform{ foodX, foodY, 0 }));
+        ++currentPelletCount_;
+//                ticksTillNext_ = 1'00.0 * std::pow(double(currentPelletCount_) / double(maxPellets_), 2.0);
+//        ticksTillNext_ += std::max(0.1, 10.0 * (1.0 - std::pow(double(currentPelletCount_) / double(maxPellets_), 0.5)));
+        auto x = double(currentPelletCount_) / double(maxPellets_);
+        ticksTillNext_ += 10.0 * ((-0.8 * (std::pow(x, 2.0) * -std::pow(x - 2, 2.0))) + 0.1);
     }
 }

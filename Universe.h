@@ -2,7 +2,7 @@
 #define UNIVERSE_H
 
 #include "QuadTree.h"
-#include "EnergyPool.h"
+#include "Energy.h"
 #include "LineGraph.h"
 #include "FeedDispenser.h"
 
@@ -22,8 +22,8 @@ public:
     void SetupGraphs(LineGraph& graph);
 
 signals:
-    void OnFoodEnergySampled(double energy);
-    void OnSwimmerEnergySampled(double energy);
+    void OnFoodEnergySampled(Energy energy);
+    void OnSwimmerEnergySampled(Energy energy);
     void OnGraphResetRequested();
 
 protected:
@@ -48,7 +48,6 @@ private:
     bool pauseSim_ = false;
     bool respawn_ = true;
 
-    EnergyPool& energy_;
     QuadTree rootNode_;
     std::vector<FeedDispenser> feedDispensers_;
 

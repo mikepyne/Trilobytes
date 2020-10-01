@@ -9,8 +9,8 @@
 
 class Swimmer : public Entity {
 public:
-    Swimmer(EnergyPool&& energy, const Transform& transform);
-    Swimmer(EnergyPool&& energy, const Transform& transform, std::shared_ptr<Genome> genome);
+    Swimmer(Energy energy, const Transform& transform);
+    Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome);
     virtual ~Swimmer() override final;
 
     virtual std::string_view GetName() const override { return "Swimmer"; }

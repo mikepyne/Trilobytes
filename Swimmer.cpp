@@ -14,13 +14,13 @@
 
 #include <math.h>
 
-Swimmer::Swimmer(EnergyPool&& energy, const Transform& transform)
-    : Swimmer(std::move(energy), transform, std::make_shared<Genome>(CreateDefaultGenome()))
+Swimmer::Swimmer(Energy energy, const Transform& transform)
+    : Swimmer(energy, transform, std::make_shared<Genome>(CreateDefaultGenome()))
 {
 }
 
-Swimmer::Swimmer(EnergyPool&& energy, const Transform& transform, std::shared_ptr<Genome> genome)
-    : Entity(std::move(energy), transform, 6.0, genome->GetPhenoType(*this).colour)
+Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome)
+    : Entity(energy, transform, 6.0, genome->GetPhenoType(*this).colour)
     , genome_(genome)
     , brain_(genome->GetPhenoType(*this).brain)
     , senses_(genome->GetPhenoType(*this).senses)
@@ -64,6 +64,7 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
     {
         if (FoodPellet* f = dynamic_cast<FoodPellet*>(&other)) {
             FeedOn(*f, f->GetEnergy());
+            assert(!f->Alive());
         }
     });
 

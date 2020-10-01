@@ -1,13 +1,12 @@
 #ifndef FEEDDISPENSER_H
 #define FEEDDISPENSER_H
 
-class EnergyPool;
 class QuadTree;
 class QPainter;
 
 class FeedDispenser {
 public:
-    FeedDispenser(EnergyPool& energyPool, QuadTree& entityContainer, double x, double y, double averageSpawnRadius, unsigned maxPelletCount, unsigned averageTicksBetweenPellets_);
+    FeedDispenser(QuadTree& entityContainer, double x, double y, double radius, double pelletDensity);
 
     void Draw(QPainter& paint);
     void Tick();
@@ -15,22 +14,21 @@ public:
 
     double GetX() const { return x_; }
     double GetY() const { return y_; }
-    double GetRadius() const { return spawnStdDeviation_ * 3; }
+    double GetRadius() const { return radius_; }
 
 private:
-    EnergyPool& energyPool_;
     QuadTree& entityContainer_;
+
     double x_;
     double y_;
-    double spawnStdDeviation_;
-    unsigned maxPelletCount_;
-    unsigned averageTicksBetweenPellets_;
-    double xVelocity_;
-    double yVelocity_;
-    unsigned stepsRemaining_;
+    double radius_;
+
+    unsigned maxPellets_;
+    double ticksTillNext_;
 
     unsigned currentPelletCount_;
-    unsigned ticksTillNext_;
+
+    void SpawnPellet();
 };
 
 #endif // FEEDDISPENSER_H

@@ -11,28 +11,17 @@
 
 Universe::Universe(QWidget* parent)
     : QWidget(parent)
-    , energy_(EnergyPool::GetGlobalEnergyPool())
     , rootNode_({0, 0, 1000, 1000})
 {
     setFocusPolicy(Qt::StrongFocus);
 
-    unsigned count = 50;
-    double xRange = 1500;
-    double yRange = 1500;
-    uint64_t maxPellets = energy_.Quantity() / 25_mj;
-    for (unsigned i = 0; i < count; i++) {
-        double x = Random::Number(-xRange / 2, xRange / 2);
-        double y = Random::Number(-yRange / 2, yRange / 2);
-        feedDispensers_.emplace_back(energy_, rootNode_, x, y, Random::Number(50, 100), maxPellets / count, Random::Number(0, 5));
-    }
+    feedDispensers_.emplace_back(rootNode_, 0, 0, 1000, 0.001);
 
     /*
      * QT hack to get this running in the QT event loop (necessary for
      * drawing anything, not ideal for running the Sim quickly...)
-     *
-     * Leaking this pointer... not intended to last long
      */
-    QTimer* timer = new QTimer();
+    QTimer* timer = new QTimer(this);
     timer->setSingleShot(false);
     timer->connect(timer, &QTimer::timeout, [&](auto) -> void
     {
@@ -117,7 +106,6 @@ void Universe::paintEvent(QPaintEvent*)
     QPainter p(this);
     p.setBackground(QColor(200, 225, 255));
     p.drawText(0, 15, "Entities:    " + QString::number(rootNode_.EntityCount()));
-    p.drawText(0, 30, "SpareEnergy (mj): " + QString::number(energy_.Quantity() / 1_mj));
     p.drawText(0, 45, "Paused (space): " + QVariant(pauseSim_).toString());
     p.drawText(0, 60, "Spawn Food (F): " + QVariant(spawnFood_).toString());
     p.drawText(0, 75, "Respawn (R)");
@@ -142,10 +130,12 @@ void Universe::Thread()
         if (respawn_) {
             respawn_ = false;
             for (auto feeder : feedDispensers_) {
-                double swimmerX = feeder.GetX() + Random::Number(-feeder.GetRadius() / 3, feeder.GetRadius() / 3);
-                double swimmerY = feeder.GetY() + Random::Number(-feeder.GetRadius() / 3, feeder.GetRadius() / 3);
                 for (unsigned i = 0; i < std::max(1u, 25 / feedDispensers_.size()); i++) {
-                    rootNode_.AddEntity(std::make_shared<Swimmer>(energy_.CreateChild(300_mj), Transform{ swimmerX, swimmerY, 0 }));
+                    double rotation = Random::Number(0.0, EoBE::Tau);
+                    double distance = std::sqrt(Random::Number(0.0, 1.0)) * feeder.GetRadius();
+                    double swimmerX = feeder.GetX() + distance * std::cos(rotation);
+                    double swimmerY = feeder.GetY() + distance * std::sin(rotation);
+                    rootNode_.AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ swimmerX, swimmerY, 0 }));
                 }
             }
         }
@@ -158,8 +148,8 @@ void Universe::Thread()
 
         static uint64_t tick = 0;
         if (++tick % 100 == 0) {
-            uint64_t foodEnergy = 0;
-            uint64_t swimmerEnergy = 0;
+            Energy foodEnergy = 0;
+            Energy swimmerEnergy = 0;
             rootNode_.ForEach([&](const Entity& e) -> void
             {
                 if (const auto* f = dynamic_cast<const FoodPellet*>(&e)) {
