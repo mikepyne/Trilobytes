@@ -22,9 +22,9 @@ void Sense::Draw(QPainter& /*paint*/) const
     // Nothing to draw
 }
 
-void Sense::Tick(std::vector<double>& outputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef& environment)
+void Sense::Tick(std::vector<double>& outputs, const EntityContainerInterface& entities)
 {
-    PrimeInputs(inputs_, entities, environment);
+    PrimeInputs(inputs_, entities);
     network_->ForwardPropogate(inputs_);
     outputConnections_->PassForward(inputs_, outputs);
 }

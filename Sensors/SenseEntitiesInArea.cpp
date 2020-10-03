@@ -13,7 +13,7 @@ SenseEntitiesInArea::SenseEntitiesInArea(const std::shared_ptr<NeuralNetwork>& n
 {
 }
 
-void SenseEntitiesInArea::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef& environment) const
+void SenseEntitiesInArea::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const
 {
     for (auto& input : inputs) {
         input = 0.0;
@@ -29,10 +29,10 @@ void SenseEntitiesInArea::PrimeInputs(std::vector<double>& inputs, const EntityC
             double distanceSquare = GetDistanceSquare(senseCentre, e.GetLocation());
             if (distanceSquare < senseRadiusSquare) {
                 double distanceProportion = 1.0 - (distanceSquare / senseRadiusSquare);
-                inputs[0] += distanceProportion * senseDistanceWeight_;
+                inputs.at(0) += distanceProportion * senseDistanceWeight_;
                 size_t i = 0;
                 for (auto& [traitWeight, trait ] : toDetect_) {
-                    inputs[++i] += distanceProportion * traitWeight * e.GetTrait(trait);
+                    inputs.at(++i) += distanceProportion * traitWeight * e.GetTrait(trait);
                 }
             }
         }

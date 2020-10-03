@@ -79,33 +79,22 @@ Energy Entity::TakeEnergy(Energy quantity)
     return toGive;
 }
 
-void Entity::SetColour(double red, double green, double blue)
-{
-    colour_.setRgbF(red, green, blue);
-    // TODO use energy to do this!
-}
-
 void Entity::SetBearing(double bearing)
 {
+    if (bearing < 0.0) {
+        bearing += EoBE::Tau;
+    } else if (bearing > EoBE::Tau) {
+        bearing -= EoBE::Tau;
+    }
     transform_.rotation = bearing;
-    // TODO use energy to do this
-}
-
-void Entity::SetSpeed(double speed)
-{
-    speed_ = speed;
-    // TODO use energy to do this
 }
 
 bool Entity::Move()
 {
-    // TODO THIS wont be using energy, BUT the changing of the speed should totally be using energy (proportional to the rate of change)
-    // TODO add inertia by reducing speed after movement
-    // TODO perhaps overlapping entities could exchange some inertia? penalty for collisions?
-
-    if (speed_ > 0) {
+    if (std::abs(speed_) > 0.05) {
         transform_.x += std::sin(transform_.rotation) * speed_;
         transform_.y += -(std::cos(transform_.rotation) * speed_);
+        speed_ -= speed_ / 4.0;
         return true;
     }
     return false;

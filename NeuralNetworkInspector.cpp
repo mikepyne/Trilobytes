@@ -35,7 +35,7 @@ void NeuralNetworkInspector::SetSwimmer(Swimmer& toInspect, EntityContainerInter
                  * neurons.
                  */
                 if (senseGroup.nodes.empty()) {
-                    senseGroup.horizontalNodes = sense->InspectConnection().Inspect().size();
+                    senseGroup.horizontalNodes = sense->InspectConnection().GetInputCount();
                     senseGroup.verticalNodes = 1;
                     senseGroup.nodes[{ 0, 0 }];
                 }
@@ -48,13 +48,37 @@ void NeuralNetworkInspector::SetSwimmer(Swimmer& toInspect, EntityContainerInter
         }
 
         std::vector<double> inputs(senseGroup.horizontalNodes);
-        sense->PrimeInputs(inputs, container, {});
+        sense->PrimeInputs(inputs, container);
         for (unsigned x = 0; x < senseGroup.horizontalNodes; ++x) {
-            senseGroup.nodes[{ x, 0 }].value = inputs.at(x);
+            senseGroup.nodes.at({ x, 0 }).value = inputs.at(x);
         }
     }
 
-    // TODO add the effectors, and connect to brain
+    for (auto& effector : toInspect.InspectEffectors()) {
+        effectorGroups_.push_back(CreateGroup(effector->Inspect(), std::string(effector->GetName())));
+        Group& effectorGroup = effectorGroups_.back();
+
+        unsigned neuronIndex = 0;
+        for (auto& neuron : effector->InspectConnection().Inspect()) {
+            unsigned weightIndex = 0;
+            for (auto& weight : neuron) {
+                /*
+                 * Some effectors are simple passthroughs and do not have any
+                 * neurons.
+                 */
+                if (effectorGroup.nodes.empty()) {
+                    effectorGroup.horizontalNodes = effector->InspectConnection().GetOutputCount();
+                    effectorGroup.verticalNodes = 1;
+                    effectorGroup.nodes[{ 0, 0 }];
+                }
+                Node& node = brainGroup_.nodes.at({ neuronIndex, brainGroup_.verticalNodes - 1 });
+                node.connections.push_back({ effectorGroup.nodes[{ weightIndex, 0 }], weight });
+                node.value = 0;
+                ++weightIndex;
+            }
+            ++neuronIndex;
+        }
+    }
 
     ForwardPropogate();
     LayoutGroups();
@@ -107,6 +131,9 @@ void NeuralNetworkInspector::paintEvent(QPaintEvent* /*event*/)
 
     PaintGroup(brainGroup_, paint);
 
+    for (const auto& group : effectorGroups_) {
+        PaintGroup(group, paint);
+    }
 }
 
 void NeuralNetworkInspector::resizeEvent(QResizeEvent* /*event*/)
@@ -127,7 +154,7 @@ NeuralNetworkInspector::Group NeuralNetworkInspector::CreateGroup(const NeuralNe
         unsigned inputY = y - 1;
         for (const auto& connectionWeight : node) {
             group.nodes[{ inputX, inputY }].connections.push_back({ group.nodes[{ x, y }], connectionWeight });
-            group.nodes[{ x, y }]; // Ensure even nodes without connections are added
+            group.nodes.insert({ { x, y }, { 0, 0, 0, {}} }); // Ensure even nodes without connections are added
             inputX++;
         }
     });
@@ -146,13 +173,23 @@ NeuralNetworkInspector::Group NeuralNetworkInspector::CreateGroup(const NeuralNe
 void NeuralNetworkInspector::LayoutGroups()
 {
     if (width() != 0 && height() != 0) {
-        QRect screen = rect();
-        LayoutGroup(brainGroup_, screen.adjusted(5, (height() / 2) + 5, -5, -5));
+        qreal brainHeight = 2 * (height() / 3);
+        qreal brainWidth = width();
+        LayoutGroup(brainGroup_, QRect(5, ((height() - brainHeight) / 2.0) + 5, brainWidth - 10, brainHeight - 10));
 
         unsigned index = 0;
         for (auto& group : sensorGroups_) {
+            qreal senseHeight = height() / 6;
             qreal senseWidth = static_cast<qreal>(width() / sensorGroups_.size());
-            LayoutGroup(group, screen.adjusted((index * senseWidth) + 5, 5, -(screen.width() - (senseWidth * (index + 1))) - 5, (-height() / 2) - 5));
+            LayoutGroup(group, QRect((index * senseWidth) + 5, 5, senseWidth - 10, senseHeight - 10));
+            ++index;
+        }
+
+        index = 0;
+        for (auto& group : effectorGroups_) {
+            qreal effectorHeight = height() / 6;
+            qreal effectorWidth = static_cast<qreal>(width() / effectorGroups_.size());
+            LayoutGroup(group, QRect((index * effectorWidth) + 5, height() - (effectorHeight - 5), effectorWidth - 10, effectorHeight - 10));
             ++index;
         }
     }
@@ -166,13 +203,15 @@ void NeuralNetworkInspector::LayoutGroup(NeuralNetworkInspector::Group& group, Q
         node.x = group.area.x() + ((group.area.width() / (group.horizontalNodes + 1)) * (column + 1));
         node.y = group.area.y() + ((group.area.height() / (group.verticalNodes + 1)) * (row + 1));
     }
+    viewX_ = -0.5 * width();
+    viewY_ = -0.5 * height();
 }
 
 void NeuralNetworkInspector::PaintGroup(const Group& group, QPainter& p) const
 {
     p.setPen(Qt::black);
     p.setBrush(Qt::NoBrush);
-    p.drawRect(group.area);p.setClipRect(rect());
+    p.drawRect(group.area);
 
     p.drawText(group.area.topLeft() + QPoint(2, 10), QString(group.name.c_str()));
 
@@ -183,7 +222,7 @@ void NeuralNetworkInspector::PaintGroup(const Group& group, QPainter& p) const
         for (auto& [ target, strength ] : node.connections) {
             unsigned opacity = std::clamp(std::abs(node.value) * 200, 0.0, 255.0);
             QPen pen(QColor(strength > 0 ? 0 : 255, 0, 0, opacity));
-            pen.setWidthF((std::abs(strength) / 1.5) * 10);
+            pen.setWidthF((std::abs(strength) / 1.5) * 8);
             p.setPen(pen);
 
             p.drawLine(QPointF{ node.x, node.y }, QPointF{ target.get().x, target.get().y });
@@ -194,10 +233,12 @@ void NeuralNetworkInspector::PaintGroup(const Group& group, QPainter& p) const
     for (auto& [ nodeCoordinates, node ] : group.nodes) {
         (void) nodeCoordinates; // unused
         // Draw the Node
-        p.setPen(Qt::PenStyle::NoPen);
-        p.setBrush(QColor(25, 25, 255));
-        double scale = node.value / 2;
-        p.drawEllipse(QPointF(node.x, node.y), 15.0 * scale, 15.0 * scale);
+        QColor nodeCol(node.value > 0 ? Qt::blue : Qt::red);
+        qreal transparency = std::abs(node.value);
+        p.setPen(QPen(nodeCol, 3.0));
+        nodeCol.setAlphaF(transparency);
+        p.setBrush(nodeCol);
+        p.drawEllipse(QPointF(node.x, node.y), 10.0, 10.0);
     }
 }
 

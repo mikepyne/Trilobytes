@@ -3,11 +3,7 @@
 
 #include "Random.h"
 
-#include <iomanip>
-#include <stdint.h>
 #include <vector>
-#include <algorithm>
-#include <assert.h>
 #include <memory>
 
 /**
@@ -39,9 +35,6 @@ public:
     /**
      * Inputs should be between 0.0 and 1.0 inclusive. Returns the final node
      * values.
-     *
-     * OPTIMISATION Perhaps nodes storing their value instead of populating
-     * vectors could improve performance by reducting copying
      */
     void ForwardPropogate(std::vector<double>& inputs) const;
 

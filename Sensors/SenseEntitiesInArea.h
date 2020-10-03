@@ -11,7 +11,7 @@ public:
     SenseEntitiesInArea(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double maxDistance, const Transform& transform, double senseDistanceWeight, const std::vector<std::pair<double, Trait>>&& toDetect);
 
     virtual std::string_view GetName() const override { return "SenseEntitiesInArea"; }
-    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) const override;
+    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const override;
 
     virtual void Draw(QPainter& paint) const override;
 

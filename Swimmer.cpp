@@ -10,6 +10,9 @@
 #include "Genome/GeneSenseRandom.h"
 #include "Genome/GeneSenseMagneticField.h"
 
+// TODO remove this once the Tail isn't hard-coded
+#include "Effectors/EffectorTail.h"
+
 #include <QPainter>
 
 #include <math.h>
@@ -19,13 +22,16 @@ Swimmer::Swimmer(Energy energy, const Transform& transform)
 {
 }
 
+// TODO prevent multiple re-calculation of phenotype
 Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome)
     : Entity(energy, transform, 6.0, genome->GetPhenoType(*this).colour)
     , genome_(genome)
     , brain_(genome->GetPhenoType(*this).brain)
     , senses_(genome->GetPhenoType(*this).senses)
+//    , effectors_(genome.GetPhenoType(*this).effectors)
+    , brainValues_(brain_->GetInputCount(), 0.0)
 {
-    SetSpeed(0.5);
+    effectors_.push_back(std::make_shared<EffectorTail>(std::make_shared<NeuralNetwork>(0, 3, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(NeuralNetworkConnector(brain_->GetOutputCount(), 3)), *this));
 }
 
 Swimmer::~Swimmer()
@@ -37,28 +43,35 @@ std::shared_ptr<Entity> Swimmer::GiveBirth(const std::shared_ptr<Genome>& other)
     return std::make_shared<Egg>(TakeEnergy(100_mj), GetTransform(), genome_, other ? other : genome_, Random::Poisson(50u));
 }
 
+void Swimmer::AdjustVelocity(double adjustment)
+{
+    UseEnergy(200_uj * std::pow(adjustment, 2.0));
+    SetVelocity(GetVelocity() + adjustment);
+}
+
+void Swimmer::AdjustBearing(double adjustment)
+{
+    UseEnergy(10_uj * std::pow(adjustment, 2.0));
+    SetBearing(GetTransform().rotation + adjustment);
+}
+
 void Swimmer::TickImpl(EntityContainerInterface& container)
 {
-    // TODO bearing should JUMP at Pi to -Pi (not Tau to 0), also makes maths and normalising easier
-    // In the event that the brain gene is lost, or it evolves to be 0 wide
     if (brain_ && brain_->GetInputCount() > 0) {
-        std::vector<double> sensoryOutput(brain_->GetInputCount(), 0.0);
+        std::fill(std::begin(brainValues_), std::end(brainValues_), 0.0);
         for (auto& sense : senses_) {
-            sense->Tick(sensoryOutput, container, {});
+            sense->Tick(brainValues_, container);
         }
 
-        brain_->ForwardPropogate(sensoryOutput);
-        double newBearing = GetTransform().rotation;
-        newBearing += (sensoryOutput[0]);
-        if (newBearing < 0.0) {
-            newBearing += EoBE::Tau;
-        } else if (newBearing > EoBE::Tau) {
-            newBearing -= EoBE::Tau;
+        brain_->ForwardPropogate(brainValues_);
+
+        for (auto& effector : effectors_) {
+            effector->Tick(brainValues_, container);
         }
-        SetBearing(newBearing);
     }
 
-    UseEnergy(200_uj); // TODO remove this, entities will use energy based on what they are doing (well maybe a small base usage would deter couch potatoes...)
+    // Baseline energy use TODO adjust based on genome (sense + effector count e.t.c.)
+    UseEnergy(20_uj);
 
     std::shared_ptr<Genome> otherGenes;
     container.ForEachCollidingWith(Circle{ GetTransform().x, GetTransform().y, GetRadius() }, [&](Entity& other) -> void
@@ -98,6 +111,7 @@ std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
     // TODO create genes for the following
     // std::make_shared<SenseEntitiesTouching>(*this, 0.0, 0.0, 1.0, std::vector<std::pair<double, Trait>>{ /*{1.0, Trait::Green},*/ }),
     // std::make_shared<SenseEntityRaycast>(*this, GetRadius() * 2, 0.0, std::vector<Trait>{}),
+    // EffectorTail
 
     unsigned brainWidth = 7;
     return {

@@ -15,6 +15,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     Effectors/Effector.cpp \
+    Effectors/EffectorTail.cpp \
     Egg.cpp \
     Entity.cpp \
     FeedDispenser.cpp \
@@ -49,6 +50,7 @@ SOURCES += \
 
 HEADERS += \
     Effectors/Effector.h \
+    Effectors/EffectorTail.h \
     Egg.h \
     Energy.h \
     Entity.h \

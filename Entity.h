@@ -35,11 +35,13 @@ public:
 
     virtual std::string_view GetName() const = 0;
 
+    const uint64_t& GetAge() const { return age_; }
     const Transform& GetTransform() const { return transform_; }
-    [[deprecated]]Point GetLocation() const { return { transform_.x, transform_.y }; } // TODO get rid of this
+    [[deprecated]]Point GetLocation() const { return { transform_.x, transform_.y }; }
     const double& GetRadius() const { return radius_; }
     double GetEnergy() const { return energy_; }
     const QColor& GetColour() const { return colour_; }
+    const double& GetVelocity() const { return speed_; }
 
     bool Alive() const;
     void FeedOn(Entity& other, Energy quantity);
@@ -62,13 +64,11 @@ protected:
     Energy TakeEnergy(Energy quantity);
     void Terminate() { energy_ = 0; }
 
-    // TODO consider these "Set" functions might be better as "Adjust" functions?
-    void SetColour(double red, double green, double blue);
+    void SetColour(double red, double green, double blue) { colour_.setRgbF(red, green, blue); }
     void SetBearing(double bearing);
-    void SetSpeed(double speed);
+    void SetVelocity(double speed) { speed_ = speed; }
 
 private:
-    // Instance variables
     Energy energy_; // TODO consider tracking energy used recenty via some sort of low pass filtered heat variable that decays over time
     Transform transform_;
     double radius_;

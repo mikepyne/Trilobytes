@@ -2,16 +2,22 @@
 
 #include "Swimmer.h"
 
-Effector::Effector(Swimmer& owner, unsigned actionsCount)
+Effector::Effector(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, Swimmer& owner)
     : owner_(owner)
-    , brainToEffectorConnector_(owner_.GetBrainInputCount(), actionsCount)
-    , actionValues_(actionsCount, 0)
+    , network_(network)
+    , inputConnections_(inputConnections)
+    , outputs_(3, 0.0)
 {
 }
 
-void Effector::Tick(const std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment)
+Effector::~Effector()
 {
-    std::fill(std::begin(actionValues_), std::end(actionValues_), 0);
-    brainToEffectorConnector_.PassForward(inputs, actionValues_);
-    PerformActions(actionValues_, entities, environment);
+}
+
+void Effector::Tick(const std::vector<double>& inputs, const EntityContainerInterface& entities)
+{
+    std::fill(std::begin(outputs_), std::end(outputs_), 0.0);
+    inputConnections_->PassForward(inputs, outputs_);
+    network_->ForwardPropogate(outputs_);
+    PerformActions(outputs_, entities);
 }

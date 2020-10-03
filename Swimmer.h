@@ -4,6 +4,8 @@
 #include "Entity.h"
 #include "NeuralNetwork.h"
 #include "Genome/Genome.h"
+#include "Sensors/Sense.h"
+#include "Effectors/Effector.h"
 
 #include <memory>
 
@@ -21,6 +23,10 @@ public:
 
     const NeuralNetwork& InspectBrain() { return *brain_; };
     const std::vector<std::shared_ptr<Sense>>& InspectSenses() { return senses_; };
+    const std::vector<std::shared_ptr<Effector>>& InspectEffectors() { return effectors_; };
+
+    void AdjustVelocity(double adjustment);
+    void AdjustBearing(double adjustment);
 
 protected:
     virtual void TickImpl(EntityContainerInterface& container) override final;
@@ -30,6 +36,8 @@ private:
     std::shared_ptr<Genome> genome_;
     std::shared_ptr<NeuralNetwork> brain_;
     std::vector<std::shared_ptr<Sense>> senses_;
+    std::vector<std::shared_ptr<Effector>> effectors_;
+    std::vector<double> brainValues_;
 
     static std::vector<std::shared_ptr<Gene>> CreateDefaultGenome();
 

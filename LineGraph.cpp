@@ -18,10 +18,7 @@ void LineGraph::PushBack(QRgb colour, double datum)
 
 void LineGraph::Reset()
 {
-    for (auto& [colour, plot] : plots_) {
-        (void) colour;
-        plot.clear();
-    }
+    plots_.clear();
 }
 
 void LineGraph::wheelEvent(QWheelEvent* event)

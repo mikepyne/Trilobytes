@@ -1,7 +1,5 @@
 #include "NeuralNetwork.h"
 
-#include <memory>
-
 NeuralNetwork::NeuralNetwork(unsigned layerCount, unsigned width, NeuralNetwork::InitialWeights initialWeights)
     : NeuralNetwork(initialWeights == InitialWeights::Random ? CreateRandomLayers(layerCount, width) : CreatePassThroughLayers(layerCount, width))
 {
@@ -28,11 +26,11 @@ void NeuralNetwork::ForwardPropogate(std::vector<double>& toPropogate) const
             double nodeValue = 0.0;
             size_t edgeIndex = 0;
             for (auto& edge : node) {
-                nodeValue += edge * previousNodeValues[edgeIndex];
+                nodeValue += edge * previousNodeValues.at(edgeIndex);
                 ++edgeIndex;
             }
             // tanh is our sigma function
-            toPropogate[nodeIndex] = std::tanh(nodeValue);
+            toPropogate.at(nodeIndex) = std::tanh(nodeValue);
             nodeIndex++;
         }
     }
@@ -109,7 +107,7 @@ std::vector<NeuralNetwork::Layer> NeuralNetwork::CreatePassThroughLayers(unsigne
         unsigned nodeColumn = 0;
         for (auto& node : layer) {
             for (unsigned inputColumn = 0; inputColumn < node.size(); inputColumn++) {
-                node[inputColumn] = (inputColumn == nodeColumn ? 1.0 : 0.0);
+                node.at(inputColumn) = (inputColumn == nodeColumn ? 1.0 : 0.0);
             }
             nodeColumn++;
         }

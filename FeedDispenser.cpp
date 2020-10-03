@@ -17,7 +17,7 @@ FeedDispenser::FeedDispenser(QuadTree& entityContainer, double x, double y, doub
     , ticksTillNext_(0)
     , currentPelletCount_(0)
 {
-    while(currentPelletCount_ < maxPellets_ / 4) {
+    while(currentPelletCount_ < maxPellets_ / 8) {
         SpawnPellet();
     }
     ticksTillNext_ = 0;

@@ -12,7 +12,7 @@ SenseEntityRaycast::SenseEntityRaycast(const std::shared_ptr<NeuralNetwork>& net
 {
 }
 
-void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef&) const
+void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const
 {
     Line rayCastLine = GetLine();
     Entity* nearestEntity = nullptr;
@@ -30,9 +30,9 @@ void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityCo
     });
 
     if (nearestEntity != nullptr) {
-        inputs[0] = distanceToNearest / rayCastDistance_;
+        inputs.at(0) = distanceToNearest / rayCastDistance_;
         for (unsigned i = 0; i < toDetect_.size(); i++) {
-            inputs[i + 1] = nearestEntity->GetTrait(toDetect_[i]);
+            inputs.at(i + 1) = nearestEntity->GetTrait(toDetect_[i]);
         }
     }
 }

@@ -16,22 +16,15 @@ class Swimmer;
  * All senses contain a small Neural network which is propogated each tick.
  */
 class Sense {
-protected:
-    struct UniverseInfoStructRef {
-        // Placeholder till a real one exists
-    };
 public:
-    /**
-     * Instantiates with a random neural network
-     */
     Sense(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner);
     virtual ~Sense();
 
     virtual std::string_view GetName() const = 0;
-    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) const = 0;
+    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const = 0;
 
     virtual void Draw(QPainter& paint) const;
-    virtual void Tick(std::vector<double>& outputs, const EntityContainerInterface& entities, const UniverseInfoStructRef& environment) final;
+    virtual void Tick(std::vector<double>& outputs, const EntityContainerInterface& entities) final;
 
     unsigned GetOutputCount() const { return network_->GetOutputCount(); }
 

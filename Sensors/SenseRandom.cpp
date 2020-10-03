@@ -7,7 +7,7 @@ SenseRandom::SenseRandom(const std::shared_ptr<NeuralNetwork>& network, const st
 {
 }
 
-void SenseRandom::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& /*entities*/, const Sense::UniverseInfoStructRef& /*environment*/) const
+void SenseRandom::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& /*entities*/) const
 {
     auto rand = Random::Numbers(inputs.size(), -1.0, 1.0);
     inputs.swap(rand);

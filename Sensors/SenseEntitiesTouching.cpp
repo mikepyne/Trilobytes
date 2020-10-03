@@ -12,7 +12,7 @@ SenseEntitiesTouching::SenseEntitiesTouching(const std::shared_ptr<NeuralNetwork
 {
 }
 
-void SenseEntitiesTouching::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const Sense::UniverseInfoStructRef& /*environment*/) const
+void SenseEntitiesTouching::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const
 {
     for (auto& input : inputs) {
         input = 0.0;
@@ -23,10 +23,10 @@ void SenseEntitiesTouching::PrimeInputs(std::vector<double>& inputs, const Entit
     {
         // don't detect ourself
         if (&e != &owner_) {
-            inputs[0] += genericDetectionWeight_;
+            inputs.at(0) += genericDetectionWeight_;
             size_t i = 0;
             for (auto& [traitWeight, trait ] : toDetect_) {
-                inputs[++i] += traitWeight * e.GetTrait(trait);
+                inputs.at(++i) += traitWeight * e.GetTrait(trait);
             }
         }
     });
