@@ -15,7 +15,7 @@ public:
 
     virtual std::string_view GetName() const override { return "Swimmer"; }
 
-    std::shared_ptr<Entity> GiveBirth();
+    std::shared_ptr<Entity> GiveBirth(const std::shared_ptr<Genome>& other);
     unsigned GetBrainInputCount() const { return brain_->GetInputCount(); }
     unsigned GetBrainOutputCount() const { return brain_->GetOutputCount(); }
 

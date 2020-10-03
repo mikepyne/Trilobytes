@@ -146,7 +146,17 @@ void ChromosomePair::Mutate()
 
         // gene addition
         if (Random::Number(0.0, 1.0) < (1.0 / 1000)) {
-            unsigned brainWidth = 7; // FIXME
+            /*
+             * FIXME perhaps the brain should be a fixed feature of the genome
+             * and not a gene?
+             *
+             * Even if we parsed the genome and extracted the gene width, at
+             * this point there'd be no way to tell if the brain width was going
+             * to change...
+             *
+             * Perhaps each gene needs a "BrainWidthMutated(newWidth)" function?
+             */
+            unsigned brainWidth = 7;
             std::shared_ptr<Gene> randomGene = GeneFactory::Random(brainWidth);
             bool addToA = Random::Boolean();
             size_t randomLocation = Random::Number<size_t>(addToA ? aChromosomeRange_.Min() : bChromosomeRange_.Min(), addToA ? aChromosomeRange_.Max() : bChromosomeRange_.Max());

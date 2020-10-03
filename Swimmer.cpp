@@ -32,9 +32,9 @@ Swimmer::~Swimmer()
 {
 }
 
-std::shared_ptr<Entity> Swimmer::GiveBirth()
+std::shared_ptr<Entity> Swimmer::GiveBirth(const std::shared_ptr<Genome>& other)
 {
-    return std::make_shared<Egg>(TakeEnergy(100_mj), GetTransform(), genome_, Random::Poisson(50u));
+    return std::make_shared<Egg>(TakeEnergy(100_mj), GetTransform(), genome_, other ? other : genome_, Random::Poisson(50u));
 }
 
 void Swimmer::TickImpl(EntityContainerInterface& container)
@@ -60,16 +60,21 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
 
     UseEnergy(200_uj); // TODO remove this, entities will use energy based on what they are doing (well maybe a small base usage would deter couch potatoes...)
 
+    std::shared_ptr<Genome> otherGenes;
     container.ForEachCollidingWith(Circle{ GetTransform().x, GetTransform().y, GetRadius() }, [&](Entity& other) -> void
     {
-        if (FoodPellet* f = dynamic_cast<FoodPellet*>(&other)) {
-            FeedOn(*f, f->GetEnergy());
-            assert(!f->Alive());
+        if (&other != this) {
+            if (FoodPellet* f = dynamic_cast<FoodPellet*>(&other)) {
+                FeedOn(*f, f->GetEnergy());
+                assert(!f->Alive());
+            } else if (Swimmer* s = dynamic_cast<Swimmer*>(&other)) {
+                otherGenes = s->genome_;
+            }
         }
     });
 
     if (GetEnergy() > 300_mj) {
-        container.AddEntity(GiveBirth());
+        container.AddEntity(GiveBirth(otherGenes));
     }
 }
 
@@ -91,8 +96,8 @@ void Swimmer::DrawImpl(QPainter& paint)
 std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
 {
     // TODO create genes for the following
-//              std::make_shared<SenseEntitiesTouching>(*this, 0.0, 0.0, 1.0, std::vector<std::pair<double, Trait>>{ /*{1.0, Trait::Green},*/ }),
-//              std::make_shared<SenseEntityRaycast>(*this, GetRadius() * 2, 0.0, std::vector<Trait>{}),
+    // std::make_shared<SenseEntitiesTouching>(*this, 0.0, 0.0, 1.0, std::vector<std::pair<double, Trait>>{ /*{1.0, Trait::Green},*/ }),
+    // std::make_shared<SenseEntityRaycast>(*this, GetRadius() * 2, 0.0, std::vector<Trait>{}),
 
     unsigned brainWidth = 7;
     return {

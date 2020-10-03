@@ -8,7 +8,9 @@
 
 int main(int argc, char *argv[])
 {
-    Random::Seed(static_cast<unsigned long>(time(nullptr)));
+    auto seed = static_cast<unsigned long>(time(nullptr));
+    Random::Seed(seed);
+    std::cout << "Seed: " << seed << std::endl;
 
     QApplication a(argc, argv);
     MainWindow w;

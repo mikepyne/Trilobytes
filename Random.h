@@ -135,6 +135,18 @@ public:
         std::shuffle(std::begin(toShuffle), std::end(toShuffle), entropy_);
     }
 
+    template<typename Container>
+    static typename Container::value_type& Item(Container& toShuffle)
+    {
+        return toShuffle.at(Random::Number(0u, toShuffle.size() - 1));
+    }
+
+    template<typename Container>
+    static const typename Container::value_type& Item(const Container& toShuffle)
+    {
+        return toShuffle.at(Random::Number(0u, toShuffle.size() - 1));
+    }
+
 private:
     inline static std::mt19937 entropy_ = std::mt19937();
 

@@ -15,7 +15,12 @@ Universe::Universe(QWidget* parent)
 {
     setFocusPolicy(Qt::StrongFocus);
 
-    feedDispensers_.emplace_back(rootNode_, 0, 0, 1000, 0.001);
+    feedDispensers_.emplace_back(rootNode_,  1000, 0, 950, 0.001);
+    feedDispensers_.emplace_back(rootNode_, -1000, 0, 950, 0.001);
+
+    Point startLocation = TransformSimToLocalCoords({ feedDispensers_.front().GetX(), feedDispensers_.front().GetY() });
+    simX_ = startLocation.x;
+    simY_ = startLocation.y;
 
     /*
      * QT hack to get this running in the QT event loop (necessary for
