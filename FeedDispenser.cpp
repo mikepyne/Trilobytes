@@ -43,7 +43,6 @@ void FeedDispenser::Tick()
 void FeedDispenser::PelletEaten()
 {
     --currentPelletCount_;
-    //    ticksTillNext_ -= currentPelletCount_ / maxPellets_;
 }
 
 void FeedDispenser::SpawnPellet()
@@ -52,7 +51,7 @@ void FeedDispenser::SpawnPellet()
     double distance = std::sqrt(Random::Number(0.0, 1.0)) * radius_;
     double foodX = x_ + distance * std::cos(rotation);
     double foodY = y_ + distance * std::sin(rotation);
-    if (entityContainer_.SelectEntities(Point{ foodX, foodY }).empty()) {
+    if (entityContainer_.CountEntities(Point{ foodX, foodY }) == 0) {
         entityContainer_.AddEntity(std::make_shared<FoodPellet>(*this, 50_mj, Transform{ foodX, foodY, 0 }));
         ++currentPelletCount_;
         auto proportion = double(currentPelletCount_) / double(maxPellets_);

@@ -34,6 +34,17 @@ public:
         root_->ForEachCollidingWith(collide, action);
     }
 
+    template <typename Shape>
+    unsigned CountEntities(const Shape& collide)
+    {
+        unsigned count = 0;
+        ForEachCollidingWith(collide, [&](auto&)
+        {
+            ++count;
+        });
+        return count;
+    }
+
 private:
     class Quad : public EntityContainerInterface {
     public:

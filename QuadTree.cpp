@@ -103,9 +103,9 @@ std::vector<std::shared_ptr<QuadTree::Quad> > QuadTree::Quad::CreateChildren(Rec
 
     return {
         std::make_shared<Quad>(Rect{ parentRect.left, parentRect.top, midX            , midY }             , baseTree, parent),
-                std::make_shared<Quad>(Rect{ midX           , parentRect.top, parentRect.right, midY }             , baseTree, parent),
-                std::make_shared<Quad>(Rect{ parentRect.left, midY          , midX            , parentRect.bottom }, baseTree, parent),
-                std::make_shared<Quad>(Rect{ midX           , midY          , parentRect.right, parentRect.bottom }, baseTree, parent),
+        std::make_shared<Quad>(Rect{ midX           , parentRect.top, parentRect.right, midY }             , baseTree, parent),
+        std::make_shared<Quad>(Rect{ parentRect.left, midY          , midX            , parentRect.bottom }, baseTree, parent),
+        std::make_shared<Quad>(Rect{ midX           , midY          , parentRect.right, parentRect.bottom }, baseTree, parent),
     };
 }
 
