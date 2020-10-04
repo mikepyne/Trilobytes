@@ -26,6 +26,8 @@ SOURCES += \
     Genome/GeneFactory.cpp \
     Genome/GenePigment.cpp \
     Genome/GeneSenseEntitiesInArea.cpp \
+    Genome/GeneSenseEntitiesTouching.cpp \
+    Genome/GeneSenseEntityRaycast.cpp \
     Genome/GeneSenseMagneticField.cpp \
     Genome/GeneSenseRandom.cpp \
     Genome/Genome.cpp \
@@ -63,6 +65,8 @@ HEADERS += \
     Genome/GeneFactory.h \
     Genome/GenePigment.h \
     Genome/GeneSenseEntitiesInArea.h \
+    Genome/GeneSenseEntitiesTouching.h \
+    Genome/GeneSenseEntityRaycast.h \
     Genome/GeneSenseMagneticField.h \
     Genome/GeneSenseRandom.h \
     Genome/Genome.h \

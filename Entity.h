@@ -22,7 +22,7 @@ enum class Trait {
     Size,
 };
 
-constexpr std::array traits = { Trait::Red, Trait::Green, Trait::Blue, Trait::Energy, Trait::Age, Trait::Size };
+constexpr std::array ALL_TRAITS = { Trait::Red, Trait::Green, Trait::Blue, Trait::Energy, Trait::Age, Trait::Size };
 
 class Entity {
 public:

@@ -7,7 +7,7 @@
 
 class SenseEntityRaycast : public Sense {
 public:
-    SenseEntityRaycast(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double maxDistance, double angle, const std::vector<Trait>&& toDetect);
+    SenseEntityRaycast(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double maxDistance, double angle, double genericWeight, const std::vector<std::pair<double, Trait>>&& traits);
 
     virtual std::string_view GetName() const override { return "SenseEntityRaycast"; }
     virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const override;
@@ -17,7 +17,8 @@ public:
 private:
     double rayCastDistance_;
     double rayCastAngle_;
-    std::vector<Trait> toDetect_;
+    double genericWeight_;
+    std::vector<std::pair<double, Trait>> traits_;
 
     Line GetLine() const;
 };

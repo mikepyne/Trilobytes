@@ -4,11 +4,12 @@
 
 #include <QPainter>
 
-SenseEntityRaycast::SenseEntityRaycast(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double maxDistance, double angle, const std::vector<Trait>&& toDetect)
+SenseEntityRaycast::SenseEntityRaycast(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double maxDistance, double angle, double genericWeight, const std::vector<std::pair<double, Trait> >&& traits)
     : Sense(network, outputConnections, owner)
     , rayCastDistance_(maxDistance)
     , rayCastAngle_(angle)
-    , toDetect_(toDetect)
+    , genericWeight_(genericWeight)
+    , traits_(traits)
 {
 }
 
@@ -30,9 +31,9 @@ void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityCo
     });
 
     if (nearestEntity != nullptr) {
-        inputs.at(0) = distanceToNearest / rayCastDistance_;
-        for (unsigned i = 0; i < toDetect_.size(); i++) {
-            inputs.at(i + 1) = nearestEntity->GetTrait(toDetect_[i]);
+        inputs.at(0) = (distanceToNearest / rayCastDistance_) * genericWeight_;
+        for (unsigned i = 0; i < traits_.size(); i++) {
+            inputs.at(i + 1) = nearestEntity->GetTrait(traits_[i].second) * traits_[i].first;
         }
     }
 }

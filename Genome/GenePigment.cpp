@@ -26,10 +26,10 @@ GenePigment::~GenePigment()
 
 std::shared_ptr<Gene> GenePigment::Mutate() const
 {
-    return std::make_shared<GenePigment>(std::clamp(a_ + Random::Number(-0.1, 0.1), 0.0, 1.0),
-                                         std::clamp(r_ + Random::Number(-0.1, 0.1), 0.0, 1.0),
-                                         std::clamp(g_ + Random::Number(-0.1, 0.1), 0.0, 1.0),
-                                         std::clamp(b_ + Random::Number(-0.1, 0.1), 0.0, 1.0),
+    return std::make_shared<GenePigment>(std::clamp(a_ + Random::Gaussian(0.0, 0.1), 0.0, 1.0),
+                                         std::clamp(r_ + Random::Gaussian(0.0, 0.1), 0.0, 1.0),
+                                         std::clamp(g_ + Random::Gaussian(0.0, 0.1), 0.0, 1.0),
+                                         std::clamp(b_ + Random::Gaussian(0.0, 0.1), 0.0, 1.0),
                                          GetMutatedDominance(),
                                          GetMutatedMutationProbability());
 }

@@ -116,11 +116,11 @@ void ChromosomePair::ForEach(const std::function<void (const Gene&)>& action) co
 
 void ChromosomePair::Mutate()
 {
-    // TODO inversions
+    // MAYBE inversions
 
     // chromosome range change
     for (auto range : { &aChromosomeRange_, &bChromosomeRange_ }) {
-        if (Random::Number(0.0, 1.0) < (1.0 / 1000)) {
+        if (Random::Percent() > 99.5) {
             unsigned first = static_cast<unsigned>(Random::Gaussian<float>(0, range->ValueRange() / 200) + range->First());
             unsigned last = static_cast<unsigned>(Random::Gaussian<float>(0, range->ValueRange() / 200) + range->Last());
             range->SetRange(first, last);
@@ -129,7 +129,7 @@ void ChromosomePair::Mutate()
 
     if (chromosomePair_.size() > 0) {
         // gene duplication
-        if (Random::Number(0.0, 1.0) < (1.0 / 1000)) {
+        if (Random::Percent() > 99.5) {
             std::shared_ptr<Gene>& randomGene = RandomGene();
             if (randomGene != nullptr) {
                 bool addToA = Random::Boolean();
@@ -139,13 +139,13 @@ void ChromosomePair::Mutate()
         }
 
         // gene loss
-        if (Random::Number(0.0, 1.0) < (1.0 / 1000)) {
+        if (Random::Percent() > 99.5) {
             std::shared_ptr<Gene>& randomGene = RandomGene();
             randomGene.reset();
         }
 
         // gene addition
-        if (Random::Number(0.0, 1.0) < (1.0 / 1000)) {
+        if (Random::Percent() > 99.5) {
             /*
              * FIXME perhaps the brain should be a fixed feature of the genome
              * and not a gene?
