@@ -209,12 +209,6 @@ void NeuralNetworkInspector::LayoutGroup(NeuralNetworkInspector::Group& group, Q
 
 void NeuralNetworkInspector::PaintGroup(const Group& group, QPainter& p) const
 {
-    p.setPen(Qt::black);
-    p.setBrush(Qt::NoBrush);
-    p.drawRect(group.area);
-
-    p.drawText(group.area.topLeft() + QPoint(2, 10), QString(group.name.c_str()));
-
     // Draw the connections
     for (auto& [ nodeCoordinates, node ] : group.nodes) {
         (void) nodeCoordinates; // unused
@@ -238,8 +232,16 @@ void NeuralNetworkInspector::PaintGroup(const Group& group, QPainter& p) const
         p.setPen(QPen(nodeCol, 3.0));
         nodeCol.setAlphaF(transparency);
         p.setBrush(nodeCol);
-        p.drawEllipse(QPointF(node.x, node.y), 10.0, 10.0);
+        // scale /should/ be 1.0, if it isn't something needs normalising!
+        double scale = std::max(1.0, transparency);
+        p.drawEllipse(QPointF(node.x, node.y), 10.0 * scale, 10.0 * scale);
     }
+
+    // Draw last so can be seen over over stimulated neurons
+    p.setPen(Qt::black);
+    p.setBrush(Qt::NoBrush);
+    p.drawRect(group.area);
+    p.drawText(group.area.topLeft() + QPoint(2, 10), QString(group.name.c_str()));
 }
 
 void NeuralNetworkInspector::ForwardPropogate()

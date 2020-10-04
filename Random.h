@@ -136,15 +136,17 @@ public:
     }
 
     template<typename Container>
-    static typename Container::value_type& Item(Container& toShuffle)
+    static typename Container::value_type& Item(Container& container)
     {
-        return toShuffle.at(Random::Number(0u, toShuffle.size() - 1));
+        assert(!container.empty());
+        return container.at(Random::Number(0u, container.size() - 1));
     }
 
     template<typename Container>
-    static const typename Container::value_type& Item(const Container& toShuffle)
+    static const typename Container::value_type& Item(const Container& container)
     {
-        return toShuffle.at(Random::Number(0u, toShuffle.size() - 1));
+        assert(!container.empty());
+        return container.at(Random::Number(0u, container.size() - 1));
     }
 
 private:

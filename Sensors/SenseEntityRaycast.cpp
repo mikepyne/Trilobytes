@@ -32,8 +32,9 @@ void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityCo
 
     if (nearestEntity != nullptr) {
         inputs.at(0) = (distanceToNearest / rayCastDistance_) * genericWeight_;
-        for (unsigned i = 0; i < traits_.size(); i++) {
-            inputs.at(i + 1) = nearestEntity->GetTrait(traits_[i].second) * traits_[i].first;
+        size_t i = 0;
+        for (auto& [ traitWeight, trait] : traits_) {
+            inputs.at(++i) = traitWeight * nearestEntity->GetTrait(trait);
         }
     }
 }

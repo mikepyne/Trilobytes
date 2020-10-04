@@ -14,10 +14,6 @@ SenseEntitiesTouching::SenseEntitiesTouching(const std::shared_ptr<NeuralNetwork
 
 void SenseEntitiesTouching::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const
 {
-    for (auto& input : inputs) {
-        input = 0.0;
-    }
-
     Point location = ApplyOffset(owner_.GetLocation(), transform_.rotation + owner_.GetTransform().rotation, std::sqrt(GetDistanceSquare(owner_.GetLocation(), { owner_.GetLocation().x + transform_.x, owner_.GetLocation().y + transform_.y })));
     entities.ForEachCollidingWith(location, [&](const std::shared_ptr<Entity>& e)
     {

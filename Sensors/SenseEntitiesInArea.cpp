@@ -15,10 +15,6 @@ SenseEntitiesInArea::SenseEntitiesInArea(const std::shared_ptr<NeuralNetwork>& n
 
 void SenseEntitiesInArea::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const
 {
-    for (auto& input : inputs) {
-        input = 0.0;
-    }
-
     Circle senseArea = GetArea();
     Point senseCentre = { senseArea.x, senseArea.y };
     double senseRadiusSquare = std::pow(senseArea.radius, 2.0);

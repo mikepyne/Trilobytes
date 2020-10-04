@@ -36,7 +36,6 @@ SOURCES += \
     NeuralNetworkConnector.cpp \
     NeuralNetworkInspector.cpp \
     QuadTree.cpp \
-    Random.cpp \
     Sensors/Sense.cpp \
     Sensors/SenseEntitiesInArea.cpp \
     Sensors/SenseEntitiesTouching.cpp \

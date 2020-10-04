@@ -48,11 +48,15 @@ std::shared_ptr<Gene> GeneSenseEntityRaycast::Mutate() const
         switch(Random::Number(0, 3)) {
         case 0 :
             // Adjust trait strength
-            Random::Item(traitWeights).first += Random::Gaussian(0.0, 0.05 + Random::Item(traitWeights).first / 10);
+            if (!traitWeights.empty()) {
+                Random::Item(traitWeights).first += Random::Gaussian(0.0, 0.05 + Random::Item(traitWeights).first / 10);
+            }
             break;
         case 1 :
             // Switch trait
-            Random::Item(traitWeights).second = Random::Item(ALL_TRAITS);
+            if (!traitWeights.empty()) {
+                Random::Item(traitWeights).second = Random::Item(ALL_TRAITS);
+            }
             break;
         case 2 :
             // Add trait
