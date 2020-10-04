@@ -19,14 +19,14 @@ void SenseEntitiesTouching::PrimeInputs(std::vector<double>& inputs, const Entit
     }
 
     Point location = ApplyOffset(owner_.GetLocation(), offsetAngle_ + owner_.GetTransform().rotation, offsetDistance_);
-    entities.ForEachCollidingWith(location, [&](Entity& e)
+    entities.ForEachCollidingWith(location, [&](const std::shared_ptr<Entity>& e)
     {
         // don't detect ourself
-        if (&e != &owner_) {
+        if (e.get() != &owner_) {
             inputs.at(0) += genericDetectionWeight_;
             size_t i = 0;
             for (auto& [traitWeight, trait ] : toDetect_) {
-                inputs.at(++i) += traitWeight * e.GetTrait(trait);
+                inputs.at(++i) += traitWeight * e->GetTrait(trait);
             }
         }
     });

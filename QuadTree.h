@@ -22,14 +22,14 @@ public:
     void AddEntity(const std::shared_ptr<Entity>& entity);
     uint64_t EntityCount();
     void SetEntityCapacity(uint64_t target, uint64_t leeway);
-    void ForEach(const std::function<void(const Entity&)>& action) const;
+    void ForEach(const std::function<void(const std::shared_ptr<Entity>&)>& action) const;
 
     /**
      * Applies the action to every entity that is contained within the specified
      * collision shape.
      */
     template <typename Shape>
-    void ForEachCollidingWith(const Shape& collide, const std::function<void(Entity&)>& action) const
+    void ForEachCollidingWith(const Shape& collide, const std::function<void(const std::shared_ptr<Entity>&)>& action) const
     {
         root_->ForEachCollidingWith(collide, action);
     }
@@ -58,15 +58,15 @@ private:
         void ResolveRecursive();
         void DrawRecursive(QPainter& paint);
         void RehomeRecursive(const std::shared_ptr<Entity>& entity, bool delayed);
-        void ForEachRecursive(const std::function<void(const Entity&)>& action) const;
+        void ForEachRecursive(const std::function<void(const std::shared_ptr<Entity>&)>& action) const;
         uint64_t RecursiveEntityCount() const;
 
         const Rect& GetRect();
 
-        virtual void ForEachCollidingWith(const Point& collide, const std::function<void (Entity&)>& action) const override { ForEachCollidingWith<Point>(collide, action); }
-        virtual void ForEachCollidingWith(const Line& collide, const std::function<void (Entity&)>& action) const override { ForEachCollidingWith<Line>(collide, action); }
-        virtual void ForEachCollidingWith(const Rect& collide, const std::function<void (Entity&)>& action) const override final { ForEachCollidingWith<Rect>(collide, action); }
-        virtual void ForEachCollidingWith(const Circle& collide, const std::function<void (Entity&)>& action) const override final { ForEachCollidingWith<Circle>(collide, action); }
+        virtual void ForEachCollidingWith(const Point& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override { ForEachCollidingWith<Point>(collide, action); }
+        virtual void ForEachCollidingWith(const Line& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override { ForEachCollidingWith<Line>(collide, action); }
+        virtual void ForEachCollidingWith(const Rect& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override final { ForEachCollidingWith<Rect>(collide, action); }
+        virtual void ForEachCollidingWith(const Circle& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override final { ForEachCollidingWith<Circle>(collide, action); }
 
         /**
          * Historesis allows for leeway in count so a single entity repeatedly
@@ -92,7 +92,7 @@ private:
          * shape.
          */
         template <typename Shape>
-        void ForEachInRecursive(const Shape& collide, const std::function<void(Entity&)>& action) const
+        void ForEachInRecursive(const Shape& collide, const std::function<void(const std::shared_ptr<Entity>&)>& action) const
         {
             if (!Collides(rect_, collide)) {
                 assert(Collides(rect_, collide));
@@ -100,7 +100,7 @@ private:
             if (children_.empty()) {
                 for (auto& entity : entities_) {
                     if (Collides(collide, Circle{ entity->GetTransform().x, entity->GetTransform().y, entity->GetRadius() })) {
-                        action(*entity);
+                        action(entity);
                     }
                 }
             } else {
@@ -117,7 +117,7 @@ private:
          * collision shape.
          */
         template <typename Shape>
-        void ForEachCollidingWith(const Shape& collide, const std::function<void(Entity&)>& action) const
+        void ForEachCollidingWith(const Shape& collide, const std::function<void(const std::shared_ptr<Entity>&)>& action) const
         {
             if (Contains(rect_, collide) || (!parent_ && Collides(rect_, collide))) {
                 ForEachInRecursive(collide, action);

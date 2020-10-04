@@ -15,15 +15,15 @@ SenseEntityRaycast::SenseEntityRaycast(const std::shared_ptr<NeuralNetwork>& net
 void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const
 {
     Line rayCastLine = GetLine();
-    Entity* nearestEntity = nullptr;
+    std::shared_ptr<Entity> nearestEntity;
     double distanceToNearest = 0.0;
-    entities.ForEachCollidingWith(rayCastLine, [&](Entity& e)
+    entities.ForEachCollidingWith(rayCastLine, [&](const std::shared_ptr<Entity>& e)
     {
         // don't detect ourself
-        if (&e != &owner_) {
-            double distance = std::sqrt(GetDistanceSquare(owner_.GetLocation(), e.GetLocation())) - e.GetRadius();
+        if (e.get() != &owner_) {
+            double distance = std::sqrt(GetDistanceSquare(owner_.GetLocation(), e->GetLocation())) - e->GetRadius();
             if (nearestEntity == nullptr || distance < distanceToNearest) {
-                nearestEntity = &e;
+                nearestEntity = e;
                 distanceToNearest = distance;
             }
         }

@@ -49,7 +49,7 @@ void QuadTree::SetEntityCapacity(uint64_t target, uint64_t leeway)
     requiresRebalance_ = false;
 }
 
-void QuadTree::ForEach(const std::function<void (const Entity&)>& action) const
+void QuadTree::ForEach(const std::function<void (const std::shared_ptr<Entity>&)>& action) const
 {
     if (root_) {
         root_->ForEachRecursive(action);
@@ -213,13 +213,13 @@ void QuadTree::Quad::RehomeRecursive(const std::shared_ptr<Entity>& entity, bool
     }
 }
 
-void QuadTree::Quad::ForEachRecursive(const std::function<void (const Entity&)>& action) const
+void QuadTree::Quad::ForEachRecursive(const std::function<void(const std::shared_ptr<Entity>&)>& action) const
 {
     for (const auto& child : children_) {
         child->ForEachRecursive(action);
     }
     for (const auto& entity : entities_) {
-        action(*entity);
+        action(entity);
     }
 }
 

@@ -22,17 +22,17 @@ void SenseEntitiesInArea::PrimeInputs(std::vector<double>& inputs, const EntityC
     Circle senseArea = GetArea();
     Point senseCentre = { senseArea.x, senseArea.y };
     double senseRadiusSquare = std::pow(senseArea.radius, 2.0);
-    entities.ForEachCollidingWith(senseArea, [&](Entity& e)
+    entities.ForEachCollidingWith(senseArea, [&](const std::shared_ptr<Entity>& e)
     {
         // don't detect ourself
-        if (&e != &owner_) {
-            double distanceSquare = GetDistanceSquare(senseCentre, e.GetLocation());
+        if (e.get() != &owner_) {
+            double distanceSquare = GetDistanceSquare(senseCentre, e->GetLocation());
             if (distanceSquare < senseRadiusSquare) {
                 double distanceProportion = 1.0 - (distanceSquare / senseRadiusSquare);
                 inputs.at(0) += distanceProportion * senseDistanceWeight_;
                 size_t i = 0;
                 for (auto& [traitWeight, trait ] : toDetect_) {
-                    inputs.at(++i) += distanceProportion * traitWeight * e.GetTrait(trait);
+                    inputs.at(++i) += distanceProportion * traitWeight * e->GetTrait(trait);
                 }
             }
         }

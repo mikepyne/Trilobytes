@@ -74,13 +74,13 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
     UseEnergy(20_uj);
 
     std::shared_ptr<Genome> otherGenes;
-    container.ForEachCollidingWith(Circle{ GetTransform().x, GetTransform().y, GetRadius() }, [&](Entity& other) -> void
+    container.ForEachCollidingWith(Circle{ GetTransform().x, GetTransform().y, GetRadius() }, [&](const std::shared_ptr<Entity>& other) -> void
     {
-        if (&other != this) {
-            if (FoodPellet* f = dynamic_cast<FoodPellet*>(&other)) {
+        if (other.get() != this) {
+            if (FoodPellet* f = dynamic_cast<FoodPellet*>(other.get())) {
                 FeedOn(*f, f->GetEnergy());
                 assert(!f->Alive());
-            } else if (Swimmer* s = dynamic_cast<Swimmer*>(&other)) {
+            } else if (Swimmer* s = dynamic_cast<Swimmer*>(other.get())) {
                 otherGenes = s->genome_;
             }
         }

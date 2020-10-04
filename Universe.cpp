@@ -66,10 +66,10 @@ void Universe::mousePressEvent(QMouseEvent* event)
         dragX_ = event->x();
         dragY_ = event->y();
     } else if (event->button() == Qt::RightButton) {
-        Point local = TransformLocalToSimCoords({ static_cast<double>(event->x()), static_cast<double>(event->y()) });
-        rootNode_.ForEachCollidingWith(local, [&](Entity& e)
+        Point simLocation = TransformLocalToSimCoords({ static_cast<double>(event->x()), static_cast<double>(event->y()) });
+        rootNode_.ForEachCollidingWith(simLocation, [&](const std::shared_ptr<Entity>& e)
         {
-            if (Swimmer* swimmer = dynamic_cast<Swimmer*>(&e); swimmer != nullptr) {
+            if (Swimmer* swimmer = dynamic_cast<Swimmer*>(e.get()); swimmer != nullptr) {
                 MainWindow* mainWindow = dynamic_cast<MainWindow*>(parentWidget()->parentWidget());
                 assert(mainWindow);
                 mainWindow->SetSwimmerToInspect(*swimmer, rootNode_.GetContainer());
@@ -155,11 +155,11 @@ void Universe::Thread()
         if (++tick % 100 == 0) {
             Energy foodEnergy = 0;
             Energy swimmerEnergy = 0;
-            rootNode_.ForEach([&](const Entity& e) -> void
+            rootNode_.ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
-                if (const auto* f = dynamic_cast<const FoodPellet*>(&e)) {
+                if (const auto* f = dynamic_cast<const FoodPellet*>(e.get())) {
                     foodEnergy += f->GetEnergy();
-                } else if (const auto* s = dynamic_cast<const Swimmer*>(&e)) {
+                } else if (const auto* s = dynamic_cast<const Swimmer*>(e.get())) {
                     swimmerEnergy += s->GetEnergy();
                 }
             });
