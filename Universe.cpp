@@ -48,8 +48,6 @@ void Universe::wheelEvent(QWheelEvent* event)
 {
     double d = 1.0 + (0.001 * double(event->angleDelta().y()));
     simScale_ *= d;
-    simX_ *= d;
-    simY_ *= d;
 }
 
 void Universe::mouseReleaseEvent(QMouseEvent* event)
@@ -81,8 +79,8 @@ void Universe::mousePressEvent(QMouseEvent* event)
 void Universe::mouseMoveEvent(QMouseEvent* event)
 {
     if (dragging_) {
-        simX_ += (event->x() - dragX_);
-        simY_ += (event->y() - dragY_);
+        simX_ += ((event->x() - dragX_) / simScale_);
+        simY_ += ((event->y() - dragY_) / simScale_);
         dragX_ = event->x();
         dragY_ = event->y();
     }
@@ -103,6 +101,12 @@ void Universe::keyPressEvent(QKeyEvent* event)
     case Qt::Key_G :
         emit OnGraphResetRequested();
         break;
+    case Qt::Key_K :
+        followFittest_ = !followFittest_;
+        if (!followFittest_) {
+            following_ = {};
+        }
+        break;
     }
 }
 
@@ -115,8 +119,17 @@ void Universe::paintEvent(QPaintEvent*)
     p.drawText(0, 60, "Spawn Food (F): " + QVariant(spawnFood_).toString());
     p.drawText(0, 75, "Respawn (R)");
     p.drawText(0, 90, "Reset Graph (G)");
-    p.translate(simX_ + (width() / 2), simY_ + (height() / 2));
+    p.drawText(0, 105, "Find Fittest (K): " + QVariant(followFittest_).toString());
+    if (followFittest_ && following_) {
+        auto f = dynamic_cast<Swimmer*>(following_.get());
+        p.drawText(0, 120, QString("   - Age [%1]").arg(f->GetAge()));
+        p.drawText(0, 135, QString("   - Eggs Layed [%1]").arg(f->GetEggLayedCount()));
+        p.drawText(0, 150, QString("   - Energy [%1]mj").arg(f->GetEnergy()));
+    }
+
+    p.translate(width() / 2, height() / 2);
     p.scale(simScale_, simScale_);
+    p.translate(simX_, simY_);
 
     if (spawnFood_) {
         for (auto& dispenser : feedDispensers_) {
@@ -131,6 +144,28 @@ void Universe::Thread()
 {
     if (!pauseSim_) {
         rootNode_.Tick();
+
+        if (followFittest_) {
+            unsigned mostEggsLayed = 0;
+            rootNode_.ForEach([&](const std::shared_ptr<Entity>& e)
+            {
+                if (const auto* s = dynamic_cast<const Swimmer*>(e.get())) {
+                    if (s->GetEggLayedCount() > mostEggsLayed) {
+                        mostEggsLayed = s->GetEggLayedCount();
+                        following_ = e;
+                    }
+                }
+            });
+        }
+
+        if (following_ && following_->Alive()) {
+            simX_ = -following_->GetLocation().x;
+            simY_ = -following_->GetLocation().y;
+            MainWindow* mainWindow = dynamic_cast<MainWindow*>(parentWidget()->parentWidget());
+            assert(mainWindow);
+            Swimmer& s = dynamic_cast<Swimmer&>(*following_.get());
+            mainWindow->SetSwimmerToInspect(s, rootNode_.GetContainer());
+        }
 
         if (respawn_) {
             respawn_ = false;
@@ -179,12 +214,12 @@ Point Universe::TransformLocalToSimCoords(const Point& local)
     // Sim is centred on screen
     x -= (width() / 2);
     y -= (height() / 2);
-    // Sim is transformed
-    x -= simX_;
-    y -= simY_;
     // Sim is scaled
     x /= simScale_;
     y /= simScale_;
+    // Sim is transformed
+    x -= simX_;
+    y -= simY_;
     return { x, y };
 }
 
@@ -192,12 +227,12 @@ Point Universe::TransformSimToLocalCoords(const Point& sim)
 {
     double x = sim.x;
     double y = sim.y;
-    // Sim is scaled
-    x *= simScale_;
-    y *= simScale_;
     // Sim is transformed
     x += simX_;
     y += simY_;
+    // Sim is scaled
+    x *= simScale_;
+    y *= simScale_;
     // Sim is centred on screen
     x += (width() / 2);
     y += (height() / 2);

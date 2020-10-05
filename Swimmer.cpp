@@ -32,6 +32,7 @@ Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Geno
     , senses_(genome->GetPhenoType(*this).senses)
 //    , effectors_(genome.GetPhenoType(*this).effectors)
     , brainValues_(brain_->GetInputCount(), 0.0)
+    , eggsLayed_(0)
 {
     effectors_.push_back(std::make_shared<EffectorTail>(std::make_shared<NeuralNetwork>(0, 3, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(NeuralNetworkConnector(brain_->GetOutputCount(), 3)), *this));
 }
@@ -42,6 +43,7 @@ Swimmer::~Swimmer()
 
 std::shared_ptr<Entity> Swimmer::GiveBirth(const std::shared_ptr<Genome>& other)
 {
+    eggsLayed_++;
     return std::make_shared<Egg>(TakeEnergy(100_mj), GetTransform(), genome_, other ? other : genome_, Random::Poisson(50u));
 }
 
@@ -120,9 +122,9 @@ std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
         std::make_shared<GeneBrain>(3, brainWidth, 0.5),
         std::make_shared<GeneSenseRandom>(1, brainWidth),
         std::make_shared<GeneSenseMagneticField>(brainWidth),
-        std::make_shared<GeneSenseEntitiesInArea>(std::vector<std::pair<double, Trait>>{ {1.0, Trait::Green}, }, 0, brainWidth, Transform{ 0, 24,  0.6}, 20, 1.0),
-        std::make_shared<GeneSenseEntitiesInArea>(std::vector<std::pair<double, Trait>>{ {1.0, Trait::Green}, }, 0, brainWidth, Transform{ 0, 24, -0.6}, 20, 1.0),
-        std::make_shared<GeneSenseEntityRaycast>(std::vector<std::pair<double, Trait>>{ {1.0, Trait::Size}, }, 0, brainWidth, Transform{ 0, -30, 0 }, 1.0),
-        std::make_shared<GeneSenseEntitiesTouching>(std::vector<std::pair<double, Trait>>{ {1.0, Trait::Age}, }, 0, brainWidth, Transform{ 0, 0, 0 }, 1.0),
+        std::make_shared<GeneSenseEntitiesInArea>(std::vector<std::pair<double, Trait>>{ {1.0 / 255, Trait::Green}, }, 0, brainWidth, Transform{ 0, 24,  0.6}, 20, 1.0),
+        std::make_shared<GeneSenseEntitiesInArea>(std::vector<std::pair<double, Trait>>{ {1.0 / 255, Trait::Green}, }, 0, brainWidth, Transform{ 0, 24, -0.6}, 20, 1.0),
+        std::make_shared<GeneSenseEntityRaycast>(std::vector<std::pair<double, Trait>>{ {1.0 / 30, Trait::Size}, }, 0, brainWidth, Transform{ 0, -30, 0 }, 1.0),
+        std::make_shared<GeneSenseEntitiesTouching>(std::vector<std::pair<double, Trait>>{ {1.0 / 10000, Trait::Age}, }, 0, brainWidth, Transform{ 0, 0, 0 }, 1.0),
     };
 }

@@ -7,7 +7,7 @@ class GenePigment : public Gene {
 public:
     GenePigment();
     GenePigment(double a, double r, double g, double b, double dominance, double mutationProbability);
-    virtual ~GenePigment() override;
+    virtual ~GenePigment() override final;
 
 protected:
     virtual std::shared_ptr<Gene> Mutate() const override;

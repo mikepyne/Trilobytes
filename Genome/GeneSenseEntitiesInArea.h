@@ -12,6 +12,7 @@ class GeneSenseEntitiesInArea : public Gene {
 public:
     GeneSenseEntitiesInArea(std::vector<std::pair<double, Trait>>&& traitWeights, unsigned hiddenLayers, unsigned outputCount, const Transform& transform, double radius, double genericWeight);
     GeneSenseEntitiesInArea(std::vector<std::pair<double, Trait>>&& traitWeights, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Transform& transform, double radius, double genericWeight, double dominance, double mutationProbability);
+    virtual ~GeneSenseEntitiesInArea() override final {}
 
     virtual std::shared_ptr<Gene> Mutate() const override;
     virtual void ExpressGene(const Swimmer& owner, Phenotype& target) const override;

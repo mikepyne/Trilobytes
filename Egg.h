@@ -8,6 +8,7 @@
 class Egg : public Entity {
 public:
     Egg(Energy energy, const Transform& transform, std::shared_ptr<Genome> genomeOne, std::shared_ptr<Genome> genomeTwo, unsigned hatchingDelay);
+    virtual ~Egg() override final;
 
     virtual std::string_view GetName() const override { return "Egg"; }
 

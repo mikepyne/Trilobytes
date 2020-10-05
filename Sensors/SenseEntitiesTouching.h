@@ -9,6 +9,7 @@ class QPainter;
 class SenseEntitiesTouching : public Sense {
     public:
         SenseEntitiesTouching(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, Transform transform, double genericDetectionWeight, const std::vector<std::pair<double, Trait>>&& toDetect);
+        virtual ~SenseEntitiesTouching() override final {}
 
         virtual std::string_view GetName() const override { return "SenseEntitiesTouching"; }
         virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const override;

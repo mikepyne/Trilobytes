@@ -12,6 +12,10 @@ Egg::Egg(Energy energy, const Transform& transform, std::shared_ptr<Genome> geno
 {
 }
 
+Egg::~Egg()
+{
+}
+
 void Egg::TickImpl(EntityContainerInterface& container)
 {
     if (hatchingDelay_ > 0) {

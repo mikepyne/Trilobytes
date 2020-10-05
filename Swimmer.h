@@ -25,6 +25,8 @@ public:
     const std::vector<std::shared_ptr<Sense>>& InspectSenses() { return senses_; };
     const std::vector<std::shared_ptr<Effector>>& InspectEffectors() { return effectors_; };
 
+    unsigned GetEggLayedCount() const { return eggsLayed_; }
+
     void AdjustVelocity(double adjustment);
     void AdjustBearing(double adjustment);
 
@@ -38,6 +40,7 @@ private:
     std::vector<std::shared_ptr<Sense>> senses_;
     std::vector<std::shared_ptr<Effector>> effectors_;
     std::vector<double> brainValues_;
+    unsigned eggsLayed_;
 
     static std::vector<std::shared_ptr<Gene>> CreateDefaultGenome();
 

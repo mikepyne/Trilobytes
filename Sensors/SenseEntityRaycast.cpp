@@ -22,7 +22,8 @@ void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityCo
     {
         // don't detect ourself
         if (e.get() != &owner_) {
-            double distance = std::sqrt(GetDistanceSquare(owner_.GetLocation(), e->GetLocation())) - e->GetRadius();
+            // TODO this distance assumes head on detection, not incidental ones
+            double distance = std::sqrt(GetDistanceSquare(rayCastLine.a, e->GetLocation())) - e->GetRadius();
             if (nearestEntity == nullptr || distance < distanceToNearest) {
                 nearestEntity = e;
                 distanceToNearest = distance;
@@ -31,10 +32,10 @@ void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityCo
     });
 
     if (nearestEntity != nullptr) {
-        inputs.at(0) = (distanceToNearest / rayCastDistance_) * genericWeight_;
+        inputs.at(0) = genericWeight_ * (distanceToNearest / rayCastDistance_);
         size_t i = 0;
         for (auto& [ traitWeight, trait] : traits_) {
-            inputs.at(++i) = traitWeight * nearestEntity->GetTrait(trait);
+            inputs.at(++i) = (traitWeight * nearestEntity->GetTrait(trait) * (distanceToNearest / rayCastDistance_));
         }
     }
 }

@@ -47,9 +47,11 @@ private:
     bool spawnFood_ = true;
     bool pauseSim_ = false;
     bool respawn_ = true;
+    bool followFittest_ = false;
 
     QuadTree rootNode_;
     std::vector<FeedDispenser> feedDispensers_;
+    std::shared_ptr<Entity> following_;
 
     void Thread();
 

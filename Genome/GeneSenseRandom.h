@@ -9,6 +9,7 @@ class GeneSenseRandom : public Gene {
 public:
     GeneSenseRandom(unsigned inputCount, unsigned outputCount);
     GeneSenseRandom(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, double dominance, double mutationProbability);
+    virtual ~GeneSenseRandom() override final {}
 
     virtual std::shared_ptr<Gene> Mutate() const override;
     virtual void ExpressGene(const Swimmer& owner, Phenotype& target) const override;
