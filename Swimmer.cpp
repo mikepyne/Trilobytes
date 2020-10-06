@@ -31,7 +31,7 @@ Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Geno
     , brain_(genome->GetPhenoType(*this).brain)
     , senses_(genome->GetPhenoType(*this).senses)
 //    , effectors_(genome.GetPhenoType(*this).effectors)
-    , brainValues_(brain_->GetInputCount(), 0.0)
+    , brainValues_(brain_ ? brain_->GetInputCount() : 0, 0.0)
     , eggsLayed_(0)
 {
     effectors_.push_back(std::make_shared<EffectorTail>(std::make_shared<NeuralNetwork>(0, 3, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(NeuralNetworkConnector(brain_->GetOutputCount(), 3)), *this));

@@ -20,7 +20,9 @@ void NeuralNetworkInspector::SetSwimmer(Swimmer& toInspect, EntityContainerInter
 
     // TODO low priority, make groups movable and resizable and hideable
 
-    brainGroup_ = CreateGroup(toInspect.InspectBrain(), "Brain");
+    if (toInspect.InspectBrain()) {
+        brainGroup_ = CreateGroup(*toInspect.InspectBrain(), "Brain");
+    }
 
     for (auto& sense : toInspect.InspectSenses()) {
         sensorGroups_.push_back(CreateGroup(sense->Inspect(), std::string(sense->GetName())));

@@ -18,10 +18,8 @@ public:
     virtual std::string_view GetName() const override { return "Swimmer"; }
 
     std::shared_ptr<Entity> GiveBirth(const std::shared_ptr<Genome>& other);
-    unsigned GetBrainInputCount() const { return brain_->GetInputCount(); }
-    unsigned GetBrainOutputCount() const { return brain_->GetOutputCount(); }
 
-    const NeuralNetwork& InspectBrain() { return *brain_; };
+    const std::shared_ptr<NeuralNetwork>& InspectBrain() { return brain_; };
     const std::vector<std::shared_ptr<Sense>>& InspectSenses() { return senses_; };
     const std::vector<std::shared_ptr<Effector>>& InspectEffectors() { return effectors_; };
 
