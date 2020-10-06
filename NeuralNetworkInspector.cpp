@@ -230,10 +230,10 @@ void NeuralNetworkInspector::PaintGroup(const Group& group, QPainter& p) const
         QColor nodeCol(node.value > 0 ? Qt::blue : Qt::red);
         qreal transparency = std::abs(node.value);
         p.setPen(QPen(nodeCol, 3.0));
-        nodeCol.setAlphaF(transparency);
+        nodeCol.setAlphaF(std::min(1.0, transparency));
         p.setBrush(nodeCol);
         // scale /should/ be 1.0, if it isn't something needs normalising!
-        double scale = std::max(1.0, std::min(transparency, 1.0));
+        double scale = std::max(1.0, transparency);
         p.drawEllipse(QPointF(node.x, node.y), 10.0 * scale, 10.0 * scale);
     }
 

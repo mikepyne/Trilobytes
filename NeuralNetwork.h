@@ -29,8 +29,8 @@ public:
     NeuralNetwork(unsigned layerCount, unsigned width, InitialWeights initialWeights);
     NeuralNetwork(std::vector<Layer>&& layers);
 
-    unsigned GetInputCount() const { return layers_.front().size(); }
-    unsigned GetOutputCount() const { return layers_.back().size(); }
+    unsigned GetInputCount() const { return layers_.empty() ? 0 : layers_.front().size(); }
+    unsigned GetOutputCount() const { return layers_.empty() ? 0 : layers_.back().empty() ? 0 : layers_.back().size(); }
 
     /**
      * Inputs should be between 0.0 and 1.0 inclusive. Returns the final node

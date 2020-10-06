@@ -17,10 +17,6 @@ FeedDispenser::FeedDispenser(QuadTree& entityContainer, double x, double y, doub
     , ticksTillNext_(0)
     , currentPelletCount_(0)
 {
-    while(currentPelletCount_ < maxPellets_ / 8) {
-        SpawnPellet();
-    }
-    ticksTillNext_ = 0;
 }
 
 void FeedDispenser::Draw(QPainter& paint)
@@ -45,6 +41,14 @@ void FeedDispenser::PelletEaten()
     --currentPelletCount_;
 }
 
+void FeedDispenser::AddPelletsImmediately(unsigned pelletCount)
+{
+    for (unsigned i = 0; i < pelletCount; i++) {
+        SpawnPellet();
+    }
+    ticksTillNext_ = 0;
+}
+
 void FeedDispenser::SpawnPellet()
 {
     double rotation = Random::Number(0.0, EoBE::Tau);
@@ -52,7 +56,7 @@ void FeedDispenser::SpawnPellet()
     double foodX = x_ + distance * std::cos(rotation);
     double foodY = y_ + distance * std::sin(rotation);
     if (entityContainer_.CountEntities(Point{ foodX, foodY }) == 0) {
-        entityContainer_.AddEntity(std::make_shared<FoodPellet>(*this, 25_mj, Transform{ foodX, foodY, 0 }));
+        entityContainer_.AddEntity(std::make_shared<FoodPellet>(shared_from_this(), 25_mj, Transform{ foodX, foodY, 0 }));
         ++currentPelletCount_;
         auto proportion = double(currentPelletCount_) / double(maxPellets_);
         ticksTillNext_ += 10.0 * ((-0.8 * (std::pow(proportion, 2.0) * -std::pow(proportion - 2, 2.0))) + 0.1);

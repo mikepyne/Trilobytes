@@ -6,8 +6,7 @@
 #include "Random.h"
 #include "MainWindow.h"
 
-//RenderSettings struct to contain such as showQuads, showSenseRanges, showPole, showFoodSpawnArea
-//If sticking with QT, consider spawning seperate thread for sim and leaving rendering on QT thread, ensure data races only over trivial things like where to draw things, so Render thread is read only, mutex over settings for obvious reasons
+// TODO RenderSettings struct to contain such as showQuads, showSenseRanges, showPole, showFoodSpawnArea
 
 Universe::Universe(QWidget* parent)
     : QWidget(parent)
@@ -15,24 +14,23 @@ Universe::Universe(QWidget* parent)
 {
     setFocusPolicy(Qt::StrongFocus);
 
-    feedDispensers_.emplace_back(rootNode_,  1000, 0, 950, 0.001);
-    feedDispensers_.emplace_back(rootNode_, -1000, 0, 950, 0.001);
+    feedDispensers_.push_back(std::make_shared<FeedDispenser>(rootNode_,  1000, 0, 950, 0.001));
+    feedDispensers_.push_back(std::make_shared<FeedDispenser>(rootNode_, -1000, 0, 950, 0.001));
 
-    Point startLocation = TransformSimToLocalCoords({ feedDispensers_.front().GetX(), feedDispensers_.front().GetY() });
-    simX_ = startLocation.x;
-    simY_ = startLocation.y;
+    for (auto& feeder : feedDispensers_) {
+        Point startLocation = TransformSimToLocalCoords({ feeder->GetX(), feeder->GetY() });
+        simX_ = startLocation.x;
+        simY_ = startLocation.y;
+        feeder->AddPelletsImmediately(feeder->GetMaxPellets() / 8);
+    }
 
     /*
      * QT hack to get this running in the QT event loop (necessary for
      * drawing anything, not ideal for running the Sim quickly...)
      */
-    QTimer* timer = new QTimer(this);
-    timer->setSingleShot(false);
-    timer->connect(timer, &QTimer::timeout, [&](auto) -> void
-    {
-        this->Thread();
-    });
-    timer->start(0);
+    mainThread_.setSingleShot(false);
+    mainThread_.connect(&mainThread_, &QTimer::timeout, this, &Universe::Thread);
+    mainThread_.start(0);
 
     rootNode_.SetEntityCapacity(25, 5);
 }
@@ -133,7 +131,7 @@ void Universe::paintEvent(QPaintEvent*)
 
     if (spawnFood_) {
         for (auto& dispenser : feedDispensers_) {
-            dispenser.Draw(p);
+            dispenser->Draw(p);
         }
     }
 
@@ -172,9 +170,9 @@ void Universe::Thread()
             for (auto feeder : feedDispensers_) {
                 for (unsigned i = 0; i < std::max(1u, 25 / feedDispensers_.size()); i++) {
                     double rotation = Random::Number(0.0, EoBE::Tau);
-                    double distance = std::sqrt(Random::Number(0.0, 1.0)) * feeder.GetRadius();
-                    double swimmerX = feeder.GetX() + distance * std::cos(rotation);
-                    double swimmerY = feeder.GetY() + distance * std::sin(rotation);
+                    double distance = std::sqrt(Random::Number(0.0, 1.0)) * feeder->GetRadius();
+                    double swimmerX = feeder->GetX() + distance * std::cos(rotation);
+                    double swimmerY = feeder->GetY() + distance * std::sin(rotation);
                     rootNode_.AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ swimmerX, swimmerY, 0 }));
                 }
             }
@@ -182,7 +180,7 @@ void Universe::Thread()
 
         if (spawnFood_) {
             for (auto& dispenser : feedDispensers_) {
-                dispenser.Tick();
+                dispenser->Tick();
             }
         }
 

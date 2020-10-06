@@ -50,6 +50,7 @@ private:
     public:
         Quad(const Rect& area, QuadTree& owner, Quad* parent);
         Quad(const Rect& area, QuadTree& owner, std::vector<std::shared_ptr<Quad>>&& children);
+        virtual ~Quad() override final;
 
         static std::vector<std::shared_ptr<Quad>> CreateChildren(Rect parentRect, QuadTree& baseTree, Quad* parent);
         virtual void AddEntity(const std::shared_ptr<Entity>& entity) override final;

@@ -9,6 +9,10 @@ EffectorTail::EffectorTail(const std::shared_ptr<NeuralNetwork>& network, const 
 {
 }
 
+EffectorTail::~EffectorTail()
+{
+}
+
 void EffectorTail::Draw(QPainter& /*paint*/) const
 {
     // TODO

@@ -95,6 +95,10 @@ QuadTree::Quad::Quad(const Rect& area, QuadTree& owner, std::vector<std::shared_
     }
 }
 
+QuadTree::Quad::~Quad()
+{
+}
+
 std::vector<std::shared_ptr<QuadTree::Quad> > QuadTree::Quad::CreateChildren(Rect parentRect, QuadTree& baseTree, QuadTree::Quad* parent)
 {
     double halfWidth = (parentRect.right - parentRect.left) / 2.0;
@@ -250,7 +254,7 @@ void QuadTree::Quad::Rebalance(const uint64_t targetCount, uint64_t historesis)
         children_.clear();
     } else if (children_.empty() && RecursiveEntityCount() > targetCount + historesis) {
         children_ = CreateChildren(rect_, baseTree_, this);
-        for (auto entity : entities_) {
+        for (auto& entity : entities_) {
             for (auto& child : children_) {
                 if (Contains(child->rect_, Point{ entity->GetTransform().x, entity->GetTransform().y })) {
                     child->entities_.push_back(entity);

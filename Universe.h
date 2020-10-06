@@ -50,8 +50,10 @@ private:
     bool followFittest_ = false;
 
     QuadTree rootNode_;
-    std::vector<FeedDispenser> feedDispensers_;
+    std::vector<std::shared_ptr<FeedDispenser>> feedDispensers_;
     std::shared_ptr<Entity> following_;
+
+    QTimer mainThread_;
 
     void Thread();
 

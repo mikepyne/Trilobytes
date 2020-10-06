@@ -4,7 +4,7 @@
 
 #include <QPainter>
 
-FoodPellet::FoodPellet(FeedDispenser& spawner, Energy energy, const Transform& transform)
+FoodPellet::FoodPellet(const std::shared_ptr<FeedDispenser>& spawner, Energy energy, const Transform& transform)
     : Entity(energy, transform, 2.5, QColor::fromRgb(15, 235, 15))
     , spawner_(spawner)
 {
@@ -12,7 +12,7 @@ FoodPellet::FoodPellet(FeedDispenser& spawner, Energy energy, const Transform& t
 
 FoodPellet::~FoodPellet()
 {
-    spawner_.PelletEaten();
+    spawner_->PelletEaten();
 }
 
 void FoodPellet::DrawImpl(QPainter& paint)
