@@ -8,7 +8,6 @@
 NeuralNetworkConnector::NeuralNetworkConnector(unsigned inputs, unsigned outputs)
     : weights_(inputs, std::vector<double>(outputs, 0.0))
 {
-    assert(!weights_.empty());
     std::vector<size_t> inputIndexes = EoBE::CreateSeries<size_t>(0, inputs);
     std::vector<size_t> outputIndexes = EoBE::CreateSeries<size_t>(0, outputs);
 

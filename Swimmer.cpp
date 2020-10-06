@@ -34,7 +34,7 @@ Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Geno
     , brainValues_(brain_ ? brain_->GetInputCount() : 0, 0.0)
     , eggsLayed_(0)
 {
-    effectors_.push_back(std::make_shared<EffectorTail>(std::make_shared<NeuralNetwork>(0, 3, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(NeuralNetworkConnector(brain_->GetOutputCount(), 3)), *this));
+    effectors_.push_back(std::make_shared<EffectorTail>(std::make_shared<NeuralNetwork>(0, 3, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(NeuralNetworkConnector(brain_ ? brain_->GetOutputCount() : 7, 3)), *this));
 }
 
 Swimmer::~Swimmer()
@@ -112,9 +112,6 @@ void Swimmer::DrawImpl(QPainter& paint)
 
 std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
 {
-    // TODO create genes for the following
-    // EffectorTail
-
     unsigned brainWidth = 7;
     return {
         std::make_shared<GenePigment>(),

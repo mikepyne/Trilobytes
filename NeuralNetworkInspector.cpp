@@ -42,7 +42,9 @@ void NeuralNetworkInspector::SetSwimmer(Swimmer& toInspect, EntityContainerInter
                     senseGroup.nodes[{ 0, 0 }];
                 }
                 Node& node = senseGroup.nodes[{ neuronIndex, senseGroup.verticalNodes - 1 }];
-                node.connections.push_back({ brainGroup_.nodes[{ weightIndex, 0 }], weight });
+                if (brainGroup_.horizontalNodes > 0 && brainGroup_.verticalNodes > 0) {
+                    node.connections.push_back({ brainGroup_.nodes[{ weightIndex, 0 }], weight });
+                }
                 node.value = 0;
                 ++weightIndex;
             }
@@ -73,9 +75,11 @@ void NeuralNetworkInspector::SetSwimmer(Swimmer& toInspect, EntityContainerInter
                     effectorGroup.verticalNodes = 1;
                     effectorGroup.nodes[{ 0, 0 }];
                 }
-                Node& node = brainGroup_.nodes.at({ neuronIndex, brainGroup_.verticalNodes - 1 });
-                node.connections.push_back({ effectorGroup.nodes[{ weightIndex, 0 }], weight });
-                node.value = 0;
+                if (brainGroup_.horizontalNodes > 0 && brainGroup_.verticalNodes > 0) {
+                    Node& node = brainGroup_.nodes.at({ neuronIndex, brainGroup_.verticalNodes - 1 });
+                    node.connections.push_back({ effectorGroup.nodes[{ weightIndex, 0 }], weight });
+                }
+                effectorGroup.nodes[{ weightIndex, 0 }].value = 0;
                 ++weightIndex;
             }
             ++neuronIndex;
