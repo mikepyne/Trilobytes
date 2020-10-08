@@ -12,15 +12,31 @@ Gene::~Gene()
 {
 }
 
-const std::shared_ptr<Gene>& Gene::GetMostDominant(const std::shared_ptr<Gene>& a, const std::shared_ptr<Gene>& b)
+std::shared_ptr<Gene>& Gene::GetMostDominant(std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene> >& alleles)
 {
-    if (a == nullptr) {
-        return b;
-    } else if (b == nullptr) {
-        return a;
+    if (alleles.first == nullptr) {
+        return alleles.second;
+    } else if (alleles.second == nullptr) {
+        return alleles.first;
     } else {
-        return  a->dominance_ > b->dominance_ ? a : b;
+        return alleles.first->dominance_ > alleles.second->dominance_ ? alleles.first : alleles.second;
     }
+}
+
+const std::shared_ptr<Gene>& Gene::GetMostDominant(const std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene> >& alleles)
+{
+    if (alleles.first == nullptr) {
+        return alleles.second;
+    } else if (alleles.second == nullptr) {
+        return alleles.first;
+    } else {
+        return alleles.first->dominance_ > alleles.second->dominance_ ? alleles.first : alleles.second;
+    }
+}
+
+std::shared_ptr<Gene>& Gene::GetRandom(std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene> >& alleles)
+{
+    return Random::Boolean() ? alleles.first : alleles.second;
 }
 
 double Gene::GetMutatedDominance() const

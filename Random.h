@@ -139,14 +139,18 @@ public:
     static typename Container::value_type& Item(Container& container)
     {
         assert(!container.empty());
-        return container.at(Random::Number(0u, container.size() - 1));
+        auto iter = std::begin(container);
+        std::advance(iter, Random::Number(0u, container.size() - 1));
+        return *iter;
     }
 
     template<typename Container>
     static const typename Container::value_type& Item(const Container& container)
     {
         assert(!container.empty());
-        return container.at(Random::Number(0u, container.size() - 1));
+        auto iter = std::cbegin(container);
+        std::advance(iter, Random::Number(0u, container.size() - 1));
+        return *iter;
     }
 
 private:

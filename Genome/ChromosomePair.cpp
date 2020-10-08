@@ -110,7 +110,9 @@ void ChromosomePair::ForEach(const std::function<void (const Gene&)>& action) co
 {
     for (auto& [ location, pair ] : chromosomePair_) {
         (void) location;
-        action(*Gene::GetMostDominant(pair.first, pair.second));
+        if (!Gene::Empty(pair)) {
+            action(*Gene::GetMostDominant(pair));
+        }
     }
 }
 
@@ -120,7 +122,7 @@ void ChromosomePair::Mutate()
 
     // chromosome range change
     for (auto range : { &aChromosomeRange_, &bChromosomeRange_ }) {
-        if (Random::Percent() > 99.5) {
+        if (Random::Percent() < 0.5) {
             unsigned first = static_cast<unsigned>(Random::Gaussian<float>(0, range->ValueRange() / 200) + range->First());
             unsigned last = static_cast<unsigned>(Random::Gaussian<float>(0, range->ValueRange() / 200) + range->Last());
             range->SetRange(first, last);
@@ -129,8 +131,10 @@ void ChromosomePair::Mutate()
 
     if (chromosomePair_.size() > 0) {
         // gene duplication
-        if (Random::Percent() > 99.5) {
-            std::shared_ptr<Gene>& randomGene = RandomGene();
+        if (Random::Percent() < 0.5) {
+            auto& [ location, genePair ] = Random::Item(chromosomePair_);
+            (void) location;
+            std::shared_ptr<Gene>& randomGene = Gene::GetRandom(genePair);
             if (randomGene != nullptr) {
                 bool addToA = Random::Boolean();
                 size_t randomLocation = Random::Number<size_t>(addToA ? aChromosomeRange_.Min() : bChromosomeRange_.Min(), addToA ? aChromosomeRange_.Max() : bChromosomeRange_.Max());
@@ -138,21 +142,27 @@ void ChromosomePair::Mutate()
             }
         }
 
+        // allele loss
+        if (Random::Percent() < 0.5) {
+            auto& [ location, genePair ] = Random::Item(chromosomePair_);
+            (void) location;
+            Gene::GetRandom(genePair).reset();
+        }
+
         // gene loss
-        if (Random::Percent() > 99.5) {
-            std::shared_ptr<Gene>& randomGene = RandomGene();
-            randomGene.reset();
+        if (Random::Percent() < 0.5) {
+            chromosomePair_.erase(Random::Item(chromosomePair_).first);
         }
 
         // gene addition
-        if (Random::Percent() > 99.5) {
+        if (Random::Percent() < 0.5) {
             /*
              * FIXME perhaps the brain should be a fixed feature of the genome
              * and not a gene?
              *
              * Even if we parsed the genome and extracted the gene width, at
              * this point there'd be no way to tell if the brain width was going
-             * to change...
+             * to mutate later...
              *
              * Perhaps each gene needs a "BrainWidthMutated(newWidth)" function?
              */
@@ -164,26 +174,28 @@ void ChromosomePair::Mutate()
         }
 
         // gene transposition
-        if (Random::Number(0.0, 1.0) < (1.0 / 1000)) {
-            std::shared_ptr<Gene>& randomGene = RandomGene();
-            if (randomGene != nullptr) {
+        if (Random::Percent() < 0.5) {
+            auto& [ location, genePair ] = Random::Item(chromosomePair_);
+            (void) location;
+            std::shared_ptr<Gene>& randomGene = Gene::GetRandom(genePair);
+            if (randomGene) {
                 bool addToA = Random::Boolean();
                 size_t randomLocation = Random::Number<size_t>(addToA ? aChromosomeRange_.Min() : bChromosomeRange_.Min(), addToA ? aChromosomeRange_.Max() : bChromosomeRange_.Max());
                 addToA ? chromosomePair_[randomLocation].first = randomGene : chromosomePair_[randomLocation].second = randomGene;
                 randomGene.reset();
             }
         }
+    }
 
-        // Remove any gene pairs that are no longer on either chromosome
-        // Sadly std::remove_if doesn't work for std::map, perhaps future erase_if will...
-        for (auto iter = chromosomePair_.begin(); iter != chromosomePair_.end();) {
-            const unsigned& location = iter->first;
-            if ((location < aChromosomeRange_.Min() && location < bChromosomeRange_.Min())
-             || (location > aChromosomeRange_.Max() && location > bChromosomeRange_.Max())) {
-                iter = chromosomePair_.erase(iter);
-            } else {
-                ++iter;
-            }
+    // Remove any gene pairs that are no longer on either chromosome
+    // Sadly std::remove_if doesn't work for std::map, perhaps future erase_if will...
+    for (auto iter = chromosomePair_.begin(); iter != chromosomePair_.end();) {
+        const unsigned& location = iter->first;
+        if ((location < aChromosomeRange_.Min() && location < bChromosomeRange_.Min())
+         || (location > aChromosomeRange_.Max() && location > bChromosomeRange_.Max())) {
+            iter = chromosomePair_.erase(iter);
+        } else {
+            ++iter;
         }
     }
 
@@ -209,15 +221,4 @@ ChromosomePair::ChromosomePair(const EoBE::Range<unsigned>& aRange, const EoBE::
     , bChromosomeRange_(bRange)
     , chromosomePair_(chromosomePair)
 {
-}
-
-std::shared_ptr<Gene>& ChromosomePair::RandomGene()
-{
-    static std::shared_ptr<Gene> null = nullptr;
-    if (!chromosomePair_.empty()) {
-        auto iter = chromosomePair_.begin();
-        std::advance(iter, Random::Number<size_t>(0, chromosomePair_.size() - 1));
-        return  Random::Boolean() ? iter->second.first : iter->second.second;
-    }
-    return null;
 }

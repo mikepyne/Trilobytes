@@ -26,8 +26,6 @@ private:
     std::map<unsigned, std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene>>> chromosomePair_;
 
     ChromosomePair(const EoBE::Range<unsigned>& aRange, const EoBE::Range<unsigned>& bRange, std::map<unsigned, std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene>>>&& chromosomePair);
-
-    std::shared_ptr<Gene>& RandomGene();
 };
 
 #endif // CHROMOSOMEPAIR_H
