@@ -8,10 +8,10 @@
 
 #include <memory>
 
-class SenseMagneticField : public Sense {
+class SenseMagneticField final : public Sense {
 public:
     SenseMagneticField(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner);
-    virtual ~SenseMagneticField() override final {}
+    virtual ~SenseMagneticField() override {}
 
     virtual std::string_view GetName() const override { return "MagneticField"; }
     virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& /*entities*/) const override;

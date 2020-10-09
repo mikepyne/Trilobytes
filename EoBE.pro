@@ -42,6 +42,7 @@ SOURCES += \
     Sensors/SenseEntityRaycast.cpp \
     Sensors/SenseMagneticField.cpp \
     Sensors/SenseRandom.cpp \
+    Sensors/SenseTraitsBase.cpp \
     Swimmer.cpp \
     Transform.cpp \
     Universe.cpp \
@@ -83,6 +84,7 @@ HEADERS += \
     Sensors/SenseEntityRaycast.h \
     Sensors/SenseMagneticField.h \
     Sensors/SenseRandom.h \
+    Sensors/SenseTraitsBase.h \
     Shape.h \
     Swimmer.h \
     Transform.h \

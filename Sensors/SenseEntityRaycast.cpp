@@ -1,43 +1,14 @@
 #include "SenseEntityRaycast.h"
 
 #include "Swimmer.h"
+#include "EntityContainerInterface.h"
 
 #include <QPainter>
 
-SenseEntityRaycast::SenseEntityRaycast(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double maxDistance, double angle, double genericWeight, const std::vector<std::pair<double, Trait> >&& traits)
-    : Sense(network, outputConnections, owner)
+SenseEntityRaycast::SenseEntityRaycast(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, std::vector<TraitNormaliser>&& toDetect, double maxDistance, double angle)
+    : SenseTraitsBase(network, outputConnections, owner, { 0, 0, angle }, std::move(toDetect))
     , rayCastDistance_(maxDistance)
-    , rayCastAngle_(angle)
-    , genericWeight_(genericWeight)
-    , traits_(traits)
 {
-}
-
-void SenseEntityRaycast::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const
-{
-    Line rayCastLine = GetLine();
-    std::shared_ptr<Entity> nearestEntity;
-    double distanceToNearest = 0.0;
-    entities.ForEachCollidingWith(rayCastLine, [&](const std::shared_ptr<Entity>& e)
-    {
-        // don't detect ourself
-        if (e.get() != &owner_) {
-            // TODO this distance assumes head on detection, not incidental ones
-            double distance = std::sqrt(GetDistanceSquare(rayCastLine.a, e->GetLocation())) - e->GetRadius();
-            if (nearestEntity == nullptr || distance < distanceToNearest) {
-                nearestEntity = e;
-                distanceToNearest = distance;
-            }
-        }
-    });
-
-    if (nearestEntity != nullptr) {
-        inputs.at(0) = genericWeight_ * (distanceToNearest / rayCastDistance_);
-        size_t i = 0;
-        for (auto& [ traitWeight, trait] : traits_) {
-            inputs.at(++i) = (traitWeight * nearestEntity->GetTrait(trait) * (distanceToNearest / rayCastDistance_));
-        }
-    }
 }
 
 void SenseEntityRaycast::Draw(QPainter& paint) const
@@ -49,7 +20,32 @@ void SenseEntityRaycast::Draw(QPainter& paint) const
 
 Line SenseEntityRaycast::GetLine() const
 {
-    Point begin = ApplyOffset(owner_.GetLocation(), rayCastAngle_ + owner_.GetTransform().rotation, owner_.GetRadius());
-    Point end = ApplyOffset(begin, rayCastAngle_ + owner_.GetTransform().rotation, rayCastDistance_);
+    Transform trans = owner_.GetTransform() + transform_;
+    Point begin = { trans.x, trans.y };
+    Point end = ApplyOffset(begin, trans.rotation, rayCastDistance_);
     return { begin, end };
+}
+
+void SenseEntityRaycast::FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity& e, const double& scale)>& forEachEntity) const
+{
+    Line rayCastLine = GetLine();
+    std::shared_ptr<Entity> nearestEntity;
+    double distanceToNearestSquared = 0.0;
+    entities.ForEachCollidingWith(rayCastLine, [&](const std::shared_ptr<Entity>& e)
+    {
+        // don't detect ourself
+        if (e.get() != &owner_) {
+            // TODO this distance assumes head on detection, not incidental ones
+            double distanceSquare = GetDistanceSquare(rayCastLine.a, e->GetLocation());
+            if (nearestEntity == nullptr || distanceSquare < distanceToNearestSquared) {
+                nearestEntity = e;
+                distanceToNearestSquared = distanceSquare;
+            }
+        }
+    });
+
+    if (nearestEntity != nullptr) {
+        // Only nearest entity detected, scaled by distance from detector
+        forEachEntity(*nearestEntity, ( 1.0 - (std::sqrt(distanceToNearestSquared) / rayCastDistance_)));
+    }
 }

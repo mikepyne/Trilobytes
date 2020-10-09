@@ -1,25 +1,23 @@
 #ifndef SENSEENTITIESTOUCHING_H
 #define SENSEENTITIESTOUCHING_H
 
-#include "Sense.h"
-#include "Entity.h"
+#include "Shape.h"
+#include "SenseTraitsBase.h"
 
 class QPainter;
 
-class SenseEntitiesTouching : public Sense {
-    public:
-        SenseEntitiesTouching(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, Transform transform, double genericDetectionWeight, const std::vector<std::pair<double, Trait>>&& toDetect);
-        virtual ~SenseEntitiesTouching() override final {}
+class SenseEntitiesTouching final : public SenseTraitsBase {
+public:
+    SenseEntitiesTouching(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, Transform transform, std::vector<TraitNormaliser>&& toDetect);
+    virtual ~SenseEntitiesTouching() override {}
 
-        virtual std::string_view GetName() const override { return "SenseEntitiesTouching"; }
-        virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const override;
+    virtual std::string_view GetName() const override { return "SenseTraitsTouching"; }
+    virtual void Draw(QPainter& paint) const override;
 
-        virtual void Draw(QPainter& paint) const override;
+private:
+    Point GetPoint() const;
 
-    private:
-        Transform transform_;
-        double genericDetectionWeight_;
-        std::vector<std::pair<double, Trait>> toDetect_;
+    virtual void FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity&, const double&)>& forEachEntity) const override;
 };
 
 #endif // SENSEENTITIESTOUCHING_H

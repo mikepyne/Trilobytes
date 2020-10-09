@@ -129,6 +129,12 @@ public:
         return rands;
     }
 
+    template<typename NumericType>
+    static NumericType GaussianAdjustment(const NumericType& toAdjust, double proportion)
+    {
+        return toAdjust + Gaussian(0.0, std::abs(toAdjust) * (proportion / 3.0));
+    }
+
     template<typename Container>
     static void Shuffle(Container& toShuffle)
     {
@@ -151,6 +157,17 @@ public:
         auto iter = std::cbegin(container);
         std::advance(iter, Random::Number(0u, container.size() - 1));
         return *iter;
+    }
+
+    template<typename Container>
+    static std::vector<typename Container::value_type> CopyItems(size_t count, const Container& container)
+    {
+        assert(!container.empty());
+        std::vector<typename Container::value_type> copies;
+        for (unsigned i = 0; i < count; ++i) {
+            copies.push_back(Item(container));
+        }
+        return copies;
     }
 
 private:

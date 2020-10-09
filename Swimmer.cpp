@@ -119,9 +119,20 @@ std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
         std::make_shared<GeneBrain>(3, brainWidth, 0.5),
         std::make_shared<GeneSenseRandom>(1, brainWidth),
         std::make_shared<GeneSenseMagneticField>(brainWidth),
-        std::make_shared<GeneSenseEntitiesInArea>(std::vector<std::pair<double, Trait>>{ {1.0 / 255, Trait::Green}, }, 0, brainWidth, Transform{ 0, 24,  0.6}, 20, 1.0),
-        std::make_shared<GeneSenseEntitiesInArea>(std::vector<std::pair<double, Trait>>{ {1.0 / 255, Trait::Green}, }, 0, brainWidth, Transform{ 0, 24, -0.6}, 20, 1.0),
-        std::make_shared<GeneSenseEntityRaycast>(std::vector<std::pair<double, Trait>>{ {1.0 / 30, Trait::Size}, }, 0, brainWidth, Transform{ 0, -30, 0 }, 1.0),
-        std::make_shared<GeneSenseEntitiesTouching>(std::vector<std::pair<double, Trait>>{ {1.0 / 10000, Trait::Age}, }, 0, brainWidth, Transform{ 0, 0, 0 }, 1.0),
+        std::make_shared<GeneSenseEntitiesInArea>(std::vector{
+                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
+                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Green), },
+                                                  0, brainWidth, Transform{ 0, 24,  0.6}, 20),
+        std::make_shared<GeneSenseEntitiesInArea>(std::vector{
+                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
+                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Green), },
+                                                  0, brainWidth, Transform{ 0, 24, -0.6}, 20),
+        std::make_shared<GeneSenseEntityRaycast>(std::vector{
+                                                     SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
+                                                     SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Size), },
+                                                 0, brainWidth, Transform{ 0, -30, 0 }),
+        std::make_shared<GeneSenseEntitiesTouching>(std::vector{
+                                                        SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Age), },
+                                                    0, brainWidth, Transform{ 0, 0, 0 }),
     };
 }

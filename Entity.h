@@ -13,17 +13,6 @@
 
 class QPainter;
 
-enum class Trait {
-    Red,
-    Green,
-    Blue,
-    Energy,
-    Age,
-    Size,
-};
-
-constexpr std::array ALL_TRAITS = { Trait::Red, Trait::Green, Trait::Blue, Trait::Energy, Trait::Age, Trait::Size };
-
 class Entity {
 public:
     /**
@@ -49,12 +38,6 @@ public:
     // returns true if the entity has moved
     bool Tick(EntityContainerInterface& container);
     void Draw(QPainter& paint);
-
-    /**
-     * This allows senses to respond to any trait easily, it is up to the caller
-     * to normalise the value.
-     */
-    double GetTrait(Trait trait);
 
 protected:
     virtual void TickImpl(EntityContainerInterface& container) = 0;

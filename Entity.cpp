@@ -52,26 +52,6 @@ void Entity::Draw(QPainter& paint)
     paint.restore();
 }
 
-double Entity::GetTrait(Trait trait)
-{
-    switch (trait) {
-    case Trait::Red :
-        return colour_.redF();
-    case Trait::Green :
-        return colour_.greenF();
-    case Trait::Blue :
-        return colour_.blueF();
-    case Trait::Energy :
-        return energy_;
-    case Trait::Age :
-        return age_;
-    case Trait::Size :
-        return radius_;
-    }
-    assert(false && "Entity::GetTrait, unimplemented trait.");
-    return 0.0;
-}
-
 Energy Entity::TakeEnergy(Energy quantity)
 {
     Energy toGive = std::min(energy_, quantity);

@@ -1,27 +1,21 @@
 #ifndef SENSEENTITYRAYCAST_H
 #define SENSEENTITYRAYCAST_H
 
-#include "Sense.h"
-#include "Entity.h"
-#include "EntityContainerInterface.h"
+#include "SenseTraitsBase.h"
 
-class SenseEntityRaycast : public Sense {
+class SenseEntityRaycast final : public SenseTraitsBase {
 public:
-    SenseEntityRaycast(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double maxDistance, double angle, double genericWeight, const std::vector<std::pair<double, Trait>>&& traits);
-    virtual ~SenseEntityRaycast() override final {}
+    SenseEntityRaycast(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, std::vector<TraitNormaliser>&& toDetect, double maxDistance, double angle);
+    virtual ~SenseEntityRaycast() override {}
 
-    virtual std::string_view GetName() const override { return "SenseEntityRaycast"; }
-    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const override;
-
+    virtual std::string_view GetName() const override { return "SenseTraitsRaycast"; }
     virtual void Draw(QPainter& paint) const override;
 
 private:
     double rayCastDistance_;
-    double rayCastAngle_;
-    double genericWeight_;
-    std::vector<std::pair<double, Trait>> traits_;
-
     Line GetLine() const;
+
+    virtual void FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity&, const double&)>& forEachEntity) const override;
 };
 
 #endif // SENSEENTITYRAYCAST_H

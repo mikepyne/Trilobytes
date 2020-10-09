@@ -12,7 +12,7 @@ public:
     double y;
     double rotation;
 
-    Transform operator+(const Transform& other)
+    Transform operator+(const Transform& other) const
     {
         return { x + other.x, y + other.y, rotation + other.rotation };
     }

@@ -68,7 +68,9 @@ void Universe::mousePressEvent(QMouseEvent* event)
             if (Swimmer* swimmer = dynamic_cast<Swimmer*>(e.get()); swimmer != nullptr) {
                 MainWindow* mainWindow = dynamic_cast<MainWindow*>(parentWidget()->parentWidget());
                 assert(mainWindow);
+                following_ = e;
                 mainWindow->SetSwimmerToInspect(*swimmer, rootNode_.GetContainer());
+                update();
             }
         });
     }
@@ -118,11 +120,11 @@ void Universe::paintEvent(QPaintEvent*)
     p.drawText(0, 75, "Respawn (R)");
     p.drawText(0, 90, "Reset Graph (G)");
     p.drawText(0, 105, "Find Fittest (K): " + QVariant(followFittest_).toString());
-    if (followFittest_ && following_) {
+    if (following_) {
         auto f = dynamic_cast<Swimmer*>(following_.get());
         p.drawText(0, 120, QString("   - Age [%1]").arg(f->GetAge()));
         p.drawText(0, 135, QString("   - Eggs Layed [%1]").arg(f->GetEggLayedCount()));
-        p.drawText(0, 150, QString("   - Energy [%1]mj").arg(f->GetEnergy()));
+        p.drawText(0, 150, QString("   - Energy [%1]mj").arg(f->GetEnergy() / 1_mj));
     }
 
     p.translate(width() / 2, height() / 2);

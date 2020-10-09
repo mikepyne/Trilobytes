@@ -5,14 +5,15 @@
 #include "Entity.h"
 #include "NeuralNetwork.h"
 #include "NeuralNetworkConnector.h"
+#include "Sensors/SenseTraitsBase.h"
 
 #include <vector>
 #include <memory>
 
 class GeneSenseEntityRaycast : public Gene {
 public:
-    GeneSenseEntityRaycast(std::vector<std::pair<double, Trait>>&& traitWeights, unsigned hiddenLayers, unsigned outputCount, const Transform& transform, double genericWeight);
-    GeneSenseEntityRaycast(std::vector<std::pair<double, Trait>>&& traitWeights, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Transform& transform, double genericWeight, double dominance, double mutationProbability);
+    GeneSenseEntityRaycast(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, unsigned hiddenLayers, unsigned outputCount, const Transform& transform);
+    GeneSenseEntityRaycast(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Transform& transform, double dominance, double mutationProbability);
     virtual ~GeneSenseEntityRaycast() override final {}
 
     virtual std::shared_ptr<Gene> Mutate() const override;
@@ -23,8 +24,7 @@ private:
     const std::shared_ptr<NeuralNetworkConnector> outputConnections_;
 
     const Transform transform_;
-    const double genericWeight_;
-    const std::vector<std::pair<double, Trait>> traitWeights_;
+    const std::vector<SenseTraitsBase::TraitNormaliser> toDetect_;
 };
 
 #endif // GENESENSEENTITYRAYCAST_H

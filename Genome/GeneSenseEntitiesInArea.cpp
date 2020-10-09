@@ -3,19 +3,18 @@
 #include "Phenotype.h"
 #include "Sensors/SenseEntitiesInArea.h"
 
-GeneSenseEntitiesInArea::GeneSenseEntitiesInArea(std::vector<std::pair<double, Trait>>&& traitWeights, unsigned hiddenLayers, unsigned outputCount, const Transform& transform, double radius, double genericWeight)
-    : GeneSenseEntitiesInArea(std::move(traitWeights), std::make_shared<NeuralNetwork>(hiddenLayers, traitWeights.size() + 1, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(traitWeights.size() + 1, outputCount), transform, radius, genericWeight, Random::Number(0.0, 100.0), Random::Number(0.0, 1.0))
+GeneSenseEntitiesInArea::GeneSenseEntitiesInArea(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, unsigned hiddenLayers, unsigned outputCount, const Transform& transform, double radius)
+    : GeneSenseEntitiesInArea(std::move(toDetect), std::make_shared<NeuralNetwork>(hiddenLayers, toDetect.size(), NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(toDetect.size(), outputCount), transform, radius, Random::Number(0.0, 100.0), Random::Number(0.0, 1.0))
 {
 }
 
-GeneSenseEntitiesInArea::GeneSenseEntitiesInArea(std::vector<std::pair<double, Trait> >&& traitWeights, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Transform& transform, double radius, double genericWeight, double dominance, double mutationProbability)
+GeneSenseEntitiesInArea::GeneSenseEntitiesInArea(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Transform& transform, double radius, double dominance, double mutationProbability)
     : Gene(dominance, mutationProbability)
     , network_(network)
     , outputConnections_(outputConnections)
     , radius_(radius)
     , transform_(transform)
-    , genericWeight_(genericWeight)
-    , traitWeights_(std::move(traitWeights))
+    , toDetect_(std::move(toDetect))
 {
 }
 
@@ -25,10 +24,9 @@ std::shared_ptr<Gene> GeneSenseEntitiesInArea::Mutate() const
     std::shared_ptr<NeuralNetworkConnector> outputConnections = outputConnections_;
     Transform transform = transform_;
     double radius = radius_;
-    double genericWeight = genericWeight_;
-    std::vector<std::pair<double, Trait>> traitWeights = traitWeights_;
+    std::vector<SenseTraitsBase::TraitNormaliser> toDetect = toDetect_;
 
-    switch(Random::Number(0, 5)) {
+    switch(Random::Number(0, 4)) {
     case 0 :
         network = network->Mutated();
         break;
@@ -46,20 +44,21 @@ std::shared_ptr<Gene> GeneSenseEntitiesInArea::Mutate() const
         };
         break;
     case 4 :
-        genericWeight += Random::Gaussian(0.0, 0.05 + genericWeight / 10);
-        break;
-    case 5 :
         switch(Random::Number(0, 3)) {
         case 0 :
             // Adjust trait strength
-            if (!traitWeights.empty()) {
-                Random::Item(traitWeights).first += Random::Gaussian(0.0, 0.05 + Random::Item(traitWeights).first / 10);
+            if (!toDetect.empty()) {
+                auto& item = Random::Item(toDetect);
+                double newMin = Random::GaussianAdjustment<double>(item.range.Min(), 0.1);
+                double newMax = Random::GaussianAdjustment<double>(item.range.Max(), 0.1);
+                item.range = { newMin, newMax };
             }
             break;
         case 1 :
             // Switch trait
-            if (!traitWeights.empty()) {
-                Random::Item(traitWeights).second = Random::Item(ALL_TRAITS);
+            if (!toDetect.empty()) {
+                auto& item = Random::Item(toDetect);
+                item.trait = Random::Item(SenseTraitsBase::ALL_TRAITS);
             }
             break;
         case 2 :
@@ -71,20 +70,18 @@ std::shared_ptr<Gene> GeneSenseEntitiesInArea::Mutate() const
             // TODO requires ability to add/remove columns in network & connectors
             break;
         }
-        break;
     }
 
-    return std::make_shared<GeneSenseEntitiesInArea>(std::move(traitWeights),
+    return std::make_shared<GeneSenseEntitiesInArea>(std::move(toDetect),
                                                      network,
                                                      outputConnections,
                                                      transform,
                                                      radius,
-                                                     genericWeight,
                                                      GetMutatedDominance(),
                                                      GetMutatedMutationProbability());
 }
 
 void GeneSenseEntitiesInArea::ExpressGene(const Swimmer& owner, Phenotype& target) const
 {
-    target.senses.push_back(std::make_shared<SenseEntitiesInArea>(network_, outputConnections_, owner, radius_, transform_, genericWeight_, std::vector<std::pair<double, Trait> >(traitWeights_)));
+    target.senses.push_back(std::make_shared<SenseEntitiesInArea>(network_, outputConnections_, owner, radius_, transform_, std::vector<SenseTraitsBase::TraitNormaliser>(toDetect_)));
 }
