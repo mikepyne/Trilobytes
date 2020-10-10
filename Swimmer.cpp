@@ -19,23 +19,26 @@
 #include <math.h>
 
 Swimmer::Swimmer(Energy energy, const Transform& transform)
-    : Swimmer(energy, transform, std::make_shared<Genome>(CreateDefaultGenome()))
+    : Swimmer(energy, transform, std::make_shared<Genome>(CreateDefaultGenome()), {})
 {
 }
 
-Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome)
-    : Swimmer(energy, transform, genome, genome->GetPhenoType(*this))
+Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, std::shared_ptr<Swimmer>&& parent)
+    : Swimmer(energy, transform, genome, genome->GetPhenoType(*this), std::move(parent))
 {
 }
 
 Swimmer::~Swimmer()
 {
+    if (closestLivingAncestor_) {
+        closestLivingAncestor_->DescendantDied();
+    }
 }
 
 std::shared_ptr<Entity> Swimmer::GiveBirth(const std::shared_ptr<Genome>& other)
 {
-    eggsLayed_++;
-    return std::make_shared<Egg>(TakeEnergy(100_mj), GetTransform(), genome_, other ? other : genome_, Random::Poisson(50u));
+    ++eggsLayed_;
+    return std::make_shared<Egg>(shared_from_this(), TakeEnergy(100_mj), GetTransform(), genome_, other ? other : genome_, Random::Poisson(50u));
 }
 
 void Swimmer::AdjustVelocity(double adjustment)
@@ -52,6 +55,10 @@ void Swimmer::AdjustBearing(double adjustment)
 
 void Swimmer::TickImpl(EntityContainerInterface& container)
 {
+    if (closestLivingAncestor_ && !closestLivingAncestor_->Alive()) {
+        closestLivingAncestor_ = FindClosestLivingAncestor();
+    }
+
     if (brain_ && brain_->GetInputCount() > 0) {
         std::fill(std::begin(brainValues_), std::end(brainValues_), 0.0);
         for (auto& sense : senses_) {
@@ -101,16 +108,47 @@ void Swimmer::DrawImpl(QPainter& paint)
     }
 }
 
-Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, const Phenotype& phenotype)
+Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, const Phenotype& phenotype, std::shared_ptr<Swimmer>&& mother)
     : Entity(energy, transform, 6.0, phenotype.colour)
+    , closestLivingAncestor_(std::move(mother))
     , genome_(genome)
     , brain_(phenotype.brain)
     , senses_(phenotype.senses)
     , effectors_(phenotype.effectors)
     , brainValues_(brain_->GetInputCount(), 0.0)
-    , eggsLayed_(0)
-    {
+    , totalDescendantCount_(0)
+    , extantDescendantCount_(0)
+{
+    if (closestLivingAncestor_) {
+        closestLivingAncestor_->DescendantBorn();
     }
+}
+
+std::shared_ptr<Swimmer> Swimmer::FindClosestLivingAncestor() const
+{
+    std::shared_ptr<Swimmer> ancestor = closestLivingAncestor_;
+    while (ancestor && !ancestor->Alive()) {
+        ancestor = ancestor->closestLivingAncestor_;
+    }
+    return ancestor;
+}
+
+void Swimmer::DescendantBorn()
+{
+    ++totalDescendantCount_;
+    ++extantDescendantCount_;
+    if (closestLivingAncestor_) {
+        closestLivingAncestor_->DescendantBorn();
+    }
+}
+
+void Swimmer::DescendantDied()
+{
+    --extantDescendantCount_;
+    if (closestLivingAncestor_) {
+        closestLivingAncestor_->DescendantDied();
+    }
+}
 
 std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
 {

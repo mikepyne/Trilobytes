@@ -9,11 +9,11 @@
 
 #include <memory>
 
-class Swimmer : public Entity {
+class Swimmer : public Entity, public std::enable_shared_from_this<Swimmer> {
 public:
     Swimmer(Energy energy, const Transform& transform);
-    Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome);
-    virtual ~Swimmer() override final;
+    Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, std::shared_ptr<Swimmer>&& parent);
+    virtual ~Swimmer() override;
 
     virtual std::string_view GetName() const override { return "Swimmer"; }
 
@@ -23,12 +23,16 @@ public:
     const std::vector<std::shared_ptr<Sense>>& InspectSenses() { return senses_; };
     const std::vector<std::shared_ptr<Effector>>& InspectEffectors() { return effectors_; };
 
-    unsigned GetEggLayedCount() const { return eggsLayed_; }
+    unsigned GetEggsLayedCount() const { return eggsLayed_; }
+    unsigned GetTotalDescendantsCount() const { return totalDescendantCount_; }
+    unsigned GetLivingDescendantsCount() const { return extantDescendantCount_; }
 
     void AdjustVelocity(double adjustment);
     void AdjustBearing(double adjustment);
 
 protected:
+    std::shared_ptr<Swimmer> closestLivingAncestor_;
+
     virtual void TickImpl(EntityContainerInterface& container) override final;
     virtual void DrawImpl(QPainter& paint) override final;
 
@@ -38,9 +42,17 @@ private:
     std::vector<std::shared_ptr<Sense>> senses_;
     std::vector<std::shared_ptr<Effector>> effectors_;
     std::vector<double> brainValues_;
-    unsigned eggsLayed_;
 
-    Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, const Phenotype& phenotype);
+    unsigned eggsLayed_;
+    unsigned totalDescendantCount_;
+    unsigned extantDescendantCount_;
+
+    Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, const Phenotype& phenotype, std::shared_ptr<Swimmer>&& mother);
+
+    std::shared_ptr<Swimmer> FindClosestLivingAncestor() const;
+
+    void DescendantBorn();
+    void DescendantDied();
 
     static std::vector<std::shared_ptr<Gene>> CreateDefaultGenome();
 

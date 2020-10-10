@@ -62,6 +62,7 @@ void Universe::mousePressEvent(QMouseEvent* event)
         dragX_ = event->x();
         dragY_ = event->y();
     } else if (event->button() == Qt::RightButton) {
+        following_.reset();
         Point simLocation = TransformLocalToSimCoords({ static_cast<double>(event->x()), static_cast<double>(event->y()) });
         rootNode_.ForEachCollidingWith(simLocation, [&](const std::shared_ptr<Entity>& e)
         {
@@ -103,9 +104,6 @@ void Universe::keyPressEvent(QKeyEvent* event)
         break;
     case Qt::Key_K :
         followFittest_ = !followFittest_;
-        if (!followFittest_) {
-            following_ = {};
-        }
         break;
     }
 }
@@ -122,9 +120,10 @@ void Universe::paintEvent(QPaintEvent*)
     p.drawText(0, 105, "Find Fittest (K): " + QVariant(followFittest_).toString());
     if (following_) {
         auto f = dynamic_cast<Swimmer*>(following_.get());
-        p.drawText(0, 120, QString("   - Age [%1]").arg(f->GetAge()));
-        p.drawText(0, 135, QString("   - Eggs Layed [%1]").arg(f->GetEggLayedCount()));
-        p.drawText(0, 150, QString("   - Energy [%1]mj").arg(f->GetEnergy() / 1_mj));
+        p.drawText(0, 120, QString("   - %1 Ticks Old").arg(f->GetAge()));
+        p.drawText(0, 135, QString("   - Laid %1 Eggs").arg(f->GetEggsLayedCount()));
+        p.drawText(0, 150, QString("   - Descendants %1/%2").arg(f->GetLivingDescendantsCount()).arg(f->GetTotalDescendantsCount()));
+        p.drawText(0, 165, QString("   - Energy %1mj").arg(f->GetEnergy() / 1_mj));
     }
 
     p.translate(width() / 2, height() / 2);
@@ -146,12 +145,12 @@ void Universe::Thread()
         rootNode_.Tick();
 
         if (followFittest_) {
-            unsigned mostEggsLayed = 0;
+            unsigned mostLivingChildren = 0;
             rootNode_.ForEach([&](const std::shared_ptr<Entity>& e)
             {
                 if (const auto* s = dynamic_cast<const Swimmer*>(e.get())) {
-                    if (s->GetEggLayedCount() > mostEggsLayed) {
-                        mostEggsLayed = s->GetEggLayedCount();
+                    if (s->GetLivingDescendantsCount() > mostLivingChildren) {
+                        mostLivingChildren = s->GetLivingDescendantsCount();
                         following_ = e;
                     }
                 }
