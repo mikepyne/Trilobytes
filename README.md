@@ -19,7 +19,7 @@ TODO
 -----
  - Tests
  - Controlls GUI & more options
- - More senses (own status? fixed value? occilating value? low pass filtered random value?)
+ - More senses (fixed value? occilating value? low pass filtered random value?)
  - More effectors (mouthparts? body armor? spikes? sex organs? pheremone creators? poison creators? decoy creators? food creators?)
  - Genes that encode more than a single effector or sensor (Pair of antenna? pair of eyes? memory (loop output to input)?
  - Improve rendering (image based? decals?)
@@ -31,3 +31,5 @@ TODO
  - Matrix based coordinate system/collisions
  - More entities (pheremones? poisons? more food types?)
  - FPS/TPS readout
+ - Add Transform(s) to Sense magnetic field so that it can evolve "depth" perception
+ - Add Inspect Descriptions for Senses and Effectors so that Inspector can label what the inputs and outputs represent

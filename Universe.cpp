@@ -112,20 +112,8 @@ void Universe::paintEvent(QPaintEvent*)
 {
     QPainter p(this);
     p.setBackground(QColor(200, 225, 255));
-    p.drawText(0, 15, "Entities:    " + QString::number(rootNode_.EntityCount()));
-    p.drawText(0, 45, "Paused (space): " + QVariant(pauseSim_).toString());
-    p.drawText(0, 60, "Spawn Food (F): " + QVariant(spawnFood_).toString());
-    p.drawText(0, 75, "Respawn (R)");
-    p.drawText(0, 90, "Reset Graph (G)");
-    p.drawText(0, 105, "Find Fittest (K): " + QVariant(followFittest_).toString());
-    if (following_) {
-        auto f = dynamic_cast<Swimmer*>(following_.get());
-        p.drawText(0, 120, QString("   - %1 Ticks Old").arg(f->GetAge()));
-        p.drawText(0, 135, QString("   - Laid %1 Eggs").arg(f->GetEggsLayedCount()));
-        p.drawText(0, 150, QString("   - Descendants %1/%2").arg(f->GetLivingDescendantsCount()).arg(f->GetTotalDescendantsCount()));
-        p.drawText(0, 165, QString("   - Energy %1mj").arg(f->GetEnergy() / 1_mj));
-    }
 
+    p.save();
     p.translate(width() / 2, height() / 2);
     p.scale(simScale_, simScale_);
     p.translate(simX_, simY_);
@@ -135,8 +123,25 @@ void Universe::paintEvent(QPaintEvent*)
             dispenser->Draw(p);
         }
     }
-
     rootNode_.Draw(p);
+    p.restore();
+
+    p.setPen(Qt::black);
+    int line = 0;
+    p.drawText(0, line += 15, "Entities:    " + QString::number(lastEntityCount_));
+    p.drawText(0, line += 15, "Swimmers:    " + QString::number(lastSwimmerCount_));
+    p.drawText(0, line += 15, "Paused (space): " + QVariant(pauseSim_).toString());
+    p.drawText(0, line += 15, "Spawn Food (F): " + QVariant(spawnFood_).toString());
+    p.drawText(0, line += 15, "Respawn (R)");
+    p.drawText(0, line += 15, "Reset Graph (G)");
+    p.drawText(0, line += 15, "Find Fittest (K): " + QVariant(followFittest_).toString());
+    if (following_) {
+        auto f = dynamic_cast<Swimmer*>(following_.get());
+        p.drawText(0, line += 15, QString("   - %1 Ticks Old").arg(f->GetAge()));
+        p.drawText(0, line += 15, QString("   - Laid %1 Eggs").arg(f->GetEggsLayedCount()));
+        p.drawText(0, line += 15, QString("   - Descendants %1/%2").arg(f->GetLivingDescendantsCount()).arg(f->GetTotalDescendantsCount()));
+        p.drawText(0, line += 15, QString("   - Energy %1mj").arg(f->GetEnergy() / 1_mj));
+    }
 }
 
 void Universe::Thread()
@@ -189,11 +194,15 @@ void Universe::Thread()
         if (++tick % 100 == 0) {
             Energy foodEnergy = 0;
             Energy swimmerEnergy = 0;
+            lastEntityCount_ = 0;
+            lastSwimmerCount_ = 0;
             rootNode_.ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
+                ++lastEntityCount_;
                 if (const auto* f = dynamic_cast<const FoodPellet*>(e.get())) {
                     foodEnergy += f->GetEnergy();
                 } else if (const auto* s = dynamic_cast<const Swimmer*>(e.get())) {
+                    ++lastSwimmerCount_;
                     swimmerEnergy += s->GetEnergy();
                 }
             });
