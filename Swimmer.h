@@ -40,6 +40,8 @@ private:
     std::vector<double> brainValues_;
     unsigned eggsLayed_;
 
+    Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, const Phenotype& phenotype);
+
     static std::vector<std::shared_ptr<Gene>> CreateDefaultGenome();
 
 };

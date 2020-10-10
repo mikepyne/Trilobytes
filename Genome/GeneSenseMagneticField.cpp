@@ -32,7 +32,7 @@ std::shared_ptr<Gene> GeneSenseMagneticField::Mutate() const
     return std::make_shared<GeneSenseMagneticField>(network, outputConnections, GetMutatedDominance(), GetMutatedMutationProbability());
 }
 
-void GeneSenseMagneticField::ExpressGene(const Swimmer& owner, Phenotype& target) const
+void GeneSenseMagneticField::ExpressGene(Swimmer& owner, Phenotype& target) const
 {
     target.senses.push_back(std::make_shared<SenseMagneticField>(network_, outputConnections_, owner));
 }

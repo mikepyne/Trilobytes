@@ -32,7 +32,7 @@ std::shared_ptr<Gene> GeneSenseRandom::Mutate() const
     return std::make_shared<GeneSenseRandom>(network, outputConnections, GetMutatedDominance(), GetMutatedMutationProbability());
 }
 
-void GeneSenseRandom::ExpressGene(const Swimmer& owner, Phenotype& target) const
+void GeneSenseRandom::ExpressGene(Swimmer& owner, Phenotype& target) const
 {
     target.senses.push_back(std::make_shared<SenseRandom>(network_, outputConnections_, owner));
 }

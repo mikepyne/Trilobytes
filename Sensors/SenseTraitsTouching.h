@@ -6,12 +6,12 @@
 
 class QPainter;
 
-class SenseEntitiesTouching final : public SenseTraitsBase {
+class SenseTraitsTouching final : public SenseTraitsBase {
 public:
-    SenseEntitiesTouching(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, Transform transform, std::vector<TraitNormaliser>&& toDetect);
-    virtual ~SenseEntitiesTouching() override {}
+    SenseTraitsTouching(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, Transform transform, std::vector<TraitNormaliser>&& toDetect);
+    virtual ~SenseTraitsTouching() override {}
 
-    virtual std::string_view GetName() const override { return "SenseTraitsTouching"; }
+    virtual std::string_view GetName() const override { return "TraitsTouching"; }
     virtual void Draw(QPainter& paint) const override;
 
 private:

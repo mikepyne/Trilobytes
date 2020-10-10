@@ -1,22 +1,31 @@
 #include "GeneFactory.h"
 
 #include "Random.h"
-#include "GenePigment.h"
 #include "GeneBrain.h"
-#include "GeneSenseEntitiesInArea.h"
-#include "GeneSenseEntitiesTouching.h"
+#include "GenePigment.h"
 #include "GeneSenseRandom.h"
+#include "GeneEffectorTail.h"
 #include "GeneSenseMagneticField.h"
-#include "GeneSenseEntityRaycast.h"
+#include "GeneSenseTraitsInArea.h"
+#include "GeneSenseTraitsTouching.h"
+#include "GeneSenseTraitsRaycast.h"
+#include "GeneSenseTraitsSelf.h"
+
+#include <vector>
 
 std::shared_ptr<Gene> GeneFactory::Random(unsigned brainWidth)
 {
-    switch (Random::Number(0, 6)) {
-    case 0 :
+    std::vector<std::function<std::shared_ptr<Gene>()>> genes{
+    []()
+    {
         return std::make_shared<GenePigment>();
-    case 1 :
+    },
+    [=]()
+    {
         return std::make_shared<GeneBrain>(Random::Number(1, 5), brainWidth, Random::Number(0.0, 1.0));
-    case 2 : {
+    },
+    [=]()
+    {
         std::vector<SenseTraitsBase::TraitNormaliser> traits;
         // Between 1 - 4 traits
         for (const SenseTraitsBase::Trait& trait : Random::CopyItems(Random::Number<size_t>(1, 4), SenseTraitsBase::ALL_TRAITS)) {
@@ -25,13 +34,18 @@ std::shared_ptr<Gene> GeneFactory::Random(unsigned brainWidth)
         unsigned hiddenLayers = Random::Number(0u, traits.size());
         Transform transform = { 0, Random::Number(0.0, 20.0), Random::Gaussian(0.0, EoBE::Pi) };
         double radius = Random::Number(5.0, 30.0);
-        return std::make_shared<GeneSenseEntitiesInArea>(std::move(traits), hiddenLayers, brainWidth, transform, radius);
-    }
-    case 3 :
+        return std::make_shared<GeneSenseTraitsInArea>(std::move(traits), hiddenLayers, brainWidth, transform, radius);
+    },
+    [=]()
+    {
         return std::make_shared<GeneSenseRandom>(Random::Number(1, 3), brainWidth);
-    case 4 :
+    },
+    [=]()
+    {
         return std::make_shared<GeneSenseMagneticField>(brainWidth);
-    case 5 : {
+    },
+    [=]()
+    {
         std::vector<SenseTraitsBase::TraitNormaliser> traits;
         // Between 1 - 4 traits
         for (const SenseTraitsBase::Trait& trait : Random::CopyItems(Random::Number<size_t>(1, 4), SenseTraitsBase::ALL_TRAITS)) {
@@ -39,9 +53,10 @@ std::shared_ptr<Gene> GeneFactory::Random(unsigned brainWidth)
         }
         unsigned hiddenLayers = Random::Number(0u, traits.size());
         Transform transform = { 0, Random::Number(0.0, 20.0), Random::Gaussian(0.0, EoBE::Pi) };
-        return std::make_shared<GeneSenseEntitiesTouching>(std::move(traits), hiddenLayers, brainWidth, transform);
-    }
-    case 6 : {
+        return std::make_shared<GeneSenseTraitsTouching>(std::move(traits), hiddenLayers, brainWidth, transform);
+    },
+    [=]()
+    {
         std::vector<SenseTraitsBase::TraitNormaliser> traits;
         // Between 1 - 4 traits
         for (const SenseTraitsBase::Trait& trait : Random::CopyItems(Random::Number<size_t>(1, 4), SenseTraitsBase::ALL_TRAITS)) {
@@ -49,8 +64,23 @@ std::shared_ptr<Gene> GeneFactory::Random(unsigned brainWidth)
         }
         unsigned hiddenLayers = Random::Number(0u, traits.size());
         Transform transform = { 0, Random::Number(0.0, 20.0), Random::Gaussian(0.0, EoBE::Pi) };
-        return std::make_shared<GeneSenseEntityRaycast>(std::move(traits), hiddenLayers, brainWidth, transform);
-    }
-    }
-    return nullptr;
+        return std::make_shared<GeneSenseTraitsRaycast>(std::move(traits), hiddenLayers, brainWidth, transform);
+    },
+    [=]()
+    {
+        std::vector<SenseTraitsBase::TraitNormaliser> traits;
+        // Between 1 - 4 traits
+        for (const SenseTraitsBase::Trait& trait : Random::CopyItems(Random::Number<size_t>(1, 4), SenseTraitsBase::ALL_TRAITS)) {
+            traits.push_back(SenseTraitsBase::DefaultNormalisation(trait));
+        }
+        unsigned hiddenLayers = Random::Number(0u, traits.size());
+        return std::make_shared<GeneSenseTraitsSelf>(std::move(traits), hiddenLayers, brainWidth);
+    },
+    [=]()
+    {
+        unsigned hiddenLayers = Random::Number(0u, 2u);
+        return std::make_shared<GeneEffectorTail>(hiddenLayers, brainWidth);
+    },
+    };
+    return Random::Item(genes)();
 }

@@ -27,6 +27,13 @@ public:
     /**
      * Applies the action to every entity that is contained within the specified
      * collision shape.
+     *
+     * FIXME entities overlapping quads may not be detected in egde cases, where
+     * they do overlap the shape, but are centred in a different quad, which the
+     * shape does not touch. Consider allowing entities to exist in more than
+     * one quad? (nope would tick multiple times) Then perhaps consider adding
+     * another list of entities to each quad, which is entities not within, but
+     * colliding with the quad.
      */
     template <typename Shape>
     void ForEachCollidingWith(const Shape& collide, const std::function<void(const std::shared_ptr<Entity>&)>& action) const

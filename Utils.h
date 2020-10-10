@@ -35,6 +35,8 @@ public:
     const T& First() const { return first_; }
     const T& Last() const { return last_; }
 
+    bool Contains(const T& value) const { return value >= Min() && value <= Max(); }
+
     double Similarity(const Range<T>& other) const
     {
         double overlap = static_cast<double>(std::min(Max(), other.Max()) - std::max(Min(), other.Min()));

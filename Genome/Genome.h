@@ -17,7 +17,7 @@ public:
 
     static std::shared_ptr<Genome> CreateOffspring(const Genome& aGenome, const Genome& bGenome);
 
-    Phenotype GetPhenoType(const Swimmer& owner) const;
+    Phenotype GetPhenoType(Swimmer& owner) const;
 
     void Mutate();
 

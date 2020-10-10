@@ -18,7 +18,7 @@ std::shared_ptr<Gene> GeneBrain::Mutate() const
     return std::make_shared<GeneBrain>(brain_->Mutated(), GetMutatedDominance(), GetMutatedMutationProbability());
 }
 
-void GeneBrain::ExpressGene(const Swimmer& /*owner*/, Phenotype& target) const
+void GeneBrain::ExpressGene(Swimmer& /*owner*/, Phenotype& target) const
 {
     target.brain = brain_;
 }

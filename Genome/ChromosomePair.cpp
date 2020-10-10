@@ -2,6 +2,7 @@
 
 #include "Random.h"
 #include "GeneFactory.h"
+#include "NeuralNetwork.h"
 
 ChromosomePair::ChromosomePair(std::vector<std::shared_ptr<Gene> >&& genes)
     : aChromosomeRange_(Random::Number<unsigned>(), Random::Number<unsigned>())
@@ -166,8 +167,7 @@ void ChromosomePair::Mutate()
              *
              * Perhaps each gene needs a "BrainWidthMutated(newWidth)" function?
              */
-            unsigned brainWidth = 7;
-            std::shared_ptr<Gene> randomGene = GeneFactory::Random(brainWidth);
+            std::shared_ptr<Gene> randomGene = GeneFactory::Random(NeuralNetwork::BRAIN_WIDTH);
             bool addToA = Random::Boolean();
             size_t randomLocation = Random::Number<size_t>(addToA ? aChromosomeRange_.Min() : bChromosomeRange_.Min(), addToA ? aChromosomeRange_.Max() : bChromosomeRange_.Max());
             addToA ? chromosomePair_[randomLocation].first = randomGene : chromosomePair_[randomLocation].second = randomGene;

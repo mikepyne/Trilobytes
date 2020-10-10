@@ -22,6 +22,9 @@ public:
         PassThrough,
     };
 
+    // FIXME work out how to not have this hard coded
+    static constexpr unsigned BRAIN_WIDTH = 7;
+
     /**
      * Creates a rectangular network of the specified width and height, with
      * random edge weights between 0.0 and 1.0.

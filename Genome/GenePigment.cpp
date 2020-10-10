@@ -34,7 +34,7 @@ std::shared_ptr<Gene> GenePigment::Mutate() const
                                          GetMutatedMutationProbability());
 }
 
-void GenePigment::ExpressGene(const Swimmer& /*owner*/, Phenotype& target) const
+void GenePigment::ExpressGene(Swimmer& /*owner*/, Phenotype& target) const
 {
     QPixmap canvas(1, 1);
     QPainter p(&canvas);

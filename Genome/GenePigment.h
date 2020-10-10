@@ -11,7 +11,7 @@ public:
 
 protected:
     virtual std::shared_ptr<Gene> Mutate() const override;
-    virtual void ExpressGene(const Swimmer& owner, Phenotype& target) const override;
+    virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 
 private:
     const double a_;

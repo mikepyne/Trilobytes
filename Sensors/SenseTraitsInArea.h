@@ -4,12 +4,12 @@
 #include "Shape.h"
 #include "SenseTraitsBase.h"
 
-class SenseEntitiesInArea final : public SenseTraitsBase {
+class SenseTraitsInArea final : public SenseTraitsBase {
 public:
-    SenseEntitiesInArea(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double radius, const Transform& transform, std::vector<TraitNormaliser>&& toDetect);
-    virtual ~SenseEntitiesInArea() override {}
+    SenseTraitsInArea(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double radius, const Transform& transform, std::vector<TraitNormaliser>&& toDetect);
+    virtual ~SenseTraitsInArea() override {}
 
-    virtual std::string_view GetName() const override { return "SenseTraitsInArea"; }
+    virtual std::string_view GetName() const override { return "TraitsInArea"; }
     virtual void Draw(QPainter& paint) const override;
 
 private:

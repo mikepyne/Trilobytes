@@ -45,11 +45,11 @@ public:
     {
         switch (trait) {
         case Trait::Red :
-            return { trait, { 0, 1.0 } };
+            return { trait, { 0, 0.9 } };
         case Trait::Green :
-            return { trait, { 0, 1.0 } };
+            return { trait, { 0, 0.9 } };
         case Trait::Blue :
-            return { trait, { 0, 1.0 } };
+            return { trait, { 0, 0.9 } };
         case Trait::Energy :
             return { trait, { 0_j, 500_j } };
         case Trait::Age :

@@ -1,6 +1,8 @@
 #ifndef SHAPEH
 #define SHAPEH
 
+#include "Utils.h"
+
 #include <limits>
 #include <math.h>
 #include <stdint.h>
@@ -31,6 +33,11 @@ struct Rect {
     const double right;
     const double bottom;
 };
+
+inline bool operator==(const Point& p1, const Point& p2)
+{
+    return p1.x == p2.x && p1.y == p2.y;
+}
 
 inline bool operator==(const Rect& r1, const Rect& r2)
 {
@@ -66,6 +73,31 @@ inline double GetBearing(const Point& from, const Point& to)
 inline Point ApplyOffset(Point start, double bearing, double distance)
 {
     return { start.x + (std::sin(bearing) * distance), start.y + (-std::cos(bearing) * distance) };
+}
+
+inline bool Contains(const Line& l, const Point& p)
+{
+    if (p == l.a || p == l.b) {
+        return true;
+    } else if (EoBE::Range<double>(l.a.x, l.b.x).Contains(p.x) && EoBE::Range<double>(l.a.y, l.b.y).Contains(p.y)) {
+        // Work out the slope of the line & a line connecting the point to the line
+        double ldx = l.b.x - l.a.x;
+        double ldy = l.b.y - l.a.y;
+        double pdx = l.b.x - p.x;
+        double pdy = l.b.y - p.y;
+
+        // Work out the slopes of the lines (checking for infinite slopes)
+        if (ldy == 0.0 || pdy == 0.0) {
+            return ldy == pdy && l.a.x == p.x && EoBE::Range<double>(l.a.x, l.b.x).Contains(p.x);
+        }
+
+
+        // Allow for floating point error
+        double lSlope = ldx / ldy;
+        double pSlope = pdx / pdy;
+        return std::abs(lSlope - pSlope) < 0.0000001;
+    }
+    return false;
 }
 
 inline bool Contains(const Circle& c, const Point& p)
@@ -120,24 +152,28 @@ inline bool Collides(const Line& l1, const Line& l2)
     return false;
 }
 
-inline bool Collides(const Line& l, const Circle& c)
+inline bool Collides(const Line& line, const Circle& circle)
 {
-    // Use Heron's formula
-    // Make a triangle between the line ends and the centre of the circle
-    // then find the "height" of the triangle between the centre  of the circle
-    // and the nearest point on the line
-    double sideA = std::sqrt(GetDistanceSquare({ c.x, c.y }, l.a));
-    double sideB = std::sqrt(GetDistanceSquare({ c.x, c.y }, l.b));
-    double sideC = std::sqrt(GetDistanceSquare(l.a, l.b)); // the base of the triangle
+    if (Contains(circle, line.a) || Contains(circle, line.b)) {
+        return true;
+    }
 
-    // s = halfTrianglePerimeter
-    double s = (sideA + sideB + sideC) / 2.0;
+    double lineLength = sqrt(GetDistanceSquare(line.a, line.b));
 
-    // Area = sqr(s * (s - sideA) * (s - sideB) * (s - sideC))
-    // Area = 0.5 * base * height // where base is sideC
-    // 0.5 * sideC * height = sqr(s * (s - sideA) * (s - sideB) * (s - sideC))
-    double height = 2 * (std::sqrt(s * (s - sideA) * (s - sideB) * (s - sideC)) / sideC);
-    return height <= c.radius;
+    // Dot product of line and circle
+    double lineDeltaX = line.b.x - line.a.x;
+    double lineDeltaY = line.b.y - line.a.y;
+    double dot = (((circle.x - line.a.x) * (lineDeltaX)) + ((circle.y - line.a.y) * (lineDeltaY))) / std::pow(lineLength , 2.0);
+
+    // Point on infinite line closest to circle
+    Point nearest{ line.a.x + (dot * (lineDeltaX)), line.a.y + (dot * (lineDeltaY)) };
+
+    // Check point is not past either end of the specified line
+    if (!Contains(line, nearest)) {
+        return false;
+    }
+
+  return std::sqrt(GetDistanceSquare({ circle.x, circle.y }, nearest)) <= circle.radius;
 }
 
 inline bool Collides(const Line& l, const Rect& r)

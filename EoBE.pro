@@ -23,13 +23,17 @@ SOURCES += \
     Genome/ChromosomePair.cpp \
     Genome/Gene.cpp \
     Genome/GeneBrain.cpp \
+    Genome/GeneEffectorBase.cpp \
+    Genome/GeneEffectorTail.cpp \
     Genome/GeneFactory.cpp \
     Genome/GenePigment.cpp \
-    Genome/GeneSenseEntitiesInArea.cpp \
-    Genome/GeneSenseEntitiesTouching.cpp \
-    Genome/GeneSenseEntityRaycast.cpp \
     Genome/GeneSenseMagneticField.cpp \
     Genome/GeneSenseRandom.cpp \
+    Genome/GeneSenseTraitsBase.cpp \
+    Genome/GeneSenseTraitsInArea.cpp \
+    Genome/GeneSenseTraitsRaycast.cpp \
+    Genome/GeneSenseTraitsSelf.cpp \
+    Genome/GeneSenseTraitsTouching.cpp \
     Genome/Genome.cpp \
     LineGraph.cpp \
     NeuralNetwork.cpp \
@@ -37,12 +41,13 @@ SOURCES += \
     NeuralNetworkInspector.cpp \
     QuadTree.cpp \
     Sensors/Sense.cpp \
-    Sensors/SenseEntitiesInArea.cpp \
-    Sensors/SenseEntitiesTouching.cpp \
-    Sensors/SenseEntityRaycast.cpp \
     Sensors/SenseMagneticField.cpp \
     Sensors/SenseRandom.cpp \
     Sensors/SenseTraitsBase.cpp \
+    Sensors/SenseTraitsInArea.cpp \
+    Sensors/SenseTraitsRaycast.cpp \
+    Sensors/SenseTraitsSelf.cpp \
+    Sensors/SenseTraitsTouching.cpp \
     Swimmer.cpp \
     Transform.cpp \
     Universe.cpp \
@@ -62,13 +67,17 @@ HEADERS += \
     Genome/ChromosomePair.h \
     Genome/Gene.h \
     Genome/GeneBrain.h \
+    Genome/GeneEffectorBase.h \
+    Genome/GeneEffectorTail.h \
     Genome/GeneFactory.h \
     Genome/GenePigment.h \
-    Genome/GeneSenseEntitiesInArea.h \
-    Genome/GeneSenseEntitiesTouching.h \
-    Genome/GeneSenseEntityRaycast.h \
     Genome/GeneSenseMagneticField.h \
     Genome/GeneSenseRandom.h \
+    Genome/GeneSenseTraitsBase.h \
+    Genome/GeneSenseTraitsInArea.h \
+    Genome/GeneSenseTraitsRaycast.h \
+    Genome/GeneSenseTraitsSelf.h \
+    Genome/GeneSenseTraitsTouching.h \
     Genome/Genome.h \
     Genome/Phenotype.h \
     LineGraph.h \
@@ -79,12 +88,13 @@ HEADERS += \
     QuadTree.h \
     Random.h \
     Sensors/Sense.h \
-    Sensors/SenseEntitiesInArea.h \
-    Sensors/SenseEntitiesTouching.h \
-    Sensors/SenseEntityRaycast.h \
     Sensors/SenseMagneticField.h \
     Sensors/SenseRandom.h \
     Sensors/SenseTraitsBase.h \
+    Sensors/SenseTraitsInArea.h \
+    Sensors/SenseTraitsRaycast.h \
+    Sensors/SenseTraitsSelf.h \
+    Sensors/SenseTraitsTouching.h \
     Shape.h \
     Swimmer.h \
     Transform.h \

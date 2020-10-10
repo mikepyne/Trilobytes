@@ -8,12 +8,11 @@
 #include "Genome/GenePigment.h"
 #include "Genome/GeneSenseRandom.h"
 #include "Genome/GeneSenseMagneticField.h"
-#include "Genome/GeneSenseEntityRaycast.h"
-#include "Genome/GeneSenseEntitiesInArea.h"
-#include "Genome/GeneSenseEntitiesTouching.h"
-
-// TODO remove this once the Tail isn't hard-coded
-#include "Effectors/EffectorTail.h"
+#include "Genome/GeneEffectorTail.h"
+#include "Genome/GeneSenseTraitsRaycast.h"
+#include "Genome/GeneSenseTraitsInArea.h"
+#include "Genome/GeneSenseTraitsTouching.h"
+#include "Genome/GeneSenseTraitsSelf.h"
 
 #include <QPainter>
 
@@ -24,17 +23,9 @@ Swimmer::Swimmer(Energy energy, const Transform& transform)
 {
 }
 
-// TODO prevent multiple re-calculation of phenotype
 Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome)
-    : Entity(energy, transform, 6.0, genome->GetPhenoType(*this).colour)
-    , genome_(genome)
-    , brain_(genome->GetPhenoType(*this).brain)
-    , senses_(genome->GetPhenoType(*this).senses)
-//    , effectors_(genome.GetPhenoType(*this).effectors)
-    , brainValues_(brain_ ? brain_->GetInputCount() : 0, 0.0)
-    , eggsLayed_(0)
+    : Swimmer(energy, transform, genome, genome->GetPhenoType(*this))
 {
-    effectors_.push_back(std::make_shared<EffectorTail>(std::make_shared<NeuralNetwork>(0, 3, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(NeuralNetworkConnector(brain_ ? brain_->GetOutputCount() : 7, 3)), *this));
 }
 
 Swimmer::~Swimmer()
@@ -49,13 +40,13 @@ std::shared_ptr<Entity> Swimmer::GiveBirth(const std::shared_ptr<Genome>& other)
 
 void Swimmer::AdjustVelocity(double adjustment)
 {
-    UseEnergy(500_uj * std::pow(adjustment, 2.0));
+    UseEnergy(350_uj * std::pow(adjustment, 2.0));
     SetVelocity(GetVelocity() + adjustment);
 }
 
 void Swimmer::AdjustBearing(double adjustment)
 {
-    UseEnergy(10_uj * std::pow(adjustment, 2.0));
+    UseEnergy(100_uj * std::pow(adjustment, 2.0));
     SetBearing(GetTransform().rotation + adjustment);
 }
 
@@ -110,29 +101,44 @@ void Swimmer::DrawImpl(QPainter& paint)
     }
 }
 
+Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, const Phenotype& phenotype)
+    : Entity(energy, transform, 6.0, phenotype.colour)
+    , genome_(genome)
+    , brain_(phenotype.brain)
+    , senses_(phenotype.senses)
+    , effectors_(phenotype.effectors)
+    , brainValues_(brain_->GetInputCount(), 0.0)
+    , eggsLayed_(0)
+    {
+    }
+
 std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
 {
-    unsigned brainWidth = 7;
     return {
         std::make_shared<GenePigment>(),
         std::make_shared<GenePigment>(),
-        std::make_shared<GeneBrain>(3, brainWidth, 0.5),
-        std::make_shared<GeneSenseRandom>(1, brainWidth),
-        std::make_shared<GeneSenseMagneticField>(brainWidth),
-        std::make_shared<GeneSenseEntitiesInArea>(std::vector{
-                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
-                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Green), },
-                                                  0, brainWidth, Transform{ 0, 24,  0.6}, 20),
-        std::make_shared<GeneSenseEntitiesInArea>(std::vector{
-                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
-                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Green), },
-                                                  0, brainWidth, Transform{ 0, 24, -0.6}, 20),
-        std::make_shared<GeneSenseEntityRaycast>(std::vector{
+        std::make_shared<GeneBrain>(3, NeuralNetwork::BRAIN_WIDTH, 0.5),
+        std::make_shared<GeneSenseRandom>(1, NeuralNetwork::BRAIN_WIDTH),
+        std::make_shared<GeneSenseMagneticField>(NeuralNetwork::BRAIN_WIDTH),
+        std::make_shared<GeneSenseTraitsInArea>(std::vector{
+                                                    SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
+                                                    SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Green), },
+                                                0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, 24,  0.6}, 20),
+        std::make_shared<GeneSenseTraitsInArea>(std::vector{
+                                                    SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
+                                                    SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Green), },
+                                                0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, 24, -0.6}, 20),
+        std::make_shared<GeneSenseTraitsRaycast>(std::vector{
                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Size), },
-                                                 0, brainWidth, Transform{ 0, -30, 0 }),
-        std::make_shared<GeneSenseEntitiesTouching>(std::vector{
-                                                        SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Age), },
-                                                    0, brainWidth, Transform{ 0, 0, 0 }),
+                                                 0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, -30, 0 }),
+        std::make_shared<GeneSenseTraitsTouching>(std::vector{
+                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Age), },
+                                                  0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, 0, 0 }),
+        std::make_shared<GeneSenseTraitsSelf>(std::vector{
+                                                  SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Age),
+                                                  SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Energy), },
+                                              0, NeuralNetwork::BRAIN_WIDTH),
+        std::make_shared<GeneEffectorTail>(0, NeuralNetwork::BRAIN_WIDTH),
     };
 }

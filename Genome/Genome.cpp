@@ -35,13 +35,16 @@ std::shared_ptr<Genome> Genome::CreateOffspring(const Genome& aGenome, const Gen
     return {};
 }
 
-Phenotype Genome::GetPhenoType(const Swimmer& owner) const
+Phenotype Genome::GetPhenoType(Swimmer& owner) const
 {
     Phenotype phenotype;
     ForEach([&](const Gene& gene)
     {
         gene.ExpressGene(owner, phenotype);
     });
+    if (!phenotype.brain) {
+        phenotype.brain = std::make_shared<NeuralNetwork>(0, NeuralNetwork::BRAIN_WIDTH, NeuralNetwork::InitialWeights::PassThrough);
+    }
     return phenotype;
 }
 

@@ -20,7 +20,7 @@ public:
     // change to it, when they're all shared_ptrs
     virtual std::shared_ptr<Gene> Mutate() const = 0;
 
-    virtual void ExpressGene(const Swimmer& owner, Phenotype& target) const = 0;
+    virtual void ExpressGene(Swimmer& owner, Phenotype& target) const = 0;
 
     // TODO (maybe...) Splice (implement a function that will create a new Gene by splicing two parent genes together)
     double GetDominance() const { return dominance_; }

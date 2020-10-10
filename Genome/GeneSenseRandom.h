@@ -12,7 +12,7 @@ public:
     virtual ~GeneSenseRandom() override final {}
 
     virtual std::shared_ptr<Gene> Mutate() const override;
-    virtual void ExpressGene(const Swimmer& owner, Phenotype& target) const override;
+    virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 
 private:
     std::shared_ptr<NeuralNetwork> network_;

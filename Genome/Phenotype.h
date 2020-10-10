@@ -3,6 +3,7 @@
 
 #include "Sensors/Sense.h"
 #include "NeuralNetwork.h"
+#include "Effectors/Effector.h"
 
 #include <QColor>
 
@@ -14,6 +15,7 @@ public:
     QColor colour;
     std::vector<std::shared_ptr<Sense>> senses;
     std::shared_ptr<NeuralNetwork> brain;
+    std::vector<std::shared_ptr<Effector>> effectors;
 };
 
 #endif // PHENOTYPE_H
