@@ -47,14 +47,14 @@ private:
     bool spawnFood_ = true;
     bool pauseSim_ = false;
     bool respawn_ = true;
-    bool followFittest_ = false;
-
+    bool autoSelectFittest_ = false;
+    bool trackSelectedEntity_ = false;
+    std::shared_ptr<Entity> selectedEntity_;
     unsigned lastEntityCount_ = 0;
     unsigned lastSwimmerCount_ = 0;
 
     QuadTree rootNode_;
     std::vector<std::shared_ptr<FeedDispenser>> feedDispensers_;
-    std::shared_ptr<Entity> following_;
 
     QTimer mainThread_;
 
@@ -62,6 +62,7 @@ private:
 
     Point TransformLocalToSimCoords(const Point& local);
     Point TransformSimToLocalCoords(const Point& sim);
+    void SelectFittestSwimmer();
 };
 
 #endif // UNIVERSE_H

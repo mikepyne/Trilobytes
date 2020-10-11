@@ -19,6 +19,13 @@ Egg::~Egg()
 
 void Egg::TickImpl(EntityContainerInterface& container)
 {
+    // TODO could delay depending on ammount of energy in the egg
+    // could delay based on the number of genes / their complexity
+    // could add an iterator to genome, and each tich process the next gene, use some energy and hatch with remaining energy once done
+
+    // TODO add a gene to decide how much energy to pass to eggs
+
+
     if (hatchingDelay_ > 0) {
         hatchingDelay_--;
     } else {

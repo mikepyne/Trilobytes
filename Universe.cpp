@@ -62,14 +62,14 @@ void Universe::mousePressEvent(QMouseEvent* event)
         dragX_ = event->x();
         dragY_ = event->y();
     } else if (event->button() == Qt::RightButton) {
-        following_.reset();
+        selectedEntity_.reset();
         Point simLocation = TransformLocalToSimCoords({ static_cast<double>(event->x()), static_cast<double>(event->y()) });
         rootNode_.ForEachCollidingWith(simLocation, [&](const std::shared_ptr<Entity>& e)
         {
             if (Swimmer* swimmer = dynamic_cast<Swimmer*>(e.get()); swimmer != nullptr) {
                 MainWindow* mainWindow = dynamic_cast<MainWindow*>(parentWidget()->parentWidget());
                 assert(mainWindow);
-                following_ = e;
+                selectedEntity_ = e;
                 mainWindow->SetSwimmerToInspect(*swimmer, rootNode_.GetContainer());
                 update();
             }
@@ -102,11 +102,20 @@ void Universe::keyPressEvent(QKeyEvent* event)
     case Qt::Key_G :
         emit OnGraphResetRequested();
         break;
+    case Qt::Key_A :
+        autoSelectFittest_ = !autoSelectFittest_;
+        trackSelectedEntity_ = autoSelectFittest_;
+        break;
+    case Qt::Key_T :
+        trackSelectedEntity_ = !trackSelectedEntity_;
+        break;
     case Qt::Key_K :
-        followFittest_ = !followFittest_;
+        SelectFittestSwimmer();
+        trackSelectedEntity_ = true;
         break;
     }
 }
+
 
 void Universe::paintEvent(QPaintEvent*)
 {
@@ -134,9 +143,11 @@ void Universe::paintEvent(QPaintEvent*)
     p.drawText(0, line += 15, "Spawn Food (F): " + QVariant(spawnFood_).toString());
     p.drawText(0, line += 15, "Respawn (R)");
     p.drawText(0, line += 15, "Reset Graph (G)");
-    p.drawText(0, line += 15, "Find Fittest (K): " + QVariant(followFittest_).toString());
-    if (following_) {
-        auto f = dynamic_cast<Swimmer*>(following_.get());
+    p.drawText(0, line += 15, "Select Fittest (K)");
+    p.drawText(0, line += 15, "Auto Select Fittest (A): " + QVariant(autoSelectFittest_).toString());
+    p.drawText(0, line += 15, "Track Selected (T): " + QVariant(trackSelectedEntity_).toString());
+    if (selectedEntity_) {
+        auto f = dynamic_cast<Swimmer*>(selectedEntity_.get());
         p.drawText(0, line += 15, QString("   - %1 Ticks Old").arg(f->GetAge()));
         p.drawText(0, line += 15, QString("   - Laid %1 Eggs").arg(f->GetEggsLayedCount()));
         p.drawText(0, line += 15, QString("   - Descendants %1/%2").arg(f->GetLivingDescendantsCount()).arg(f->GetTotalDescendantsCount()));
@@ -149,25 +160,16 @@ void Universe::Thread()
     if (!pauseSim_) {
         rootNode_.Tick();
 
-        if (followFittest_) {
-            unsigned mostLivingChildren = 0;
-            rootNode_.ForEach([&](const std::shared_ptr<Entity>& e)
-            {
-                if (const auto* s = dynamic_cast<const Swimmer*>(e.get())) {
-                    if (s->GetLivingDescendantsCount() > mostLivingChildren) {
-                        mostLivingChildren = s->GetLivingDescendantsCount();
-                        following_ = e;
-                    }
-                }
-            });
+        if (autoSelectFittest_) {
+            SelectFittestSwimmer();
         }
 
-        if (following_ && following_->Alive()) {
-            simX_ = -following_->GetLocation().x;
-            simY_ = -following_->GetLocation().y;
+        if (trackSelectedEntity_ && selectedEntity_ && selectedEntity_->Alive()) {
+            simX_ = -selectedEntity_->GetLocation().x;
+            simY_ = -selectedEntity_->GetLocation().y;
             MainWindow* mainWindow = dynamic_cast<MainWindow*>(parentWidget()->parentWidget());
             assert(mainWindow);
-            Swimmer& s = dynamic_cast<Swimmer&>(*following_.get());
+            Swimmer& s = dynamic_cast<Swimmer&>(*selectedEntity_.get());
             mainWindow->SetSwimmerToInspect(s, rootNode_.GetContainer());
         }
 
@@ -245,4 +247,17 @@ Point Universe::TransformSimToLocalCoords(const Point& sim)
     x += (width() / 2);
     y += (height() / 2);
     return { x, y };
+}
+
+void Universe::SelectFittestSwimmer() {
+    unsigned mostLivingChildren = 0;
+    rootNode_.ForEach([&](const std::shared_ptr<Entity>& e)
+    {
+        if (const auto* s = dynamic_cast<const Swimmer*>(e.get())) {
+            if (s->GetLivingDescendantsCount() > mostLivingChildren) {
+                mostLivingChildren = s->GetLivingDescendantsCount();
+                selectedEntity_ = e;
+            }
+        }
+    });
 }
