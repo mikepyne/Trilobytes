@@ -38,6 +38,8 @@ private:
     std::shared_ptr<NeuralNetwork> network_;
     std::shared_ptr<NeuralNetworkConnector> outputConnections_;
     std::vector<double> inputs_;
+
+    virtual void PrepareToPrime() {}
 };
 
 #endif // SENSE_H

@@ -7,6 +7,7 @@
 #include "Genome/GeneBrain.h"
 #include "Genome/GenePigment.h"
 #include "Genome/GeneSenseRandom.h"
+#include "Genome/GeneSenseSine.h"
 #include "Genome/GeneSenseMagneticField.h"
 #include "Genome/GeneEffectorTail.h"
 #include "Genome/GeneSenseTraitsRaycast.h"
@@ -116,6 +117,7 @@ Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Geno
     , senses_(phenotype.senses)
     , effectors_(phenotype.effectors)
     , brainValues_(brain_->GetInputCount(), 0.0)
+    , eggsLayed_(0)
     , totalDescendantCount_(0)
     , extantDescendantCount_(0)
 {
@@ -157,6 +159,7 @@ std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
         std::make_shared<GenePigment>(),
         std::make_shared<GeneBrain>(3, NeuralNetwork::BRAIN_WIDTH, 0.5),
         std::make_shared<GeneSenseRandom>(1, NeuralNetwork::BRAIN_WIDTH),
+        std::make_shared<GeneSenseSine>(1, NeuralNetwork::BRAIN_WIDTH),
         std::make_shared<GeneSenseMagneticField>(NeuralNetwork::BRAIN_WIDTH),
         std::make_shared<GeneSenseTraitsInArea>(std::vector{
                                                     SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),

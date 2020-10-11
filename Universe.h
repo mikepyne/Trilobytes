@@ -49,6 +49,9 @@ private:
     bool respawn_ = true;
     bool followFittest_ = false;
 
+    unsigned lastEntityCount_ = 0;
+    unsigned lastSwimmerCount_ = 0;
+
     QuadTree rootNode_;
     std::vector<std::shared_ptr<FeedDispenser>> feedDispensers_;
     std::shared_ptr<Entity> following_;

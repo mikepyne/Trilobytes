@@ -29,6 +29,7 @@ SOURCES += \
     Genome/GenePigment.cpp \
     Genome/GeneSenseMagneticField.cpp \
     Genome/GeneSenseRandom.cpp \
+    Genome/GeneSenseSine.cpp \
     Genome/GeneSenseTraitsBase.cpp \
     Genome/GeneSenseTraitsInArea.cpp \
     Genome/GeneSenseTraitsRaycast.cpp \
@@ -43,6 +44,7 @@ SOURCES += \
     Sensors/Sense.cpp \
     Sensors/SenseMagneticField.cpp \
     Sensors/SenseRandom.cpp \
+    Sensors/SenseSine.cpp \
     Sensors/SenseTraitsBase.cpp \
     Sensors/SenseTraitsInArea.cpp \
     Sensors/SenseTraitsRaycast.cpp \
@@ -73,6 +75,7 @@ HEADERS += \
     Genome/GenePigment.h \
     Genome/GeneSenseMagneticField.h \
     Genome/GeneSenseRandom.h \
+    Genome/GeneSenseSine.h \
     Genome/GeneSenseTraitsBase.h \
     Genome/GeneSenseTraitsInArea.h \
     Genome/GeneSenseTraitsRaycast.h \
@@ -90,6 +93,7 @@ HEADERS += \
     Sensors/Sense.h \
     Sensors/SenseMagneticField.h \
     Sensors/SenseRandom.h \
+    Sensors/SenseSine.h \
     Sensors/SenseTraitsBase.h \
     Sensors/SenseTraitsInArea.h \
     Sensors/SenseTraitsRaycast.h \

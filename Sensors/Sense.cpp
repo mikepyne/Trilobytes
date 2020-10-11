@@ -25,6 +25,7 @@ void Sense::Draw(QPainter& /*paint*/) const
 void Sense::Tick(std::vector<double>& outputs, const EntityContainerInterface& entities)
 {
     std::fill(std::begin(inputs_), std::end(inputs_), 0.0);
+    PrepareToPrime();
     PrimeInputs(inputs_, entities);
     network_->ForwardPropogate(inputs_);
     outputConnections_->PassForward(inputs_, outputs);
