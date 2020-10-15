@@ -19,8 +19,7 @@ void SenseTraitsTouching::Draw(QPainter& paint) const
 
 Point SenseTraitsTouching::GetPoint() const
 {
-    Transform t = owner_.GetTransform() + transform_;
-    return { t.x, t.y };
+    return ApplyOffset(owner_.GetLocation(), transform_.rotation + owner_.GetTransform().rotation, GetDistance({ 0, 0 }, { transform_.x, transform_.y }));
 }
 
 void SenseTraitsTouching::FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity&, const double&)>& forEachEntity) const

@@ -44,7 +44,12 @@ inline bool operator==(const Rect& r1, const Rect& r2)
     return r1.left == r2.left && r1.top == r2.top && r1.right == r2.right && r1.bottom == r2.bottom;
 }
 
-inline double GetDistanceSquare(const Point& a, const Point& b)
+inline double GetDistance(const Point& a, const Point& b)
+{
+    return std::hypot(a.x - b.x, a.y - b.y);
+}
+
+[[deprecated("Use GetDistance for efficient distance calculation")]] inline double GetDistanceSquare(const Point& a, const Point& b)
 {
     return std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2);
 }

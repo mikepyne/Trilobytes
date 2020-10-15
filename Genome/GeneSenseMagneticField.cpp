@@ -17,6 +17,10 @@ GeneSenseMagneticField::GeneSenseMagneticField(const std::shared_ptr<NeuralNetwo
 
 std::shared_ptr<Gene> GeneSenseMagneticField::Mutate() const
 {
+    // TODO allow the Sense to evolve exactly where it points to
+    // TODO perhaps threee nodes, 2 for direction (-1 to 1 facing point to not facing point, 
+    // -1 to 1 left side facing to right side facing, 
+    // & configurable range for configurable distance)
     std::shared_ptr<NeuralNetwork> network = network_;
     std::shared_ptr<NeuralNetworkConnector> outputConnections = outputConnections_;
 

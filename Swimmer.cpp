@@ -107,6 +107,11 @@ void Swimmer::DrawImpl(QPainter& paint)
         sense->Draw(paint);
         paint.restore();
     }
+    for (auto& effector : effectors_) {
+        paint.save();
+        effector->Draw(paint);
+        paint.restore();
+    }
 }
 
 Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, const Phenotype& phenotype, std::shared_ptr<Swimmer>&& mother)
@@ -152,6 +157,7 @@ void Swimmer::DescendantDied()
     }
 }
 
+// TODO this ought to live elsewhere
 std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
 {
     return {
@@ -159,8 +165,6 @@ std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
         std::make_shared<GenePigment>(),
         std::make_shared<GeneBrain>(3, NeuralNetwork::BRAIN_WIDTH, 0.5),
         std::make_shared<GeneSenseRandom>(1, NeuralNetwork::BRAIN_WIDTH),
-        std::make_shared<GeneSenseSine>(1, NeuralNetwork::BRAIN_WIDTH),
-        std::make_shared<GeneSenseMagneticField>(NeuralNetwork::BRAIN_WIDTH),
         std::make_shared<GeneSenseTraitsInArea>(std::vector{
                                                     SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
                                                     SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Green), },
@@ -174,8 +178,8 @@ std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Size), },
                                                  0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, -30, 0 }),
         std::make_shared<GeneSenseTraitsTouching>(std::vector{
-                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Age), },
-                                                  0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, 0, 0 }),
+                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Energy), },
+                                                  0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, 7.5, 0 }),
         std::make_shared<GeneSenseTraitsSelf>(std::vector{
                                                   SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Age),
                                                   SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Energy), },

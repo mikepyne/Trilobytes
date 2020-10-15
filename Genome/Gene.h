@@ -4,7 +4,7 @@
 #include <memory>
 
 class Swimmer;
-class Phenotype;
+struct Phenotype;
 
 class Gene {
 public:

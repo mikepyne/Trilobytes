@@ -6,7 +6,7 @@ Effector::Effector(const std::shared_ptr<NeuralNetwork>& network, const std::sha
     : owner_(owner)
     , network_(network)
     , inputConnections_(inputConnections)
-    , outputs_(3, 0.0)
+    , outputs_(inputConnections->GetOutputCount(), 0.0)
 {
 }
 

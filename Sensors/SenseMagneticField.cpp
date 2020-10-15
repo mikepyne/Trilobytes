@@ -13,6 +13,7 @@ SenseMagneticField::SenseMagneticField(const std::shared_ptr<NeuralNetwork>& net
 
 void SenseMagneticField::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface&) const
 {
+    // TODO need the angle to be relative to the direction the swimmer is pointing (positive if facing the )
     inputs.at(0) = GetBearing(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, Point{ 0, 0 }) / EoBE::Pi;
     inputs.at(1) = 2 * std::tanh(GetDistanceSquare(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, Point{ 0, 0 }) / 500000) - 1.0;
 }
