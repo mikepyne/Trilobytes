@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "Universe.h"
+
 #include <QMainWindow>
 #include <QImage>
 
@@ -22,5 +24,6 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    std::shared_ptr<Universe> universe_;
 };
 #endif // MAINWINDOW_H

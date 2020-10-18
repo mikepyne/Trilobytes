@@ -8,7 +8,7 @@
 class LineGraph : public QWidget {
     Q_OBJECT
 public:
-    LineGraph(QWidget* parent);
+    LineGraph(QWidget* parent = nullptr);
 
     void PushBack(QRgb colour, double datum);
     void Reset();

@@ -53,6 +53,7 @@ SOURCES += \
     Swimmer.cpp \
     Transform.cpp \
     Universe.cpp \
+    UniverseWidget.cpp \
     Utils.cpp \
     main.cpp \
     MainWindow.cpp
@@ -103,6 +104,7 @@ HEADERS += \
     Swimmer.h \
     Transform.h \
     Universe.h \
+    UniverseWidget.h \
     Utils.h
 
 FORMS += \

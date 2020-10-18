@@ -8,7 +8,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->universe->SetupGraphs(*ui->graph);
+    universe_ = std::make_shared<Universe>(*(ui->universe));
+    ui->universe->SetUniverse(universe_);
 }
 
 MainWindow::~MainWindow()

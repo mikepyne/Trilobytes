@@ -16,12 +16,13 @@ public:
     QuadTree(const Rect& startingArea);
 
     void Tick();
-    void Draw(QPainter& paint);
+    void Draw(QPainter& paint) const;
 
     EntityContainerInterface& GetContainer() { return *root_; }
     void AddEntity(const std::shared_ptr<Entity>& entity);
     uint64_t EntityCount();
     void SetEntityCapacity(uint64_t target, uint64_t leeway);
+    void Clear();
     void ForEach(const std::function<void(const std::shared_ptr<Entity>&)>& action) const;
 
     /**
@@ -57,15 +58,16 @@ private:
     public:
         Quad(const Rect& area, QuadTree& owner, Quad* parent);
         Quad(const Rect& area, QuadTree& owner, std::vector<std::shared_ptr<Quad>>&& children);
-        virtual ~Quad() override final;
+        virtual ~Quad() override;
 
         static std::vector<std::shared_ptr<Quad>> CreateChildren(Rect parentRect, QuadTree& baseTree, Quad* parent);
         virtual void AddEntity(const std::shared_ptr<Entity>& entity) override final;
 
         void TickRecursive();
         void ResolveRecursive();
-        void DrawRecursive(QPainter& paint);
+        void DrawRecursive(QPainter& paint) const;
         void RehomeRecursive(const std::shared_ptr<Entity>& entity, bool delayed);
+        void ClearRecursive();
         void ForEachRecursive(const std::function<void(const std::shared_ptr<Entity>&)>& action) const;
         uint64_t RecursiveEntityCount() const;
 

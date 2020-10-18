@@ -26,7 +26,7 @@ void QuadTree::Tick()
     root_->ResolveRecursive();
 }
 
-void QuadTree::Draw(QPainter& paint)
+void QuadTree::Draw(QPainter& paint) const
 {
     root_->DrawRecursive(paint);
 }
@@ -47,6 +47,12 @@ void QuadTree::SetEntityCapacity(uint64_t target, uint64_t leeway)
     leewayCount_ = leeway;
     root_->Rebalance(targetCount_, leewayCount_);
     requiresRebalance_ = false;
+}
+
+void QuadTree::Clear()
+{
+    root_->ClearRecursive();
+    root_->Rebalance(targetCount_, leewayCount_);
 }
 
 void QuadTree::ForEach(const std::function<void (const std::shared_ptr<Entity>&)>& action) const
@@ -175,7 +181,7 @@ void QuadTree::Quad::ResolveRecursive()
     }
 }
 
-void QuadTree::Quad::DrawRecursive(QPainter& paint)
+void QuadTree::Quad::DrawRecursive(QPainter& paint) const
 {
     paint.setBrush(QColor(200, 225, 255, 0));
     paint.drawRect(QRectF(QPointF(rect_.left, rect_.top), QPointF(rect_.right, rect_.bottom)));
@@ -215,6 +221,14 @@ void QuadTree::Quad::RehomeRecursive(const std::shared_ptr<Entity>& entity, bool
         baseTree_.ExpandRoot();
         RehomeRecursive(entity, delayed);
     }
+}
+
+void QuadTree::Quad::ClearRecursive()
+{
+    children_.clear();
+    entities_.clear();
+    enteringEntities_.clear();
+    exitingEntities_.clear();
 }
 
 void QuadTree::Quad::ForEachRecursive(const std::function<void(const std::shared_ptr<Entity>&)>& action) const
