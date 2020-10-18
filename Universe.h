@@ -17,9 +17,10 @@
  * Allows the Universe, which has no other notion of being observed, let an
  * observer know where to look.
  */
-class UniverseFocusInterface {
+class UniverseObserver {
 public:
-    virtual void SetFocus(const Point& focus) = 0;
+    virtual void SuggestFocus(const Point& focus) = 0;
+    virtual void SuggestUpdate() = 0;
 };
 
 class Universe {
@@ -31,7 +32,7 @@ public:
     enum class TaskHandle : size_t {
     };
 
-    Universe(UniverseFocusInterface& focusInterface);
+    Universe(UniverseObserver& focusInterface);
 
     void SetPaused(bool paused) { pauseSim_ = paused; }
     void SetSpawnFood(bool spawn) { spawnFood_ = spawn; }
@@ -41,13 +42,6 @@ public:
     void Reset() {  reset_ = true; }
     void SelectEntity(const Point& location);
     void SelectFittestSwimmer();
-
-    bool GetPaused() const { return pauseSim_; }
-    bool GetSpawnFood() const { return spawnFood_; }
-    bool GetAutoSelectFittest() const { return autoSelectFittest_; }
-    bool GetTrackSelected() const { return trackSelectedEntity_; }
-    void Render(QPainter& painter) const;
-
     /**
      * @brief The Task system allows clients to have code run each tick, without
      * the Univers neding to know implementation specifics. For example, graphs
@@ -57,22 +51,19 @@ public:
      *
      * @return A handle that can be used to remove the task in the future.
      */
-    TaskHandle AddTask(std::function<void(uint64_t tick)>&& task)
-    {
-        // Find lowest value task handle not in use
-        TaskHandle newHandle = static_cast<TaskHandle>(0);
-        for(auto& [ handle, task ] : perTickTasks_) {
-            (void) task; // unused
-            if (newHandle == handle) {
-                newHandle = static_cast<TaskHandle>(static_cast<size_t>(newHandle) + 1);
-            }
-        }
-        perTickTasks_.insert({ newHandle, std::move(task) });
-        return newHandle;
-    }
+    TaskHandle AddTask(std::function<void(uint64_t tick)>&& task);
+    void RemoveTask(const TaskHandle& handle);
+
+    bool GetPaused() const { return pauseSim_; }
+    bool GetSpawnFood() const { return spawnFood_; }
+    bool GetAutoSelectFittest() const { return autoSelectFittest_; }
+    bool GetTrackSelected() const { return trackSelectedEntity_; }
+    void Render(QPainter& painter) const;
+    void ForEach(const std::function<void (const std::shared_ptr<Entity>& e)>& action) const;
+
 
 private:
-    UniverseFocusInterface& focusInterface_;
+    UniverseObserver& observerInterface_;
 
     bool spawnFood_ = true;
     bool pauseSim_ = false;

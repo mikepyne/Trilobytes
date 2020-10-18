@@ -6,15 +6,17 @@
 #include "Random.h"
 #include "MainWindow.h"
 
+#include <QVariant>
+
 // TODO RenderSettings struct to contain such as showQuads, showSenseRanges, showPole, showFoodSpawnArea
 
-Universe::Universe(UniverseFocusInterface& focusInterface)
-    : focusInterface_(focusInterface)
+Universe::Universe(UniverseObserver& focusInterface)
+    : observerInterface_(focusInterface)
     , rootNode_({0, 0, 1000, 1000})
 {
     Reset();
 
-    focusInterface_.SetFocus({0,0});
+    observerInterface_.SuggestFocus({0,0});
     /*
      * QT hack to get this running in the QT event loop (necessary for
      * drawing anything, not ideal for running the Sim quickly...)
@@ -50,6 +52,26 @@ void Universe::SelectFittestSwimmer() {
             }
         }
     });
+    observerInterface_.SuggestUpdate();
+}
+
+Universe::TaskHandle Universe::AddTask(std::function<void (uint64_t)>&& task)
+{
+    // Find lowest value task handle not in use
+    TaskHandle newHandle = static_cast<TaskHandle>(0);
+    for(auto& [ handle, task ] : perTickTasks_) {
+        (void) task; // unused
+        if (newHandle == handle) {
+            newHandle = static_cast<TaskHandle>(static_cast<size_t>(newHandle) + 1);
+        }
+    }
+    perTickTasks_.insert({ newHandle, std::move(task) });
+    return newHandle;
+}
+
+void Universe::RemoveTask(const Universe::TaskHandle& handle)
+{
+    perTickTasks_.erase(handle);
 }
 
 void Universe::Render(QPainter& p) const
@@ -82,6 +104,11 @@ void Universe::Render(QPainter& p) const
     }
 }
 
+void Universe::ForEach(const std::function<void (const std::shared_ptr<Entity>&)>& action) const
+{
+    rootNode_.ForEach(action);
+}
+
 void Universe::Thread()
 {
     if (reset_) {
@@ -97,11 +124,12 @@ void Universe::Thread()
         feedDispensers_.push_back(std::make_shared<FeedDispenser>(rootNode_, -1000, 0, 950, 0.001));
 
         for (auto& feeder : feedDispensers_) {
-            focusInterface_.SetFocus({ feeder->GetX(), feeder->GetY() });
+            observerInterface_.SuggestFocus({ feeder->GetX(), feeder->GetY() });
             feeder->AddPelletsImmediately(feeder->GetMaxPellets() / 8);
         }
 
         rootNode_.SetEntityCapacity(25, 5);
+        observerInterface_.SuggestUpdate();
     }
 
     if (respawn_) {
@@ -115,10 +143,11 @@ void Universe::Thread()
                 rootNode_.AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ swimmerX, swimmerY, 0 }));
             }
         }
+        observerInterface_.SuggestUpdate();
     }
 
     if (!pauseSim_) {
-
+        observerInterface_.SuggestUpdate();
         rootNode_.Tick();
 
         if (autoSelectFittest_) {
@@ -126,7 +155,7 @@ void Universe::Thread()
         }
 
         if (trackSelectedEntity_ && selectedEntity_ && selectedEntity_->Alive()) {
-            focusInterface_.SetFocus( { selectedEntity_->GetLocation().x, selectedEntity_->GetLocation().y });
+            observerInterface_.SuggestFocus( { selectedEntity_->GetLocation().x, selectedEntity_->GetLocation().y });
         }
 
         if (spawnFood_) {
@@ -135,26 +164,6 @@ void Universe::Thread()
             }
         }
 
-        // static uint64_t tick = 0;
-        // if (++tick % 100 == 0) {
-        //     Energy foodEnergy = 0;
-        //     Energy swimmerEnergy = 0;
-        //     lastEntityCount_ = 0;
-        //     lastSwimmerCount_ = 0;
-        //     rootNode_.ForEach([&](const std::shared_ptr<Entity>& e) -> void
-        //     {
-        //         ++lastEntityCount_;
-        //         if (const auto* f = dynamic_cast<const FoodPellet*>(e.get())) {
-        //             foodEnergy += f->GetEnergy();
-        //         } else if (const auto* s = dynamic_cast<const Swimmer*>(e.get())) {
-        //             ++lastSwimmerCount_;
-        //             swimmerEnergy += s->GetEnergy();
-        //         }
-        //     });
-        //     emit OnFoodEnergySampled(foodEnergy);
-        //     emit OnSwimmerEnergySampled(swimmerEnergy);
-        // }
-
         for (auto& [handle, task] : perTickTasks_) {
             task(tickIndex_);
         }
@@ -162,5 +171,3 @@ void Universe::Thread()
         ++tickIndex_;
     }
 }
-
-

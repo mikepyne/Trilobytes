@@ -7,13 +7,14 @@
 #include <QWidget>
 #include <QTimer>
 
-class UniverseWidget final : public QWidget, public UniverseFocusInterface {
+class UniverseWidget final : public QWidget, public UniverseObserver {
     Q_OBJECT
 public:
     explicit UniverseWidget(QWidget* parent);
     virtual ~UniverseWidget();
 
-    virtual void SetFocus(const Point& focus) override;
+    virtual void SuggestFocus(const Point& focus) override;
+    virtual void SuggestUpdate() override { updateToRender_ = true; }
 
     void SetUniverse(std::shared_ptr<Universe> universe);
     void SetFpsTarget(double fps);
@@ -26,10 +27,12 @@ protected:
 
     virtual void keyPressEvent(QKeyEvent* event) override final;
 
-    virtual void paintEvent(QPaintEvent* event) override final;
+    virtual void resizeEvent(QResizeEvent* event) override;
 
+    virtual void paintEvent(QPaintEvent* event) override final;
 private:
     QTimer renderThread_;
+    bool updateToRender_ = false;
 
     // TODO update to using a matrix based transform
     qreal transformX_ = 0.0;

@@ -48,14 +48,34 @@ public:
         }
     }
 
+    void ExpandToContain(const T& newValue)
+    {
+        if (first_ > last_) {
+            if (newValue > first_) {
+                first_ = newValue;
+            }
+            if (newValue < last_) {
+                last_ = newValue;
+            }
+        } else {
+            if (newValue > last_) {
+                last_ = newValue;
+            }
+            if (newValue < first_) {
+                first_ = newValue;
+            }
+        }
+    }
+    void SetFirst(const T& newFirst) { first_ = newFirst; }
+    void SetLast(const T& newLast) { last_ = newLast; }
     void SetRange(const T& first, const T& last)
     {
         first_ = first;
         last_ = last;
     }
 
-    bool operator>(const Range<T>& other) const { return first_ > other.first_ || (first_ == other.first_ && last_ > other.last_); }
-    bool operator<(const Range<T>& other) const { return first_ < other.first_ || (first_ == other.first_ && last_ < other.last_); }
+    bool operator>(const Range<T>& other) const { return Min() > other.Min() || (Min() == other.Min() && Max() > other.Max()); }
+    bool operator<(const Range<T>& other) const { return Min() < other.Min() || (Min() == other.Min() && Max() < other.Max()); }
     bool operator==(const Range<T>& other) const { return first_ == other.first_ && last_ == other.last_; }
     bool operator>=(const Range<T>& other) const { return *this > other || *this == other; }
     bool operator<=(const Range<T>& other) const { return *this < other || *this == other; }

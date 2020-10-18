@@ -17,7 +17,13 @@ UniverseWidget::UniverseWidget(QWidget* parent)
     setPalette(p);
 
     renderThread_.setSingleShot(false);
-    renderThread_.connect(&renderThread_, &QTimer::timeout, this, static_cast<void (UniverseWidget::*)()>(&UniverseWidget::update));
+    renderThread_.connect(&renderThread_, &QTimer::timeout, [&]()
+    {
+        if (updateToRender_) {
+            update();
+        }
+    });
+
     SetFpsTarget(40);
 }
 
@@ -25,10 +31,11 @@ UniverseWidget::~UniverseWidget()
 {
 }
 
-void UniverseWidget::SetFocus(const Point& focus)
+void UniverseWidget::SuggestFocus(const Point& focus)
 {
     transformX_ = -focus.x;
     transformY_ = -focus.y;
+    updateToRender_ = true;
 }
 
 void UniverseWidget::SetUniverse(std::shared_ptr<Universe> universe)
@@ -51,6 +58,7 @@ void UniverseWidget::wheelEvent(QWheelEvent* event)
 {
     double d = 1.0 + (0.001 * double(event->angleDelta().y()));
     transformScale_ *= d;
+    updateToRender_ = true;
 }
 
 void UniverseWidget::mouseReleaseEvent(QMouseEvent* event)
@@ -81,6 +89,7 @@ void UniverseWidget::mouseMoveEvent(QMouseEvent* event)
         transformY_ += ((event->y() - dragY_) / transformScale_);
         dragX_ = event->x();
         dragY_ = event->y();
+        updateToRender_ = true;
     }
 }
 
@@ -113,8 +122,15 @@ void UniverseWidget::keyPressEvent(QKeyEvent* event)
     }
 }
 
+void UniverseWidget::resizeEvent(QResizeEvent* /*event*/)
+{
+    updateToRender_ = true;
+}
+
 void UniverseWidget::paintEvent(QPaintEvent* event)
 {
+    updateToRender_ = false;
+
     QPainter p(this);
     p.setClipRegion(event->region());
     p.translate(width() / 2, height() / 2);

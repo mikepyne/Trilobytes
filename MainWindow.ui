@@ -16,7 +16,7 @@
   <widget class="QWidget" name="mainWindowLayout">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <widget class="QSplitter" name="splitter">
+     <widget class="QSplitter" name="verticalSplitter">
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
       </property>
@@ -26,10 +26,10 @@
       <property name="childrenCollapsible">
        <bool>false</bool>
       </property>
-      <widget class="QWidget" name="widget" native="true">
+      <widget class="QWidget" name="horizontalLayout" native="true">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QSplitter" name="splitter_2">
+         <widget class="QSplitter" name="horizontalSplitter">
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
           </property>
@@ -39,7 +39,7 @@
           <property name="childrenCollapsible">
            <bool>false</bool>
           </property>
-          <widget class="QWidget" name="widget_5" native="true"/>
+          <widget class="QWidget" name="settings" native="true"/>
           <widget class="UniverseWidget" name="universe" native="true"/>
           <widget class="NeuralNetworkInspector" name="inspector" native="true"/>
          </widget>
@@ -47,11 +47,12 @@
        </layout>
       </widget>
       <widget class="QTabWidget" name="graphs">
-       <widget class="LineGraph" name="graph">
-        <attribute name="title">
-         <string/>
-        </attribute>
-       </widget>
+       <property name="usesScrollButtons">
+        <bool>false</bool>
+       </property>
+       <property name="tabsClosable">
+        <bool>true</bool>
+       </property>
       </widget>
      </widget>
     </item>
@@ -73,12 +74,6 @@
    <class>UniverseWidget</class>
    <extends>QWidget</extends>
    <header>UniverseWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LineGraph</class>
-   <extends>QWidget</extends>
-   <header>LineGraph.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

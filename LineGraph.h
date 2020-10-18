@@ -1,35 +1,37 @@
 #ifndef BARGRAPH_H
 #define BARGRAPH_H
 
+#include "Utils.h"
+
 #include <QWidget>
-#include <QPaintEvent>
-#include <QPainter>
+#include <QString>
 
 class LineGraph : public QWidget {
     Q_OBJECT
 public:
-    LineGraph(QWidget* parent = nullptr);
+    LineGraph(QWidget* parent, QString xAxisLabel, QString yAxisLabel);
 
-    void PushBack(QRgb colour, double datum);
+    void AddPlot(QRgb colour, QString name);
+    void AddPoint(size_t index, qreal x, qreal y);
     void Reset();
 
 protected:
-    virtual void wheelEvent(QWheelEvent* event) override final;
-    virtual void mouseReleaseEvent(QMouseEvent* event) override final;
-    virtual void mousePressEvent(QMouseEvent* event) override final;
-    virtual void mouseMoveEvent(QMouseEvent* event) override final;
-
     virtual void paintEvent(QPaintEvent* event) override final;
 
 private:
-    double graphX_ = 0.0;
-    double graphY_ = 0.0;
-    double graphScale_ = 1.0;
-    double dragX_;
-    double dragY_;
-    bool dragging_ = false;
+    struct Plot {
+        QString name_;
+        QRgb colour_;
+        std::vector<std::pair<qreal, qreal>> points_;
+    };
+    EoBE::Range<qreal> xRange_;
+    EoBE::Range<qreal> yRange_;
+    QString xAxisLabel_;
+    QString yAxisLabel_;
+    std::vector<Plot> plots_;
 
-    std::map<QRgb, std::vector<double>> plots_;
+    QPointF PaintAxes(QPainter& painter) const;
+    void PaintKey(QPainter& painter) const;
 };
 
 #endif // BARGRAPH_H
