@@ -84,6 +84,8 @@ void Universe::Render(QPainter& p) const
     rootNode_.Draw(p);
 
     // TODO remove all this once it is in a GUI
+    p.save();
+    p.resetMatrix();
     p.setPen(Qt::black);
     p.setBackground(QColor(200, 255, 255));
     p.setBackgroundMode(Qt::BGMode::OpaqueMode);
@@ -102,6 +104,7 @@ void Universe::Render(QPainter& p) const
         p.drawText(0, line += 15, QString("   - Descendants %1/%2").arg(f->GetLivingDescendantsCount()).arg(f->GetTotalDescendantsCount()));
         p.drawText(0, line += 15, QString("   - Energy %1mj").arg(f->GetEnergy() / 1_mj));
     }
+    p.restore();
 }
 
 void Universe::ForEach(const std::function<void (const std::shared_ptr<Entity>&)>& action) const

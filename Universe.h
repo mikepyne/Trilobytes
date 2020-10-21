@@ -81,6 +81,7 @@ private:
     QTimer mainThread_;
 
     uint64_t tickIndex_;
+    // TODO the lambda could be a "per swimmer" task, to prevent many re-iterations of all swimmers?
     std::map<TaskHandle, std::function<void(uint64_t tick)>> perTickTasks_;
 
     void Thread();
