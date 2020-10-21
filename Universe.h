@@ -58,6 +58,8 @@ public:
     bool GetSpawnFood() const { return spawnFood_; }
     bool GetAutoSelectFittest() const { return autoSelectFittest_; }
     bool GetTrackSelected() const { return trackSelectedEntity_; }
+    std::shared_ptr<Entity> GetSelectedEntity() { return selectedEntity_; }
+    EntityContainerInterface& GetEntityContainer() { return rootNode_.GetContainer(); }
     void Render(QPainter& painter) const;
     void ForEach(const std::function<void (const std::shared_ptr<Entity>& e)>& action) const;
 

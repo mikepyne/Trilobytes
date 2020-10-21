@@ -20,8 +20,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void SetSwimmerToInspect(Swimmer& swimmer, EntityContainerInterface& container);
-
 private:
     Ui::MainWindow *ui;
     std::shared_ptr<Universe> universe_;

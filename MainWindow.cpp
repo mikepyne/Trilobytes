@@ -12,15 +12,28 @@ MainWindow::MainWindow(QWidget *parent)
     universe_ = std::make_shared<Universe>(*(ui->universe));
     ui->universe->SetUniverse(universe_);
 
-    connect(ui->graphs, &QTabWidget::tabCloseRequested, [&](int index)
+    connect(ui->liveUpdateSelector, &QCheckBox::toggled, [&](bool checked)
     {
-        // TODO perhaps the handle idea could be a little more RAII (destruction of handle automatically removes task from Universe)
-        universe_->RemoveTask(graphTaskHandles_.at(index));
-        graphTaskHandles_.erase(index);
-        ui->graphs->removeTab(index);
+        ui->inspector->SetUpdateLive(checked);
     });
 
-    AddGraph("Energy", { {0x33FF33, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Combined Energy (mj)", [=](uint64_t tick, LineGraph& graph)
+    connect(ui->resetInspectorView, &QPushButton::pressed, ui->inspector, &NeuralNetworkInspector::ResetViewTransform);
+
+    connect(ui->graphs, &QTabWidget::tabCloseRequested, [&](int index)
+    {
+        // FIXME index of tabs changes whenever one closes, SO THIS DOES NOT WORK!!!!!!!
+        if (index > 0) {
+            // TODO perhaps the handle idea could be a little more RAII (destruction of handle automatically removes task from Universe)
+            // TODO need to give the graphs the RAII handle for their update function so it is removed when a graph is closed
+            // TODO need to work out how to update a graphs range when opened midway through a run
+            // TODO graphs currently collect points forever, need to have two more options, fixed width moving window, and fixed width with resolution auto reduced when filled
+            ui->graphs->removeTab(index);
+            universe_->RemoveTask(graphTaskHandles_.at(index));
+            graphTaskHandles_.erase(index);
+        }
+    });
+
+    AddGraph("Energy", { {0x00F100, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Combined Energy (mj)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
             Energy foodEnergy = 0;
@@ -37,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
             graph.AddPoint(1, tick, swimmerEnergy / 1_mj);
         }
     });
-    AddGraph("Mean Age", { {0x33FF33, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Average Age (tick)", [=](uint64_t tick, LineGraph& graph)
+    AddGraph("Mean Age", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Average Age (tick)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
             uint64_t count = 0;
@@ -57,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
             graph.AddPoint(1, tick, totalSwimmerAge / count);
         }
     });
-    AddGraph("Oldest", { {0x33FF33, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Oldest Individual (tick)", [=](uint64_t tick, LineGraph& graph)
+    AddGraph("Oldest", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Oldest Individual (tick)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
             uint64_t oldestFoodAge = 0;
@@ -74,16 +87,18 @@ MainWindow::MainWindow(QWidget *parent)
             graph.AddPoint(1, tick, oldestSwimmerAge);
         }
     });
+
+    // FIXME temp hack to get inspector pane working again (priority is to get a distributable version)
+    universe_->AddTask([&](uint64_t /*tick*/)
+    {
+        ui->inspector->SetSwimmer(std::dynamic_pointer_cast<Swimmer>(universe_->GetSelectedEntity()));
+        ui->inspector->UpdateConnectionStrengths(universe_->GetEntityContainer());
+    });
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::SetSwimmerToInspect(Swimmer& swimmer, EntityContainerInterface& container)
-{
-    ui->inspector->SetSwimmer(swimmer, container);
 }
 
 void MainWindow::AddGraph(QString graphTitle, std::vector<std::pair<QRgb, QString> >&& plots, QString xAxisTitle, QString yAxisTitle, std::function<void (uint64_t tick, LineGraph& graph)>&& task)

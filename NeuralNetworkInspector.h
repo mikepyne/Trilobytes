@@ -11,12 +11,17 @@ class Swimmer;
 class NeuralNetwork;
 class EntityContainerInterface;
 
+// TODO low priority, make groups movable and resizable and hideable
 class NeuralNetworkInspector : public QWidget {
     Q_OBJECT
 public:
     explicit NeuralNetworkInspector(QWidget *parent);
 
-    void SetSwimmer(Swimmer& toInspect, EntityContainerInterface& container);
+    void SetSwimmer(std::shared_ptr<Swimmer> toInspect);
+    void UpdateConnectionStrengths(EntityContainerInterface& container);
+
+    void SetUpdateLive(bool update);
+    void ResetViewTransform();
 
 protected:
     virtual void mousePressEvent(QMouseEvent* event) override;
@@ -24,9 +29,14 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent* event) override;
     virtual void wheelEvent(QWheelEvent* event) override;
     virtual void paintEvent(QPaintEvent* event) override;
-    virtual void resizeEvent(QResizeEvent* event) override;
 
 private:
+    enum class GroupType {
+        Sense,
+        Brain,
+        Effector,
+    };
+
     struct Node {
         double x;
         double y;
@@ -37,30 +47,43 @@ private:
 
     struct Group {
         std::string name;
-        QRect area;
+        QRectF area;
         std::map<std::pair<unsigned, unsigned>, Node> nodes;
         unsigned horizontalNodes;
         unsigned verticalNodes;
     };
 
+    const qreal nodeHeight_ = 15.0;
+    const qreal nodeWidth_ = 15.0;
+    const qreal nodeHSpacing_ = 35.0;
+    const qreal nodeVSpacing_ = nodeHSpacing_ * 1.5;
+    const qreal groupPadding_ = 5.0;
+    const qreal groupHSpacing_ = 5.0;
+    const qreal groupVSpacing_ = groupHSpacing_ * 2;
+
     std::vector<Group> sensorGroups_;
     Group brainGroup_;
     std::vector<Group> effectorGroups_;
 
-    double viewX_ = 0.0;
-    double viewY_ = 0.0;
-    double viewScale_ = 1.0;
+    double transformX_ = 0.0;
+    double transformY_ = 0.0;
+    double transformScale_ = 1.0;
     double dragX_;
     double dragY_;
     bool dragging_ = false;
 
+    std::shared_ptr<Swimmer> inspectedSwimmer_;
+    bool liveUpdate_ = false;
+
     Group CreateGroup(const NeuralNetwork& network, const std::string& name);
 
-    void LayoutGroups();
-    void LayoutGroup(Group& group, QRect area);
-    void PaintGroup(const Group& group, QPainter& p) const;
+    void LayoutGroupsInView();
+    void LayoutNodesInGroup(Group& group);
 
     void ForwardPropogate();
+
+    void ForEachGroup(std::function<void(GroupType, Group&)>&& action);
+    void ForEachGroup(std::function<void(GroupType, const Group&)>&& action) const;
 };
 
 #endif // NEURALNETWORKINSPECTOR_H
