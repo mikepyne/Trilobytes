@@ -93,38 +93,10 @@ void UniverseWidget::mouseMoveEvent(QMouseEvent* event)
     }
 }
 
-void UniverseWidget::keyPressEvent(QKeyEvent* event)
-{
-    if (universe_) {
-        switch (event->key()) {
-        case Qt::Key_Space :
-            universe_->SetPaused(!universe_->GetPaused());
-            break;
-        case Qt::Key_F :
-            universe_->SetSpawnFood(!universe_->GetSpawnFood());
-            break;
-        case Qt::Key_R :
-            universe_->Respawn();
-            break;
-        case Qt::Key_Q :
-            universe_->Reset();
-            break;
-        case Qt::Key_K :
-            universe_->SelectFittestSwimmer();
-            break;
-        case Qt::Key_A :
-            universe_->SetAutoSelectFittest(!universe_->GetAutoSelectFittest());
-            break;
-        case Qt::Key_T :
-            universe_->SetTrackSelected(!universe_->GetTrackSelected());
-            break;
-        }
-    }
-}
-
 void UniverseWidget::resizeEvent(QResizeEvent* /*event*/)
 {
     updateToRender_ = true;
+    update();
 }
 
 void UniverseWidget::paintEvent(QPaintEvent* event)

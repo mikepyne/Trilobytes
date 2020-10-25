@@ -12,13 +12,40 @@ MainWindow::MainWindow(QWidget *parent)
     universe_ = std::make_shared<Universe>(*(ui->universe));
     ui->universe->SetUniverse(universe_);
 
-    connect(ui->liveUpdateSelector, &QCheckBox::toggled, [&](bool checked)
-    {
-        ui->inspector->SetUpdateLive(checked);
-    });
+    // Make sure graphs don't start too squashed
+    ui->verticalSplitter->setSizes({ 700, 150 });
 
+    /// NeuralNetowrk Inspector controlls
+    connect(ui->liveUpdateSelector, &QCheckBox::toggled, [&](bool checked) { ui->inspector->SetUpdateLive(checked); });
     connect(ui->resetInspectorView, &QPushButton::pressed, ui->inspector, &NeuralNetworkInspector::ResetViewTransform);
 
+    /// Universe TPS & FPS controlls
+    connect(ui->pauseButton, &QPushButton::toggled, [&](bool state) { universe_->SetPaused(state); });
+    connect(ui->limitButton, &QPushButton::toggled, [&](bool state) { universe_->SetLimitTickRate(state); });
+    connect(ui->tpsSelector, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](int value) { universe_->SetTpsTarget(value); });
+    connect(ui->fpsSelector, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->universe, &UniverseWidget::SetFpsTarget);
+
+    /// Global controlls
+    connect(ui->resetAllButton, &QPushButton::pressed, [&]()
+    {
+        universe_->Reset();
+        ui->inspector->SetSwimmer(nullptr);
+        ui->inspector->ResetViewTransform();
+        for (int tabIndex = 0; tabIndex < ui->graphs->count(); ++tabIndex) {
+            if (LineGraph* graph = dynamic_cast<LineGraph*>(ui->graphs->widget(tabIndex))) {
+                graph->Reset();
+            }
+        }
+    });
+
+    /// Food Controlls
+    connect(ui->spawnFoodToggle, &QPushButton::toggled, [&](bool state) { universe_->SetSpawnFood(state); });
+
+    /// Selected Swimmer Controlls
+    connect(ui->selectFittestButton, &QPushButton::pressed, [&]() { universe_->SelectFittestSwimmer(); });
+    connect(ui->followSelectedToggle, &QPushButton::toggled, [&](bool state) { universe_->SetTrackSelected(state); });
+
+    /// Graph Controlls
     connect(ui->graphs, &QTabWidget::tabCloseRequested, [&](int index)
     {
         // FIXME index of tabs changes whenever one closes, SO THIS DOES NOT WORK!!!!!!!

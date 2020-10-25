@@ -25,8 +25,6 @@ protected:
     virtual void mousePressEvent(QMouseEvent* event) override final;
     virtual void mouseMoveEvent(QMouseEvent* event) override final;
 
-    virtual void keyPressEvent(QKeyEvent* event) override final;
-
     virtual void resizeEvent(QResizeEvent* event) override;
 
     virtual void paintEvent(QPaintEvent* event) override final;

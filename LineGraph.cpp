@@ -8,8 +8,8 @@
 
 LineGraph::LineGraph(QWidget* parent, QString xAxisLabel, QString yAxisLabel)
     : QWidget(parent)
-    , xRange_(0.0, 0.0)
-    , yRange_(0.0, 0.0)
+    , xRange_()
+    , yRange_()
     , xAxisLabel_(xAxisLabel)
     , yAxisLabel_(yAxisLabel)
 {
@@ -34,13 +34,14 @@ void LineGraph::AddPoint(size_t index, qreal x, qreal y)
 
 void LineGraph::Reset()
 {
-    xRange_.SetRange(std::numeric_limits<qreal>::min(), std::numeric_limits<qreal>::max());
-    yRange_.SetRange(std::numeric_limits<qreal>::min(), std::numeric_limits<qreal>::max());
+    xRange_.Reset();
+    yRange_.Reset();
     for (auto& [ name, colour, points ] : plots_) {
         (void) name; // unused
         (void) colour; // unused
         points.clear();
     }
+    update();
 }
 
 void LineGraph::paintEvent(QPaintEvent* event)
@@ -58,7 +59,7 @@ void LineGraph::paintEvent(QPaintEvent* event)
         paint.setPen(colour);
         QPointF lastPoint = origin;
         for (const auto& [ dataX, dataY ] : points) {
-            QPointF nextPoint(origin.x() + ( xAxisLength * ((dataX - xRange_.Min()) / xRange_.ValueRange())), origin.y() - (yAxisLength * ((dataY - yRange_.Min()) / yRange_.ValueRange())));
+            QPointF nextPoint(origin.x() + ( xAxisLength * ((dataX - xRange_.Min()) / xRange_.Range())), origin.y() - (yAxisLength * ((dataY - yRange_.Min()) / yRange_.Range())));
             if (lastPoint != origin) {
                 paint.drawLine(lastPoint, nextPoint);
             }

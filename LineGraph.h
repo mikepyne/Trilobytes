@@ -24,8 +24,8 @@ private:
         QRgb colour_;
         std::vector<std::pair<qreal, qreal>> points_;
     };
-    EoBE::Range<qreal> xRange_;
-    EoBE::Range<qreal> yRange_;
+    EoBE::MinMax<qreal> xRange_;
+    EoBE::MinMax<qreal> yRange_;
     QString xAxisLabel_;
     QString yAxisLabel_;
     std::vector<Plot> plots_;

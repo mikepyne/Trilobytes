@@ -35,6 +35,8 @@ public:
     Universe(UniverseObserver& focusInterface);
 
     void SetPaused(bool paused) { pauseSim_ = paused; }
+    void SetLimitTickRate(bool limited);
+    void SetTpsTarget(int tps);
     void SetSpawnFood(bool spawn) { spawnFood_ = spawn; }
     void SetAutoSelectFittest(bool autoSelect) { autoSelectFittest_ = autoSelect; }
     void SetTrackSelected(bool track) { trackSelectedEntity_ = track; }
@@ -69,6 +71,8 @@ private:
 
     bool spawnFood_ = true;
     bool pauseSim_ = false;
+    bool limitSim_ = true;
+    unsigned targetTps_ = 1000 / 60;
     bool respawn_ = true;
     bool reset_ = false;
     bool autoSelectFittest_ = false;
@@ -85,6 +89,8 @@ private:
     std::map<TaskHandle, std::function<void(uint64_t tick)>> perTickTasks_;
 
     void Thread();
+
+    void UpdateTps();
 };
 
 #endif // UNIVERSE_H

@@ -22,12 +22,21 @@ Universe::Universe(UniverseObserver& focusInterface)
      * drawing anything, not ideal for running the Sim quickly...)
      */
     mainThread_.setSingleShot(false);
-    mainThread_.connect(&mainThread_, &QTimer::timeout, [&]()
-    {
-        Thread();
-    });
-    mainThread_.start(0);
+    mainThread_.connect(&mainThread_, &QTimer::timeout, [&]() { Thread(); });
+    mainThread_.start();
+    UpdateTps();
+}
 
+void Universe::SetLimitTickRate(bool limited)
+{
+    limitSim_ = limited;
+    UpdateTps();
+}
+
+void Universe::SetTpsTarget(int tps)
+{
+    targetTps_ = tps;
+    UpdateTps();
 }
 
 void Universe::SelectEntity(const Point& location)
@@ -90,13 +99,6 @@ void Universe::Render(QPainter& p) const
     p.setBackground(QColor(200, 255, 255));
     p.setBackgroundMode(Qt::BGMode::OpaqueMode);
     int line = 0;
-    p.drawText(0, line += 15, "Paused (space): " + QVariant(pauseSim_).toString());
-    p.drawText(0, line += 15, "Spawn Food (F): " + QVariant(spawnFood_).toString());
-    p.drawText(0, line += 15, "Reset (Q)");
-    p.drawText(0, line += 15, "Respawn (R)");
-    p.drawText(0, line += 15, "Select Fittest (K)");
-    p.drawText(0, line += 15, "Auto Select Fittest (A): " + QVariant(autoSelectFittest_).toString());
-    p.drawText(0, line += 15, "Track Selected (T): " + QVariant(trackSelectedEntity_).toString());
     if (selectedEntity_) {
         auto f = dynamic_cast<Swimmer*>(selectedEntity_.get());
         p.drawText(0, line += 15, QString("   - %1 Ticks Old").arg(f->GetAge()));
@@ -149,7 +151,7 @@ void Universe::Thread()
         observerInterface_.SuggestUpdate();
     }
 
-    if (!pauseSim_) {
+    if (!pauseSim_ && targetTps_ > 0) {
         observerInterface_.SuggestUpdate();
         rootNode_.Tick();
 
@@ -173,4 +175,9 @@ void Universe::Thread()
 
         ++tickIndex_;
     }
+}
+
+void Universe::UpdateTps()
+{
+    mainThread_.setInterval(limitSim_ ? (1000 / std::max(targetTps_, 1u)) : 0);
 }

@@ -137,6 +137,11 @@ void NeuralNetworkInspector::wheelEvent(QWheelEvent* event)
     update();
 }
 
+void NeuralNetworkInspector::resizeEvent(QResizeEvent* /*event*/)
+{
+    update();
+}
+
 void NeuralNetworkInspector::mouseReleaseEvent(QMouseEvent*)
 {
     dragging_ = false;
