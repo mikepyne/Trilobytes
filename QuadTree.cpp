@@ -41,10 +41,12 @@ uint64_t QuadTree::EntityCount()
     return root_->RecursiveEntityCount();
 }
 
-void QuadTree::SetEntityCapacity(uint64_t target, uint64_t leeway)
+void QuadTree::SetEntityTargetPerQuad(uint64_t target, uint64_t leeway)
 {
-    targetCount_ = target;
-    leewayCount_ = leeway;
+    // target cannot be 0 (requires infinite quads)
+    targetCount_ = std::max(target, 1ull);
+    // FIXME BUG leeway cannot be greater than target, causes repeat recalculation (probably uint underflow somewhere)
+    leewayCount_ = std::min(leeway, target);
     root_->Rebalance(targetCount_, leewayCount_);
     requiresRebalance_ = false;
 }

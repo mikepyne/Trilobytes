@@ -40,6 +40,7 @@ public:
     void SetSpawnFood(bool spawn) { spawnFood_ = spawn; }
     void SetAutoSelectFittest(bool autoSelect) { autoSelectFittest_ = autoSelect; }
     void SetTrackSelected(bool track) { trackSelectedEntity_ = track; }
+    void SetEntityTargetPerQuad(uint64_t target, uint64_t leeway);
     void Respawn() { respawn_ = true; }
     void Reset() {  reset_ = true; }
     void SelectEntity(const Point& location);

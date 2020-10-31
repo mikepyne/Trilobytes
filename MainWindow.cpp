@@ -37,6 +37,14 @@ MainWindow::MainWindow(QWidget *parent)
             }
         }
     });
+    connect(ui->quadCapacitySpinner, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](int capacity)
+    {
+        universe_->SetEntityTargetPerQuad(capacity, ui->quadLeewaySpinner->value());
+    });
+    connect(ui->quadLeewaySpinner, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](int leeway)
+    {
+        universe_->SetEntityTargetPerQuad(ui->quadCapacitySpinner->value(), leeway);
+    });
 
     /// Food Controlls
     connect(ui->spawnFoodToggle, &QPushButton::toggled, [&](bool state) { universe_->SetSpawnFood(state); });
@@ -112,6 +120,17 @@ MainWindow::MainWindow(QWidget *parent)
             });
             graph.AddPoint(0, tick, oldestFoodAge);
             graph.AddPoint(1, tick, oldestSwimmerAge);
+        }
+    });
+    AddGraph("Performance", { { 0xFC02DF, "Ticks per Second" } }, "Time (tick)", "Ticks per Second (mean)", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
+    {
+        // TODO check every tick and examine interesting periodic perofrmance behaviour
+        if (tick % 100 == 0) {
+            auto now = std::chrono::steady_clock::now();
+            double seconds = std::chrono::duration_cast<std::chrono::duration<double>>(now - previous).count();
+            double tps = seconds > 0.0 ? 1.0 / (seconds / 100.0) : 0.0;
+            graph.AddPoint(0, tick, tps);
+            previous = now;
         }
     });
 

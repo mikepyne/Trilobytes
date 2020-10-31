@@ -21,7 +21,7 @@ public:
     EntityContainerInterface& GetContainer() { return *root_; }
     void AddEntity(const std::shared_ptr<Entity>& entity);
     uint64_t EntityCount();
-    void SetEntityCapacity(uint64_t target, uint64_t leeway);
+    void SetEntityTargetPerQuad(uint64_t target, uint64_t leeway);
     void Clear();
     void ForEach(const std::function<void(const std::shared_ptr<Entity>&)>& action) const;
 

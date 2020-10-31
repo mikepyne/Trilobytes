@@ -39,6 +39,11 @@ void Universe::SetTpsTarget(int tps)
     UpdateTps();
 }
 
+void Universe::SetEntityTargetPerQuad(uint64_t target, uint64_t leeway)
+{
+    rootNode_.SetEntityTargetPerQuad(target, leeway);
+}
+
 void Universe::SelectEntity(const Point& location)
 {
     selectedEntity_.reset();
@@ -133,7 +138,7 @@ void Universe::Thread()
             feeder->AddPelletsImmediately(feeder->GetMaxPellets() / 8);
         }
 
-        rootNode_.SetEntityCapacity(25, 5);
+        rootNode_.SetEntityTargetPerQuad(25, 5);
         observerInterface_.SuggestUpdate();
     }
 
