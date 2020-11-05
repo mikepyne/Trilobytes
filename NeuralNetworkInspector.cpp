@@ -62,9 +62,9 @@ void NeuralNetworkInspector::SetSwimmer(std::shared_ptr<Swimmer> toInspect)
                     unsigned weightIndex = 0;
                     for (auto& weight : neuron) {
                         /*
-                 * Some effectors are simple passthroughs and do not have any
-                 * neurons.
-                 */
+                         * Some effectors are simple passthroughs and do not have any
+                         * neurons.
+                         */
                         if (effectorGroup.nodes.empty()) {
                             effectorGroup.horizontalNodes = effector->InspectConnection().GetOutputCount();
                             effectorGroup.verticalNodes = 1;
@@ -123,7 +123,14 @@ void NeuralNetworkInspector::ResetViewTransform()
     qreal brainWidth = brainGroup_.area.width();
     qreal effectorsWidth = effectorGroups_.empty() ? 0.0 : effectorGroups_.back().area.right() - effectorGroups_.front().area.left();
 
-    transformScale_ = width() / std::max({ sensorsWidth, brainWidth, effectorsWidth });
+    qreal sensorsHeight = std::max_element(std::begin(sensorGroups_), std::end(sensorGroups_), [](auto a, auto b) { return a.area.height() < b.area.height(); })->area.height();
+    qreal brainHeight = brainGroup_.area.height();
+    qreal effectorsHeight = std::max_element(std::begin(effectorGroups_), std::end(effectorGroups_), [](auto a, auto b) { return a.area.height() < b.area.height(); })->area.height();
+
+    qreal verticalTransform = height() / (sensorsHeight + brainHeight + effectorsHeight + (4 * groupPadding_));
+    qreal horizontalTransform = width() / std::max({ sensorsWidth, brainWidth, effectorsWidth });
+
+    transformScale_ = std::min(verticalTransform, horizontalTransform);
     transformX_ = 0.0;
     transformY_ = 0.0;
     update();
@@ -293,7 +300,7 @@ void NeuralNetworkInspector::LayoutGroupsInView()
     qreal sensorsWidthSoFar = 0.0;
     for (auto& sense : sensorGroups_) {
         sense.area.moveTopLeft(sensesRect.topLeft());
-        sense.area.translate(sensorsWidthSoFar, (maxSenseHeight - sense.area.height()) / 2.0);
+        sense.area.translate(sensorsWidthSoFar, maxSenseHeight - sense.area.height());
         sensorsWidthSoFar += sense.area.width() + groupHSpacing_;
     }
 
@@ -303,7 +310,7 @@ void NeuralNetworkInspector::LayoutGroupsInView()
     qreal effectorsWidthSoFar = 0.0;
     for (auto& effector : effectorGroups_) {
         effector.area.moveTopLeft(effectorsRect.topLeft());
-        effector.area.translate(effectorsWidthSoFar, (maxEffectorHeight - effector.area.height()) / 2.0);
+        effector.area.translate(effectorsWidthSoFar, maxEffectorHeight - effector.area.height());
         effectorsWidthSoFar += effector.area.width() + groupHSpacing_;
     }
 
@@ -350,6 +357,9 @@ void NeuralNetworkInspector::ForwardPropogate()
         propogateGroup(group);
     }
     propogateGroup(brainGroup_);
+    for (auto& group : effectorGroups_) {
+        propogateGroup(group);
+    }
 }
 
 void NeuralNetworkInspector::ForEachGroup(std::function<void (GroupType type, Group& group)>&& action)

@@ -11,9 +11,10 @@ public:
     GeneBrain(unsigned layerCount, unsigned width, double mutationProbability);
     GeneBrain(const std::shared_ptr<NeuralNetwork>& brain, double dominance, double mutationProbability);
 
-    virtual std::shared_ptr<Gene> Mutate() const override;
-
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
+
+protected:
+    virtual std::shared_ptr<Gene> Copy() const override;
 
 private:
     std::shared_ptr<NeuralNetwork> brain_;

@@ -11,14 +11,38 @@ GeneBrain::GeneBrain(const std::shared_ptr<NeuralNetwork>& brain, double dominan
     : Gene(dominance, mutationProbability)
     , brain_(brain)
 {
-}
+    // Modify connections
+    AddMutation(BASE_WEIGHT, [&]()
+    {
+        brain_ = brain_->WithMutatedConnections();
+    });
 
-std::shared_ptr<Gene> GeneBrain::Mutate() const
-{
-    return std::make_shared<GeneBrain>(brain_->Mutated(), GetMutatedDominance(), GetMutatedMutationProbability());
+    // Insert a new row
+    AddMutation(0.01 * BASE_WEIGHT, [&]()
+    {
+        unsigned newRowIndex = Random::Number(0u, brain_->GetLayerCount());
+        brain_ = brain_->WithRowAdded(newRowIndex, NeuralNetwork::InitialWeights::PassThrough);
+    });
+
+    // Remove a row
+    AddMutation(0.01 * BASE_WEIGHT, [&]()
+    {
+        // Don't allow mutation to remove final row
+        if (brain_->GetLayerCount() > 1) {
+            unsigned newRowIndex = Random::Number(0u, brain_->GetLayerCount());
+            brain_ = brain_->WithRowRemoved(newRowIndex);
+        }
+    });
+
+    // MAYBE add mutations for adding/removing columns (would require modifications to all senses and effectors connections, and knowledge of which index was effected by the mutation)
 }
 
 void GeneBrain::ExpressGene(Swimmer& /*owner*/, Phenotype& target) const
 {
     target.brain = brain_;
+}
+
+std::shared_ptr<Gene> GeneBrain::Copy() const
+{
+    return std::make_shared<GeneBrain>(brain_, GetDominance(), GetMutationProbability());
 }

@@ -10,6 +10,28 @@
 
 class Random {
 public:
+    template<typename T>
+    class WeightedContainer {
+    public:
+        void PushBack(T&& value, const double& weight)
+        {
+            values_.push_back(std::move(value));
+            weights_.push_back(weight);
+            distribution_ = std::discrete_distribution<size_t>(std::begin(weights_), std::end(weights_));
+        }
+
+        const T& RandomItem()
+        {
+            auto index = Random::Generate(distribution_);
+            return values_.at(index);
+        }
+
+    private:
+        std::vector<T> values_;
+        std::vector<double> weights_;
+        std::discrete_distribution<size_t> distribution_;
+    };
+
     static void Seed(const std::mt19937::result_type& seed)
     {
         entropy_.seed(seed);
@@ -50,6 +72,16 @@ public:
     static double Percent()
     {
         return Number(0.0, 100.0);
+    }
+
+    static bool PercentChance(double chance)
+    {
+        return chance >= Number(0.0, 100.0);
+    }
+
+    static uint64_t Round(const double& v)
+    {
+        return static_cast<uint64_t>(v) + (Random::PercentChance(std::fmod(v, 1.0) * 100) ? 1 : 0);
     }
 
     template<typename NumericType>

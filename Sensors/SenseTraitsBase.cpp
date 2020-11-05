@@ -54,7 +54,7 @@ double SenseTraitsBase::GetTraitFrom(const Entity& target, Trait trait) const
         return target.GetRadius();
     case Trait::Distance :
         Transform senseLocation = transform_ + owner_.GetTransform();
-        return std::sqrt(GetDistanceSquare({ senseLocation.x, senseLocation.y }, target.GetLocation()));
+        return GetDistance({ senseLocation.x, senseLocation.y }, target.GetLocation());
     }
     assert(false && "Entity::GetTrait, unimplemented trait.");
     return 0.0;

@@ -30,10 +30,11 @@ public:
      * random edge weights between 0.0 and 1.0.
      */
     NeuralNetwork(unsigned layerCount, unsigned width, InitialWeights initialWeights);
-    NeuralNetwork(std::vector<Layer>&& layers);
+    NeuralNetwork(std::vector<Layer>&& layers, unsigned width);
 
     unsigned GetInputCount() const { return layers_.empty() ? 0 : layers_.front().size(); }
     unsigned GetOutputCount() const { return layers_.empty() ? 0 : layers_.back().empty() ? 0 : layers_.back().size(); }
+    unsigned GetConnectionCount() const;
 
     /**
      * Inputs should be between 0.0 and 1.0 inclusive. Returns the final node
@@ -42,15 +43,25 @@ public:
     void ForwardPropogate(std::vector<double>& inputs) const;
 
     void ForEach(const std::function<void(unsigned, unsigned, const Node&)>& perNode) const;
-    std::vector<size_t> GetLayerWidths() const;
+    size_t GetLayerWidth() const { return width_; }
+    size_t GetLayerCount() const { return layers_.size(); }
 
-    std::shared_ptr<NeuralNetwork> Mutated() const;
+    std::shared_ptr<NeuralNetwork> WithMutatedConnections() const;
+    std::shared_ptr<NeuralNetwork> WithColumnAdded(unsigned index, InitialWeights connections) const;
+    std::shared_ptr<NeuralNetwork> WithColumnRemoved(unsigned index) const;
+    std::shared_ptr<NeuralNetwork> WithRowAdded(unsigned index, InitialWeights connections) const;
+    std::shared_ptr<NeuralNetwork> WithRowRemoved(unsigned index) const;
 
 private:
     std::vector<Layer> layers_;
+    size_t width_;
 
-    std::vector<Layer> CreateRandomLayers(unsigned layerCount, unsigned width);
-    std::vector<Layer> CreatePassThroughLayers(unsigned layerCount, unsigned width);
+    static std::vector<Layer> CreateRandomLayers(unsigned layerCount, unsigned width);
+    static Layer CreateRandomLayer(unsigned width);
+    static std::vector<Layer> CreatePassThroughLayers(unsigned layerCount, unsigned width);
+    static Layer CreatePassThroughLayer(unsigned width);
+
+    std::vector<Layer> CopyLayers() const;
 };
 
 #endif // NEURALNETWORK_H

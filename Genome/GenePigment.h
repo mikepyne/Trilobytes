@@ -7,17 +7,17 @@ class GenePigment : public Gene {
 public:
     GenePigment();
     GenePigment(double a, double r, double g, double b, double dominance, double mutationProbability);
-    virtual ~GenePigment() override final;
+    virtual ~GenePigment() override;
 
 protected:
-    virtual std::shared_ptr<Gene> Mutate() const override;
+    virtual std::shared_ptr<Gene> Copy() const override;
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 
 private:
-    const double a_;
-    const double r_;
-    const double g_;
-    const double b_;
+    double a_;
+    double r_;
+    double g_;
+    double b_;
 };
 
 #endif // GENEPIGMENT_H

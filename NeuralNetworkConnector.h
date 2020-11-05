@@ -32,7 +32,11 @@ public:
     unsigned GetOutputCount() const { return weights_.front().size(); }
     const std::vector<std::vector<double>>& Inspect() const { return weights_; }
 
-    std::shared_ptr<NeuralNetworkConnector> Mutated() const;
+    std::shared_ptr<NeuralNetworkConnector> WithMutatedConnections() const;
+    std::shared_ptr<NeuralNetworkConnector> WithInputAdded(unsigned index) const;
+    std::shared_ptr<NeuralNetworkConnector> WithInputRemoved(unsigned index) const;
+    std::shared_ptr<NeuralNetworkConnector> WithOutputAdded(unsigned index) const;
+    std::shared_ptr<NeuralNetworkConnector> WithOutputRemoved(unsigned index) const;
 
 private:
     std::vector<std::vector<double>> weights_;

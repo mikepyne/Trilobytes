@@ -9,8 +9,13 @@ public:
     GeneSenseTraitsTouching(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Transform& transform, double dominance, double mutationProbability);
     virtual ~GeneSenseTraitsTouching() override {}
 
-    virtual std::shared_ptr<Gene> Mutate() const override;
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
+
+protected:
+    virtual std::shared_ptr<Gene> Copy() const override;
+
+private:
+    void AddMutations();
 };
 
 #endif // GENESENSEENTITIESTOUCHING_H

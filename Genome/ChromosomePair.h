@@ -21,6 +21,8 @@ public:
     void Mutate();
 
 private:
+    constexpr static double MUTATIONS_PER_COPY = 1.5;
+
     EoBE::Range<unsigned> aChromosomeRange_;
     EoBE::Range<unsigned> bChromosomeRange_;
     std::map<unsigned, std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene>>> chromosomePair_;

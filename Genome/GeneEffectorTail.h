@@ -11,8 +11,10 @@ public:
     GeneEffectorTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance, double mutationProbability);
     virtual ~GeneEffectorTail() {}
 
-    virtual std::shared_ptr<Gene> Mutate() const override;
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
+
+protected:
+    virtual std::shared_ptr<Gene> Copy() const override;
 };
 
 #endif // GENEEFFECTORTAIL_H

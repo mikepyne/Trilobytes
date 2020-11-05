@@ -20,7 +20,7 @@ void SenseTraitsInArea::Draw(QPainter& paint) const
 
 Circle SenseTraitsInArea::GetArea() const
 {
-    Point centre = ApplyOffset(owner_.GetLocation(), transform_.rotation + owner_.GetTransform().rotation, std::sqrt(GetDistanceSquare({ 0, 0 }, { transform_.x, transform_.y })));
+    Point centre = ApplyOffset(owner_.GetLocation(), transform_.rotation + owner_.GetTransform().rotation, GetDistance({ 0, 0 }, { transform_.x, transform_.y }));
     return { centre.x, centre.y, senseRadius_ };
 }
 

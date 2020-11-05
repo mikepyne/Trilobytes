@@ -6,6 +6,8 @@ Gene::Gene(double dominance, double mutationProbability)
     : dominance_(dominance)
     , mutationProbability_(mutationProbability)
 {
+    AddMutation(BASE_WEIGHT, [&]() { dominance_ += Random::Gaussian(0.0, 5.0); });
+    AddMutation(BASE_WEIGHT, [&]() { mutationProbability_ += Random::Gaussian(0.0, 0.05); });
 }
 
 Gene::~Gene()
@@ -39,12 +41,22 @@ std::shared_ptr<Gene>& Gene::GetRandom(std::pair<std::shared_ptr<Gene>, std::sha
     return Random::Boolean() ? alleles.first : alleles.second;
 }
 
-double Gene::GetMutatedDominance() const
+std::shared_ptr<Gene> Gene::Copy(double mutationCount) const
 {
-    return dominance_ + Random::Gaussian(0.0, 5.0);
+    auto copy = Copy();
+    copy->Mutate(Random::Round(mutationCount));
+    return copy;
 }
 
-double Gene::GetMutatedMutationProbability() const
+void Gene::Mutate(unsigned mutationCount)
 {
-    return mutationProbability_ + Random::Gaussian(0.0, 0.05);
+    for (unsigned i = 0; i < mutationCount; ++i) {
+        // pick from weighted distribution
+        mutations_.RandomItem()();
+    }
+}
+
+void Gene::AddMutation(const double& probability, std::function<void ()>&& action)
+{
+    mutations_.PushBack(std::move(action), probability);
 }

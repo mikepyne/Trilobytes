@@ -1,13 +1,30 @@
 #include "NeuralNetwork.h"
 
 NeuralNetwork::NeuralNetwork(unsigned layerCount, unsigned width, NeuralNetwork::InitialWeights initialWeights)
-    : NeuralNetwork(initialWeights == InitialWeights::Random ? CreateRandomLayers(layerCount, width) : CreatePassThroughLayers(layerCount, width))
+    : NeuralNetwork(initialWeights == InitialWeights::Random ? CreateRandomLayers(layerCount, width) : CreatePassThroughLayers(layerCount, width), width)
 {
 }
 
-NeuralNetwork::NeuralNetwork(std::vector<NeuralNetwork::Layer>&& layers)
+NeuralNetwork::NeuralNetwork(std::vector<NeuralNetwork::Layer>&& layers, unsigned width)
     : layers_(std::move(layers))
+    , width_(width)
 {
+    for (auto& layer : layers_) {
+        if(layer.size() != width_) {
+            assert(layer.size() == width_);
+        }
+    }
+}
+
+unsigned NeuralNetwork::GetConnectionCount() const
+{
+    unsigned connectionCount = 0;
+    for (const auto& layer : layers_) {
+        if (layer.size() > 0) {
+            connectionCount += layer.front().size() * layer.size();
+        }
+    }
+    return connectionCount;
 }
 
 void NeuralNetwork::ForwardPropogate(std::vector<double>& toPropogate) const
@@ -16,7 +33,7 @@ void NeuralNetwork::ForwardPropogate(std::vector<double>& toPropogate) const
 
     // about to swap with previousNodeValues so we can return outputs at the end
     // also allows to skip propogation when no hidden layers
-    for (auto& layer : layers_) {
+    for (const auto& layer : layers_) {
         std::swap(toPropogate, previousNodeValues);
         // We'll reuse this vector for the output of each layer
         toPropogate.assign(layer.size(), 0.0);
@@ -36,14 +53,98 @@ void NeuralNetwork::ForwardPropogate(std::vector<double>& toPropogate) const
     }
 }
 
-std::vector<size_t> NeuralNetwork::GetLayerWidths() const
+std::shared_ptr<NeuralNetwork> NeuralNetwork::WithMutatedConnections() const
 {
-    std::vector<size_t> layerWidths;
-    layerWidths.resize(layers_.size());
-    for (auto& layer : layers_) {
-        layerWidths.push_back(layer.size());
+    std::vector<Layer> copy = CopyLayers();
+    unsigned connectionCount = GetConnectionCount();
+
+    for (auto& layer : copy) {
+        for (auto& node : layer) {
+            for (auto& edge : node) {
+                // i.e average 3 mutations per child
+                if (Random::PercentChance(300.0 / connectionCount)) {
+                    edge += Random::Gaussian(0.0, 0.4);
+                }
+            }
+        }
     }
-    return layerWidths;
+
+    return std::make_shared<NeuralNetwork>(std::move(copy), width_);
+}
+
+std::shared_ptr<NeuralNetwork> NeuralNetwork::WithColumnAdded(unsigned index, NeuralNetwork::InitialWeights connections) const
+{
+    std::vector<Layer> copy = CopyLayers();
+    size_t newWidth = width_ + 1;
+    index = std::min(index, width_);
+
+    for (auto& layer : copy) {
+        // First put in the new node with the old width
+        auto layerIter = layer.begin();
+        std::advance(layerIter, index);
+        layer.insert(layerIter, Node(layer.size(), 0.0));
+        // Then for each node in the layer, add a new connection
+        for (auto& node : layer) {
+            auto nodeIter = node.begin();
+            std::advance(nodeIter, index);
+            double newWeight = connections == InitialWeights::PassThrough ? 1.0 : Random::Gaussian(0.0, 0.4);
+            node.insert(nodeIter, newWeight);
+        }
+    }
+
+    return std::make_shared<NeuralNetwork>(std::move(copy), newWidth);
+}
+
+std::shared_ptr<NeuralNetwork> NeuralNetwork::WithColumnRemoved(unsigned index) const
+{
+    std::vector<Layer> copy = CopyLayers();
+    size_t newWidth = width_;
+
+    if (width_ > 0) {
+        newWidth -= 1;
+        index = std::min(index, newWidth);
+
+        for (auto& layer : copy) {
+            // First take out the node
+            auto layerIter = layer.begin();
+            std::advance(layerIter, index);
+            layer.erase(layerIter);
+            // Then for each node in the layer, remove the connection
+            for (auto& node : layer) {
+                auto nodeIter = node.begin();
+                std::advance(nodeIter, index);
+                node.erase(nodeIter);
+            }
+        }
+    }
+
+    return std::make_shared<NeuralNetwork>(std::move(copy), newWidth);
+}
+
+std::shared_ptr<NeuralNetwork> NeuralNetwork::WithRowAdded(unsigned index, NeuralNetwork::InitialWeights connections) const
+{
+    std::vector<Layer> copy = CopyLayers();
+
+    index = std::min(index, copy.size());
+    auto layersIter = copy.begin();
+    std::advance(layersIter, index);
+    copy.insert(layersIter, connections == InitialWeights::PassThrough ? CreatePassThroughLayer(width_) : CreateRandomLayer(width_));
+
+    return std::make_shared<NeuralNetwork>(std::move(copy), width_);
+}
+
+std::shared_ptr<NeuralNetwork> NeuralNetwork::WithRowRemoved(unsigned index) const
+{
+    std::vector<Layer> copy = CopyLayers();
+
+    if (!copy.empty()) {
+        index = std::min(index, copy.size());
+        auto layersIter = copy.begin();
+        std::advance(layersIter, index);
+        copy.erase(layersIter);
+    }
+
+    return std::make_shared<NeuralNetwork>(std::move(copy), width_);
 }
 
 void NeuralNetwork::ForEach(const std::function<void (unsigned, unsigned, const NeuralNetwork::Node&)>& perNode) const
@@ -59,59 +160,59 @@ void NeuralNetwork::ForEach(const std::function<void (unsigned, unsigned, const 
     }
 }
 
-std::shared_ptr<NeuralNetwork> NeuralNetwork::Mutated() const
-{
-    size_t layerCount = layers_.size();
-    std::vector<Layer> layers;
-    for (auto& layer : layers_) {
-        layers.push_back(Layer());
-        for (auto& node : layer) {
-            layers.back().push_back(Node());
-            for (auto& edge : node) {
-                double newEdge = edge;
-                // i.e average 3 mutations per child
-                if (Random::Number(0u, layerCount * layer.size() * layer.size()) < 3) {
-                    newEdge += Random::Gaussian(0.0, 1.0);
-                }
-                layers.back().back().push_back(newEdge);
-            }
-        }
-    }
-    return std::make_shared<NeuralNetwork>(std::move(layers));
-}
-
-
-
 std::vector<NeuralNetwork::Layer> NeuralNetwork::CreateRandomLayers(unsigned layerCount, unsigned width)
 {
-    std::vector<Layer> layers(layerCount, Layer(width, Node(width)));
+    std::vector<Layer> layers;
+    layers.reserve(layerCount);
+    for (unsigned i = 0; i < layerCount; ++i) {
+        layers.push_back(CreateRandomLayer(width));
+    }
+    return layers;
+}
 
-    // First layer doesn't need input weights, as it will be assigned a value by the ForwardPropogate() func
-    for (auto& layer : layers) {
-        for (auto& node : layer) {
-            double mean = 0.75;
-            double stdDev = 0.25;
-            node = Random::DualPeakGaussians(width, -mean, stdDev, mean, stdDev);
-        }
+NeuralNetwork::Layer NeuralNetwork::CreateRandomLayer(unsigned width)
+{
+    Layer layer(width, Node(width));
+
+    for (auto& node : layer) {
+        double mean = 0.75;
+        double stdDev = 0.25;
+        node = Random::DualPeakGaussians(width, -mean, stdDev, mean, stdDev);
     }
 
-    return layers;
+    return layer;
 }
 
 std::vector<NeuralNetwork::Layer> NeuralNetwork::CreatePassThroughLayers(unsigned layerCount, unsigned width)
 {
-    std::vector<Layer> layers(layerCount, Layer(width, Node(width)));
+    std::vector<Layer> layers(layerCount, CreatePassThroughLayer(width));
+    return layers;
+}
 
-    // First layer doesn't need input weights, as it will be assigned a value by the ForwardPropogate() func
-    for (auto& layer : layers) {
-        unsigned nodeColumn = 0;
-        for (auto& node : layer) {
-            for (unsigned inputColumn = 0; inputColumn < node.size(); inputColumn++) {
-                node.at(inputColumn) = (inputColumn == nodeColumn ? 1.0 : 0.0);
-            }
-            nodeColumn++;
+NeuralNetwork::Layer NeuralNetwork::CreatePassThroughLayer(unsigned width)
+{
+    Layer layer(width, Node(width));
+
+    unsigned nodeColumn = 0;
+    for (auto& node : layer) {
+        for (unsigned inputColumn = 0; inputColumn < node.size(); inputColumn++) {
+            node.at(inputColumn) = (inputColumn == nodeColumn ? 1.0 : 0.0);
         }
+        nodeColumn++;
     }
 
-    return layers;
+    return layer;
+}
+
+std::vector<NeuralNetwork::Layer> NeuralNetwork::CopyLayers() const
+{
+    std::vector<Layer> copy(layers_.size(), Layer{});
+    EoBE::IterateBoth<Layer, Layer>(layers_, copy, [](const Layer& origLayer, Layer& copyLayer)
+    {
+        copyLayer.reserve(origLayer.size());
+        for (const Node& origNode : origLayer ) {
+            copyLayer.push_back(Node(origNode));
+        }
+    });
+    return copy;
 }

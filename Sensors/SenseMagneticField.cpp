@@ -15,7 +15,7 @@ void SenseMagneticField::PrimeInputs(std::vector<double>& inputs, const EntityCo
 {
     // TODO need the angle to be relative to the direction the swimmer is pointing (positive if facing the )
     inputs.at(0) = GetBearing(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, Point{ 0, 0 }) / EoBE::Pi;
-    inputs.at(1) = 2 * std::tanh(GetDistanceSquare(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, Point{ 0, 0 }) / 500000) - 1.0;
+    inputs.at(1) = 2 * std::tanh(GetDistance(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, Point{ 0, 0 }) / 2500) - 1.0;
 }
 
 void SenseMagneticField::Draw(QPainter& paint) const
@@ -23,7 +23,7 @@ void SenseMagneticField::Draw(QPainter& paint) const
     auto endX = owner_.GetTransform().x;
     auto endY = owner_.GetTransform().y;
     auto bearing = 1 + (GetBearing(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, Point{ 0, 0 }) / EoBE::Pi);
-    auto distance = 1 + (2 * std::tanh(GetDistanceSquare(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, Point{ 0, 0 }) / 500000) - 1.0);
+    auto distance = 1 + (2 * std::tanh(GetDistance(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, Point{ 0, 0 }) / 2500) - 1.0);
     distance *= 20;
     bearing *= EoBE::Pi;
 

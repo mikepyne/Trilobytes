@@ -43,7 +43,7 @@ void NeuralNetworkConnector::PassForward(const std::vector<double>& inputValues,
     });
 }
 
-std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::Mutated() const
+std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithMutatedConnections() const
 {
     std::vector<std::vector<double>> newWeights = weights_;
 
@@ -68,6 +68,62 @@ std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::Mutated() const
         // 2% Chance shuffle connections
         for (auto& input : newWeights) {
             Random::Shuffle(input);
+        }
+    }
+
+    return std::make_shared<NeuralNetworkConnector>(std::move(newWeights));
+}
+
+std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithInputAdded(unsigned index) const
+{
+    std::vector<std::vector<double>> newWeights = weights_;
+
+    size_t newInputIndex = std::min(index, newWeights.size());
+    auto newInputIter = newWeights.begin();
+    std::advance(newInputIter, newInputIndex);
+    newWeights.insert(newInputIter, std::vector<double>(GetOutputCount(), 0.0));
+
+    return std::make_shared<NeuralNetworkConnector>(std::move(newWeights));
+}
+
+std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithInputRemoved(unsigned index) const
+{
+    std::vector<std::vector<double>> newWeights = weights_;
+
+    if (!newWeights.empty()) {
+        size_t newInputIndex = std::min(index, newWeights.size() - 1);
+        auto newInputIter = newWeights.begin();
+        std::advance(newInputIter, newInputIndex);
+        newWeights.erase(newInputIter);
+    }
+
+    return std::make_shared<NeuralNetworkConnector>(std::move(newWeights));
+}
+
+std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithOutputAdded(unsigned index) const
+{
+    std::vector<std::vector<double>> newWeights = weights_;
+
+    for (auto& connections : newWeights) {
+        size_t newOutputIndex = std::min(index, connections.size());
+        auto newOutputIter = connections.begin();
+        std::advance(newOutputIter, newOutputIndex);
+        connections.insert(newOutputIter, 0.0);
+    }
+
+    return std::make_shared<NeuralNetworkConnector>(std::move(newWeights));
+}
+
+std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithOutputRemoved(unsigned index) const
+{
+    std::vector<std::vector<double>> newWeights = weights_;
+
+    for (auto& connections : newWeights) {
+        if (!connections.empty()) {
+            size_t newOutputIndex = std::min(index, connections.size() - 1);
+            auto newOutputIter = connections.begin();
+            std::advance(newOutputIter, newOutputIndex);
+            connections.erase(newOutputIter);
         }
     }
 

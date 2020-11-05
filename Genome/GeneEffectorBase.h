@@ -14,11 +14,15 @@ public:
     virtual ~GeneEffectorBase() {}
 
 protected:
+    void AddColumnInsertedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnAdded);
+    void AddColumnRemovedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnRemoved);
+
+    const std::shared_ptr<NeuralNetwork> GetNetwork() const { return network_; }
+    const std::shared_ptr<NeuralNetworkConnector> GetInputConnections() const { return inputConnections_; }
+
+private:
     std::shared_ptr<NeuralNetwork> network_;
-    std::shared_ptr<NeuralNetworkConnector> inputs_;
-
-    std::tuple<std::shared_ptr<NeuralNetwork>, std::shared_ptr<NeuralNetworkConnector>, double, double> GetMutated(std::vector<std::function<void()>> additionalMutations) const;
-
+    std::shared_ptr<NeuralNetworkConnector> inputConnections_;
 };
 
 #endif // GENEEFFECTORBASE_H

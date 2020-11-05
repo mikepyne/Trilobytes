@@ -27,6 +27,7 @@ SOURCES += \
     Genome/GeneEffectorTail.cpp \
     Genome/GeneFactory.cpp \
     Genome/GenePigment.cpp \
+    Genome/GeneSenseBase.cpp \
     Genome/GeneSenseMagneticField.cpp \
     Genome/GeneSenseRandom.cpp \
     Genome/GeneSenseSine.cpp \
@@ -74,6 +75,7 @@ HEADERS += \
     Genome/GeneEffectorTail.h \
     Genome/GeneFactory.h \
     Genome/GenePigment.h \
+    Genome/GeneSenseBase.h \
     Genome/GeneSenseMagneticField.h \
     Genome/GeneSenseRandom.h \
     Genome/GeneSenseSine.h \

@@ -4,6 +4,7 @@
 #include "Shape.h"
 #include "Universe.h"
 
+// TODO QOpenGLWidget allows QPainter painting, but its messed up, consider moving over once everything is pixmap based
 #include <QWidget>
 #include <QTimer>
 

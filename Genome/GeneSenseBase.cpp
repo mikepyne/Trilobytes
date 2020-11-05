@@ -1,14 +1,15 @@
-#include "GeneEffectorBase.h"
+#include "GeneSenseBase.h"
 
-GeneEffectorBase::GeneEffectorBase(unsigned hiddenLayers, unsigned inputCount, unsigned outputCount)
-    : GeneEffectorBase(std::make_shared<NeuralNetwork>(hiddenLayers, outputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(inputCount, outputCount), Random::Number(0.0, 100.0), Random::Number(0.0, 1.0))
+
+GeneSenseBase::GeneSenseBase(unsigned hiddenLayers, unsigned inputCount, unsigned outputCount)
+    : GeneSenseBase(std::make_shared<NeuralNetwork>(hiddenLayers, inputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(inputCount, outputCount), Random::Number(0.0, 100.0), Random::Number(0.0, 1.0))
 {
 }
 
-GeneEffectorBase::GeneEffectorBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance, double mutationProbability)
+GeneSenseBase::GeneSenseBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, double dominance, double mutationProbability)
     : Gene(dominance, mutationProbability)
     , network_(network)
-    , inputConnections_(inputConnections)
+    , outputConnections_(outputConnections)
 {
     // Insert a new row
     AddMutation(0.15 * BASE_WEIGHT, [&]()
@@ -36,23 +37,23 @@ GeneEffectorBase::GeneEffectorBase(const std::shared_ptr<NeuralNetwork>& network
     // Modify output connections
     AddMutation(BASE_WEIGHT, [&]()
     {
-        inputConnections_ = inputConnections_->WithMutatedConnections();
+        outputConnections_ = outputConnections_->WithMutatedConnections();
     });
 }
 
-void GeneEffectorBase::AddColumnInsertedMutation(double mutationWeight, std::function<void (unsigned)>&& onColumnAdded)
+void GeneSenseBase::AddColumnInsertedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnAdded)
 {
     // Insert a new column
     AddMutation(mutationWeight, [&, onColumnAdded = std::move(onColumnAdded)]()
     {
         unsigned newColIndex = Random::Number(0u, network_->GetInputCount());
         network_ = network_->WithColumnAdded(newColIndex, NeuralNetwork::InitialWeights::Random);
-        inputConnections_ = inputConnections_->WithOutputAdded(newColIndex);
+        outputConnections_ = outputConnections_->WithInputAdded(newColIndex);
         onColumnAdded(newColIndex);
     });
 }
 
-void GeneEffectorBase::AddColumnRemovedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnRemoved)
+void GeneSenseBase::AddColumnRemovedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnRemoved)
 {
     // Remove a column
     AddMutation(mutationWeight, [&, onColumnRemoved = std::move(onColumnRemoved)]()
@@ -61,7 +62,7 @@ void GeneEffectorBase::AddColumnRemovedMutation(double mutationWeight, std::func
         if (network_->GetInputCount() > 1) {
             unsigned index = Random::Number(0u, network_->GetInputCount() - 1);
             network_ = network_->WithColumnRemoved(index);
-            inputConnections_ = inputConnections_->WithOutputRemoved(index);
+            outputConnections_ = outputConnections_->WithInputRemoved(index);
             onColumnRemoved(index);
         }
     });

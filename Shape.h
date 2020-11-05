@@ -44,14 +44,16 @@ inline bool operator==(const Rect& r1, const Rect& r2)
     return r1.left == r2.left && r1.top == r2.top && r1.right == r2.right && r1.bottom == r2.bottom;
 }
 
-inline double GetDistance(const Point& a, const Point& b)
+inline double GetDistanceSquare(const Point& a, const Point& b)
 {
-    return std::hypot(a.x - b.x, a.y - b.y);
+    // Keep this func as sqrt is expensive, and isn't always needed
+    return std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2);
 }
 
-[[deprecated("Use GetDistance for efficient distance calculation")]] inline double GetDistanceSquare(const Point& a, const Point& b)
+inline double GetDistance(const Point& a, const Point& b)
 {
-    return std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2);
+    // Don't use std::hypot, naive impl is fit for purpose and faster
+    return std::sqrt(GetDistanceSquare(a, b));
 }
 
 inline Rect RectFromCircle(const Circle& c)
@@ -163,7 +165,7 @@ inline bool Collides(const Line& line, const Circle& circle)
         return true;
     }
 
-    double lineLength = sqrt(GetDistanceSquare(line.a, line.b));
+    double lineLength = GetDistance(line.a, line.b);
 
     // Dot product of line and circle
     double lineDeltaX = line.b.x - line.a.x;
@@ -178,7 +180,7 @@ inline bool Collides(const Line& line, const Circle& circle)
         return false;
     }
 
-  return std::sqrt(GetDistanceSquare({ circle.x, circle.y }, nearest)) <= circle.radius;
+  return GetDistance({ circle.x, circle.y }, nearest) <= circle.radius;
 }
 
 inline bool Collides(const Line& l, const Rect& r)

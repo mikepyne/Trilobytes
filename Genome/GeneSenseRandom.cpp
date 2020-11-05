@@ -9,71 +9,59 @@ GeneSenseRandom::GeneSenseRandom(unsigned inputCount, unsigned outputCount)
 }
 
 GeneSenseRandom::GeneSenseRandom(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, std::vector<SenseRandom::FilteredRandom>&& filteredRandoms, double dominance, double mutationProbability)
-    : Gene(dominance, mutationProbability)
-    , network_(network)
-    , outputConnections_(outputConnections)
+    : GeneSenseBase(network, outputConnections, dominance, mutationProbability)
     , filteredRandoms_(std::move(filteredRandoms))
 {
-}
-
-std::shared_ptr<Gene> GeneSenseRandom::Mutate() const
-{
-    std::shared_ptr<NeuralNetwork> network = network_;
-    std::shared_ptr<NeuralNetworkConnector> outputConnections = outputConnections_;
-    std::vector<SenseRandom::FilteredRandom> randoms = filteredRandoms_;
-    double dominance = GetDominance();
-    double mutationProbability = GetMutationProbability();
-
-    switch(Random::Number(0, 4)) {
-    case 0 :
-        network = network->Mutated();
-        break;
-    case 1 :
-        outputConnections = outputConnections->Mutated();
-        break;
-    case 2 :
-        switch (Random::Number(0, 4)) {
-        case 0 :
-            // Modify one
-            if (!randoms.empty()) {
-                auto& random = Random::Item(randoms);
-                random = { Random::GaussianAdjustment(random.min_, 0.1), Random::GaussianAdjustment(random.max_, 0.1), std::clamp(Random::GaussianAdjustment(random.alpha_, 0.1), 0.0, 1.0) };
-            }
-            break;
-        case 1 :
-            // TODO Add one
-            break;
-        case 2 :
-            // TODO Remove one
-            break;
-        case 3 :
-            // Shuffle
-            if (randoms.size() > 1) {
-                Random::Shuffle(randoms);
-            }
-            break;
-        case 4 :
-            // Swap
-            if (randoms.size() > 1) {
-                std::swap(Random::Item(randoms), Random::Item(randoms));
-            }
-            break;
+    // Modify one
+    AddMutation(BASE_WEIGHT, [&]()
+    {
+        if (!filteredRandoms_.empty()) {
+            auto& random = Random::Item(filteredRandoms_);
+            random = { Random::GaussianAdjustment(random.min_, 0.1), Random::GaussianAdjustment(random.max_, 0.1), std::clamp(Random::GaussianAdjustment(random.alpha_, 0.1), 0.0, 1.0) };
         }
-        break;
-    case 3 :
-        dominance = GetMutatedDominance();
-        break;
-    case 4 :
-        mutationProbability = GetMutatedMutationProbability();
-        break;
-    }
+    });
 
-    return std::make_shared<GeneSenseRandom>(network, outputConnections, std::move(randoms), dominance, mutationProbability);
+    // Shuffle
+    AddMutation(0.05 * BASE_WEIGHT, [&]()
+    {
+        if (filteredRandoms_.size() > 1) {
+            Random::Shuffle(filteredRandoms_);
+        }
+    });
+
+    // Swap
+    AddMutation(0.33 * BASE_WEIGHT, [&]()
+    {
+        if (filteredRandoms_.size() > 1) {
+            std::swap(Random::Item(filteredRandoms_), Random::Item(filteredRandoms_));
+        }
+    });
+
+    // Add one
+    AddColumnInsertedMutation(0.5 * BASE_WEIGHT, [&](unsigned index)
+    {
+        auto iter = filteredRandoms_.begin();
+        std::advance(iter, index);
+        filteredRandoms_.insert(iter, { -1.0, 1.0, std::clamp(Random::Gaussian(0.5, 0.1), 0.0, 1.0) });
+    });
+
+    // Remove one
+    AddColumnInsertedMutation(0.5 * BASE_WEIGHT, [&](unsigned index)
+    {
+        auto iter = filteredRandoms_.begin();
+        std::advance(iter, index);
+        filteredRandoms_.erase(iter);
+    });
 }
 
 void GeneSenseRandom::ExpressGene(Swimmer& owner, Phenotype& target) const
 {
-    target.senses.push_back(std::make_shared<SenseRandom>(network_, outputConnections_, owner, std::vector(filteredRandoms_)));
+    target.senses.push_back(std::make_shared<SenseRandom>(GetNetwork(), GetOutputConnections(), owner, std::vector(filteredRandoms_)));
+}
+
+std::shared_ptr<Gene> GeneSenseRandom::Copy() const
+{
+    return std::make_shared<GeneSenseRandom>(GetNetwork(), GetOutputConnections(), std::vector(filteredRandoms_), GetDominance(), GetMutationProbability());
 }
 
 std::vector<SenseRandom::FilteredRandom> GeneSenseRandom::CreateRandomFilteredRandoms(unsigned count)
