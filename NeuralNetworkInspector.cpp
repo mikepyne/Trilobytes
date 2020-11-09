@@ -123,9 +123,9 @@ void NeuralNetworkInspector::ResetViewTransform()
     qreal brainWidth = brainGroup_.area.width();
     qreal effectorsWidth = effectorGroups_.empty() ? 0.0 : effectorGroups_.back().area.right() - effectorGroups_.front().area.left();
 
-    qreal sensorsHeight = std::max_element(std::begin(sensorGroups_), std::end(sensorGroups_), [](auto a, auto b) { return a.area.height() < b.area.height(); })->area.height();
+    qreal sensorsHeight = sensorGroups_.empty() ? 0.0 : std::max_element(std::begin(sensorGroups_), std::end(sensorGroups_), [](auto a, auto b) { return a.area.height() < b.area.height(); })->area.height();
     qreal brainHeight = brainGroup_.area.height();
-    qreal effectorsHeight = std::max_element(std::begin(effectorGroups_), std::end(effectorGroups_), [](auto a, auto b) { return a.area.height() < b.area.height(); })->area.height();
+    qreal effectorsHeight = effectorGroups_.empty() ? 0.0 : std::max_element(std::begin(effectorGroups_), std::end(effectorGroups_), [](auto a, auto b) { return a.area.height() < b.area.height(); })->area.height();
 
     qreal verticalTransform = height() / (sensorsHeight + brainHeight + effectorsHeight + (4 * groupPadding_));
     qreal horizontalTransform = width() / std::max({ sensorsWidth, brainWidth, effectorsWidth });

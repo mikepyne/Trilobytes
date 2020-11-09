@@ -46,7 +46,7 @@ GeneSenseRandom::GeneSenseRandom(const std::shared_ptr<NeuralNetwork>& network, 
     });
 
     // Remove one
-    AddColumnInsertedMutation(0.5 * BASE_WEIGHT, [&](unsigned index)
+    AddColumnRemovedMutation(0.5 * BASE_WEIGHT, [&](unsigned index)
     {
         auto iter = filteredRandoms_.begin();
         std::advance(iter, index);

@@ -33,6 +33,7 @@ public:
     const T& Min() const { return std::min(first_, last_); }
     const T& Max() const { return std::max(first_, last_); }
     T ValueRange() const { return Max() - Min(); }
+    T ValueDifference() const { return first_ - last_; }
     const T& First() const { return first_; }
     const T& Last() const { return last_; }
 
@@ -124,6 +125,41 @@ public:
 private:
     T min_;
     T max_;
+};
+
+class RangeConverter {
+public:
+    RangeConverter(Range<double> from, Range<double> to)
+        : from_(from)
+        , to_(to)
+    {
+    }
+
+    double Convert(const double& value) const
+    {
+        double proportion = (value - from_.First()) / from_.ValueDifference();
+        return to_.First() + (proportion * to_.ValueDifference());
+    }
+
+    double ConvertAndClamp(const double& value) const
+    {
+        double proportion = (value - from_.First()) / from_.ValueDifference();
+        return std::clamp(to_.First() + (proportion * to_.ValueDifference()), to_.Min(), to_.Max());
+    }
+
+    const Range<double>& GetFrom() const
+    {
+        return from_;
+    }
+
+    const Range<double>& GetTo() const
+    {
+        return to_;
+    }
+
+private:
+    Range<double> from_;
+    Range<double> to_;
 };
 
 ///

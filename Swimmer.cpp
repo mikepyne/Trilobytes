@@ -97,7 +97,6 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
 void Swimmer::DrawImpl(QPainter& paint)
 {
     paint.save();
-    paint.drawEllipse({ GetTransform().x, GetTransform().y }, GetRadius(), GetRadius());
     paint.setBrush(GetColour());
     paint.drawEllipse({ GetTransform().x, GetTransform().y }, GetRadius(), GetRadius());
     paint.restore();
@@ -176,7 +175,7 @@ std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
         std::make_shared<GeneSenseTraitsRaycast>(std::vector{
                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Size), },
-                                                 0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, -30, 0 }),
+                                                 0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, 0, 0 }, 30, 0),
         std::make_shared<GeneSenseTraitsTouching>(std::vector{
                                                       SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Energy), },
                                                   0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, 7.5, 0 }),
@@ -185,5 +184,6 @@ std::vector<std::shared_ptr<Gene> > Swimmer::CreateDefaultGenome()
                                                   SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Energy), },
                                               0, NeuralNetwork::BRAIN_WIDTH),
         std::make_shared<GeneEffectorTail>(0, NeuralNetwork::BRAIN_WIDTH),
+        std::make_shared<GeneSenseMagneticField>(0, NeuralNetwork::BRAIN_WIDTH),
     };
 }

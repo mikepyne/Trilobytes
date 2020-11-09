@@ -42,7 +42,7 @@ std::shared_ptr<Gene> GeneFactory::Random(unsigned brainWidth)
     },
     [=]()
     {
-        return std::make_shared<GeneSenseMagneticField>(brainWidth);
+        return std::make_shared<GeneSenseMagneticField>(Random::Number(0, 2), brainWidth);
     },
     [=]()
     {
@@ -63,8 +63,10 @@ std::shared_ptr<Gene> GeneFactory::Random(unsigned brainWidth)
             traits.push_back(SenseTraitsBase::DefaultNormalisation(trait));
         }
         unsigned hiddenLayers = Random::Number(0u, traits.size());
-        Transform transform = { 0, Random::Number(0.0, 20.0), Random::Gaussian(0.0, EoBE::Pi) };
-        return std::make_shared<GeneSenseTraitsRaycast>(std::move(traits), hiddenLayers, brainWidth, transform);
+        double distance = Random::Number(1.0, 50.0);
+        double rotation = Random::Number(0.0, EoBE::Tau);
+        // TODO allow the sense to start somewhere other than the centre of the swimmer
+        return std::make_shared<GeneSenseTraitsRaycast>(std::move(traits), hiddenLayers, brainWidth, Transform{ 0, 0, 0 }, distance, rotation);
     },
     [=]()
     {

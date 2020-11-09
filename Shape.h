@@ -9,29 +9,29 @@
 #include <assert.h>
 
 struct Point {
-    const double x;
-    const double y;
+    double x;
+    double y;
 };
 
 struct Line {
-    const Point a;
-    const Point b;
+    Point a;
+    Point b;
 };
 
 struct Circle {
-    const double x;
-    const double y;
+    double x;
+    double y;
     // inclusive
-    const double radius;
+    double radius;
 };
 
 struct Rect {
     // inclusive, top left point is point closest to (0, 0)
-    const double left;
-    const double top;
+    double left;
+    double top;
     // exclusive
-    const double right;
-    const double bottom;
+    double right;
+    double bottom;
 };
 
 inline bool operator==(const Point& p1, const Point& p2)
@@ -62,24 +62,26 @@ inline Rect RectFromCircle(const Circle& c)
 }
 
 /**
- * Returns a value between Pi and -Pi
- * North: 0.0
- * East : Pi / 2.0
- * South: -Pi or Pi
- * West : -Pi / 2.0
- * To normalise for a neural network, just divide by Pi
+ * Returns a value between 0 & Tau, o inclusive, Tau exclusive
+ * North: 0
+ * East : 0.5 Pi
+ * South: Pi
+ * West : 1.5 Pi
  */
 inline double GetBearing(const Point& from, const Point& to)
 {
-    double xDiff = from.x - to.x;
-    double yDiff = from.y - to.y;
+    double xDiff = to.x - from.x;
+    double yDiff = to.y - from.y;
 
-    return std::atan2(xDiff, yDiff);
+    return std::fmod(std::atan2(xDiff, yDiff) + EoBE::Tau, EoBE::Tau);
 }
 
+/**
+ * Takes a bearing where 0 or Tau = North, increasing clockwise.
+ */
 inline Point ApplyOffset(Point start, double bearing, double distance)
 {
-    return { start.x + (std::sin(bearing) * distance), start.y + (-std::cos(bearing) * distance) };
+    return { start.x + (std::sin(bearing) * distance), start.y + (std::cos(bearing) * distance) };
 }
 
 inline bool Contains(const Line& l, const Point& p)

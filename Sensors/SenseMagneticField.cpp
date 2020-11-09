@@ -6,30 +6,71 @@
 
 #include <QPainter>
 
-SenseMagneticField::SenseMagneticField(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner)
+SenseMagneticField::SenseMagneticField(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, const Point& target, const EoBE::RangeConverter& distanceNormaliser, const EoBE::Range<double>& frontBackNormaliser, const EoBE::Range<double>& leftRightNormaliser)
     : Sense(network, outputConnections, owner)
+    , target_(target)
+    , distanceNormaliser_(distanceNormaliser)
+    , frontBackNormaliser_({0, EoBE::Pi}, frontBackNormaliser)
+    , leftRightNormaliser_({0, EoBE::Pi}, leftRightNormaliser)
 {
 }
 
 void SenseMagneticField::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface&) const
 {
-    // TODO need the angle to be relative to the direction the swimmer is pointing (positive if facing the )
-    inputs.at(0) = GetBearing(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, Point{ 0, 0 }) / EoBE::Pi;
-    inputs.at(1) = 2 * std::tanh(GetDistance(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, Point{ 0, 0 }) / 2500) - 1.0;
+    double distance = GetDistance(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, target_);
+    double bearing = GetBearing(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, target_);
+
+    // Distance to the target location
+    inputs.at(0) = distanceNormaliser_.ConvertAndClamp(distance);
+    // 1 Facing target, -1 back to target (left/right both 0)
+    inputs.at(1) = BearingToFrontBack(bearing);
+    // 1 Left facing target, -1 right facing target (front/back both 0)
+    inputs.at(2) = BearingToLeftRight(bearing);
 }
 
 void SenseMagneticField::Draw(QPainter& paint) const
 {
-    auto endX = owner_.GetTransform().x;
-    auto endY = owner_.GetTransform().y;
-    auto bearing = 1 + (GetBearing(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, Point{ 0, 0 }) / EoBE::Pi);
-    auto distance = 1 + (2 * std::tanh(GetDistance(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, Point{ 0, 0 }) / 2500) - 1.0);
-    distance *= 20;
-    bearing *= EoBE::Pi;
+    Point begin{ owner_.GetTransform().x, owner_.GetTransform().y };
+    double distance = GetDistance(begin, target_);
+    double bearing = GetBearing(begin, target_);
 
-    endX += std::sin(bearing) * distance;
-    endY += std::cos(bearing) * distance;
+    // Adjust distance so it can be drawn reasonably
+    distance = 30 * (distance / distanceNormaliser_.GetFrom().Max());
 
-    paint.setPen(QColor::fromRgb(0, 0, 0));
-    paint.drawLine(owner_.GetTransform().x, owner_.GetTransform().y, endX, endY);
+    Point end = ApplyOffset(begin, bearing, distance);
+
+    paint.setPen(Qt::blue);
+    paint.drawLine(QLineF(begin.x, begin.y, end.x, end.y));
+}
+
+double SenseMagneticField::BearingToFrontBack(double bearing) const
+{
+    // Get bearing from direction facing to target
+    bearing -= owner_.GetTransform().rotation;
+
+    // Ensure we are still in the range if 0 to Tau
+    if (bearing < 0.0) {
+        bearing += EoBE::Tau;
+    }
+
+    // Convert range from 0-Tau to 0 to Pi
+    bearing = std::abs(bearing - EoBE::Pi);
+
+    return frontBackNormaliser_.Convert(bearing);
+}
+
+double SenseMagneticField::BearingToLeftRight(double bearing) const
+{
+    // Get bearing from right side to target
+    bearing -= owner_.GetTransform().rotation + (EoBE::Tau / 4.0);
+
+    // Ensure we are still in the range if 0 to Tau
+    while (bearing < 0.0) {
+        bearing += EoBE::Tau;
+    }
+
+    // Convert range from 0-Tau to 0 to Pi
+    bearing = std::abs(bearing - EoBE::Pi);
+
+    return leftRightNormaliser_.Convert(bearing);
 }

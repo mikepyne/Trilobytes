@@ -5,9 +5,10 @@
 
 #include <QPainter>
 
-SenseTraitsRaycast::SenseTraitsRaycast(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, std::vector<TraitNormaliser>&& toDetect, double maxDistance, double angle)
-    : SenseTraitsBase(network, outputConnections, owner, { 0, 0, angle }, std::move(toDetect))
+SenseTraitsRaycast::SenseTraitsRaycast(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, std::vector<TraitNormaliser>&& toDetect, const Transform& transform, double maxDistance, double angle)
+    : SenseTraitsBase(network, outputConnections, owner, transform, std::move(toDetect))
     , rayCastDistance_(maxDistance)
+    , rayCastAngle_(angle)
 {
 }
 
@@ -20,9 +21,9 @@ void SenseTraitsRaycast::Draw(QPainter& paint) const
 
 Line SenseTraitsRaycast::GetLine() const
 {
-    Transform trans = owner_.GetTransform() + transform_;
-    Point begin = { trans.x, trans.y };
-    Point end = ApplyOffset(begin, trans.rotation, rayCastDistance_);
+    // TODO this is really why I need to get on with implementing a real transform class...
+    Point begin = ApplyOffset({ owner_.GetTransform().x, owner_.GetTransform().y }, transform_.rotation + owner_.GetTransform().rotation, GetDistance({0, 0}, {transform_.x, transform_.y}));
+    Point end = ApplyOffset(begin, transform_.rotation + owner_.GetTransform().rotation + rayCastAngle_, rayCastDistance_);
     return { begin, end };
 }
 

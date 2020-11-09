@@ -72,8 +72,9 @@ void Entity::SetBearing(double bearing)
 bool Entity::Move()
 {
     if (std::abs(speed_) > 0.05) {
-        transform_.x += std::sin(transform_.rotation) * speed_;
-        transform_.y += -(std::cos(transform_.rotation) * speed_);
+        Point newLocation = ApplyOffset({ transform_.x, transform_.y }, transform_.rotation, speed_);
+        transform_.x = newLocation.x;
+        transform_.y = newLocation.y;
         speed_ -= speed_ / 4.0;
         return true;
     }
