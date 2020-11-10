@@ -23,7 +23,7 @@ Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Geno
 Swimmer::~Swimmer()
 {
     if (closestLivingAncestor_) {
-        closestLivingAncestor_->DescendantDied();
+        closestLivingAncestor_->DescendantDied(generation_);
     }
 }
 
@@ -31,6 +31,22 @@ std::shared_ptr<Entity> Swimmer::GiveBirth(const std::shared_ptr<Genome>& other)
 {
     ++eggsLayed_;
     return std::make_shared<Egg>(shared_from_this(), TakeEnergy(100_mj), GetTransform(), genome_, other ? other : genome_, Random::Poisson(50u));
+}
+
+unsigned Swimmer::GetTotalDescendantsCount() const
+{
+    return std::accumulate(std::cbegin(totalDescentantCounts_), std::cend(totalDescentantCounts_), 0u, [](unsigned total, const auto& pair)
+    {
+        return total + pair.second;
+    });
+}
+
+unsigned Swimmer::GetLivingDescendantsCount() const
+{
+    return std::accumulate(std::cbegin(extantDescentantCounts_), std::cend(extantDescentantCounts_), 0u, [](unsigned total, const auto& pair)
+    {
+        return total + pair.second;
+    });
 }
 
 void Swimmer::AdjustVelocity(double adjustment)
@@ -113,11 +129,10 @@ Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Geno
     , effectors_(phenotype.effectors)
     , brainValues_(brain_->GetInputCount(), 0.0)
     , eggsLayed_(0)
-    , totalDescendantCount_(0)
-    , extantDescendantCount_(0)
+    , generation_(closestLivingAncestor_ ? closestLivingAncestor_->generation_ + 1 : 0)
 {
     if (closestLivingAncestor_) {
-        closestLivingAncestor_->DescendantBorn();
+        closestLivingAncestor_->DescendantBorn(generation_);
     }
 }
 
@@ -130,19 +145,21 @@ std::shared_ptr<Swimmer> Swimmer::FindClosestLivingAncestor() const
     return ancestor;
 }
 
-void Swimmer::DescendantBorn()
+void Swimmer::DescendantBorn(unsigned generation)
 {
-    ++totalDescendantCount_;
-    ++extantDescendantCount_;
+    // record generations of descendants relative to this's generation
+    ++totalDescentantCounts_[generation - generation_];
+    ++extantDescentantCounts_[generation - generation_];
     if (closestLivingAncestor_) {
-        closestLivingAncestor_->DescendantBorn();
+        closestLivingAncestor_->DescendantBorn(generation);
     }
 }
 
-void Swimmer::DescendantDied()
+void Swimmer::DescendantDied(unsigned generation)
 {
-    --extantDescendantCount_;
+    // record generations of descendants relative to this's generation
+    --extantDescentantCounts_[generation - generation_];
     if (closestLivingAncestor_) {
-        closestLivingAncestor_->DescendantDied();
+        closestLivingAncestor_->DescendantDied(generation);
     }
 }

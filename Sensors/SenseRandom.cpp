@@ -20,6 +20,6 @@ void SenseRandom::PrimeInputs(std::vector<double>& inputs, const EntityContainer
 void SenseRandom::PrepareToPrime()
 {
     EoBE::IterateBoth<double, FilteredRandom>(last_, filteredRandoms_, [](double& previous, const FilteredRandom& filter) {
-        previous = std::clamp(previous + (filter.alpha_ * (Random::Number(filter.min_, filter.max_) - previous)), -1.0, 1.0);
+        previous = std::clamp(previous + (filter.beta_ * (Random::Number(filter.min_, filter.max_) - previous)), -1.0, 1.0);
     });
 }

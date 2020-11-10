@@ -8,7 +8,7 @@ public:
     struct FilteredRandom {
         double min_;
         double max_;
-        double alpha_; // i.e. Low pass filter
+        double beta_; // i.e. Low pass filter
     };
 
     SenseRandom(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, std::vector<FilteredRandom>&& filteredRandoms);

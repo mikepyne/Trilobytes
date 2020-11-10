@@ -23,9 +23,12 @@ public:
     const std::vector<std::shared_ptr<Sense>>& InspectSenses() { return senses_; };
     const std::vector<std::shared_ptr<Effector>>& InspectEffectors() { return effectors_; };
 
+    uint64_t GetGeneration() const { return generation_; }
     unsigned GetEggsLayedCount() const { return eggsLayed_; }
-    unsigned GetTotalDescendantsCount() const { return totalDescendantCount_; }
-    unsigned GetLivingDescendantsCount() const { return extantDescendantCount_; }
+    unsigned GetTotalDescendantsCount(unsigned generation) const { return totalDescentantCounts_.count(generation) ? totalDescentantCounts_.at(generation) : 0; }
+    unsigned GetLivingDescendantsCount(unsigned generation) const { return extantDescentantCounts_.count(generation) ? extantDescentantCounts_.at(generation) : 0; }
+    unsigned GetTotalDescendantsCount() const;
+    unsigned GetLivingDescendantsCount() const;
 
     void AdjustVelocity(double adjustment);
     void AdjustBearing(double adjustment);
@@ -44,15 +47,17 @@ private:
     std::vector<double> brainValues_;
 
     unsigned eggsLayed_;
-    unsigned totalDescendantCount_;
-    unsigned extantDescendantCount_;
+    uint64_t generation_;
+    // <relative generation (where children of this are gen 1), count>
+    std::map<unsigned, unsigned> totalDescentantCounts_;
+    std::map<unsigned, unsigned> extantDescentantCounts_;
 
     Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, const Phenotype& phenotype, std::shared_ptr<Swimmer>&& mother);
 
     std::shared_ptr<Swimmer> FindClosestLivingAncestor() const;
 
-    void DescendantBorn();
-    void DescendantDied();
+    void DescendantBorn(unsigned generation);
+    void DescendantDied(unsigned generation);
 };
 
 #endif // SWIMMER_H

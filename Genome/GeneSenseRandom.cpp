@@ -17,7 +17,7 @@ GeneSenseRandom::GeneSenseRandom(const std::shared_ptr<NeuralNetwork>& network, 
     {
         if (!filteredRandoms_.empty()) {
             auto& random = Random::Item(filteredRandoms_);
-            random = { Random::GaussianAdjustment(random.min_, 0.1), Random::GaussianAdjustment(random.max_, 0.1), std::clamp(Random::GaussianAdjustment(random.alpha_, 0.1), 0.0, 1.0) };
+            random = { Random::GaussianAdjustment(random.min_, 0.1), Random::GaussianAdjustment(random.max_, 0.1), std::clamp(Random::GaussianAdjustment(random.beta_, 0.1), 0.0, 1.0) };
         }
     });
 

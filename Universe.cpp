@@ -61,8 +61,8 @@ void Universe::SelectFittestSwimmer() {
     rootNode_.ForEach([&](const std::shared_ptr<Entity>& e)
     {
         if (const auto* s = dynamic_cast<const Swimmer*>(e.get())) {
-            if (s->GetLivingDescendantsCount() > mostLivingChildren) {
-                mostLivingChildren = s->GetLivingDescendantsCount();
+            if (s->GetLivingDescendantsCount(2) > mostLivingChildren) {
+                mostLivingChildren = s->GetLivingDescendantsCount(2);
                 selectedEntity_ = e;
             }
         }
@@ -119,7 +119,10 @@ void Universe::Render(QPainter& p) const
         auto f = dynamic_cast<Swimmer*>(selectedEntity_.get());
         p.drawText(0, line += 15, QString("   - %1 Ticks Old").arg(f->GetAge()));
         p.drawText(0, line += 15, QString("   - Laid %1 Eggs").arg(f->GetEggsLayedCount()));
-        p.drawText(0, line += 15, QString("   - Descendants %1/%2").arg(f->GetLivingDescendantsCount()).arg(f->GetTotalDescendantsCount()));
+        p.drawText(0, line += 15, QString("   - Children %1/%2").arg(f->GetLivingDescendantsCount(1)).arg(f->GetTotalDescendantsCount(1)));
+        p.drawText(0, line += 15, QString("   - GrandChildred %1/%2").arg(f->GetLivingDescendantsCount(2)).arg(f->GetTotalDescendantsCount(2)));
+        p.drawText(0, line += 15, QString("   - GreatGrandChildred %1/%2").arg(f->GetLivingDescendantsCount(3)).arg(f->GetTotalDescendantsCount(3)));
+        p.drawText(0, line += 15, QString("   - All Descendants %1/%2").arg(f->GetLivingDescendantsCount()).arg(f->GetTotalDescendantsCount()));
         p.drawText(0, line += 15, QString("   - Energy %1mj").arg(f->GetEnergy() / 1_mj));
     }
     p.restore();

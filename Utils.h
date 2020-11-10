@@ -129,37 +129,34 @@ private:
 
 class RangeConverter {
 public:
-    RangeConverter(Range<double> from, Range<double> to)
-        : from_(from)
-        , to_(to)
-    {
-    }
+    RangeConverter(Range<double> from, Range<double> to);
 
-    double Convert(const double& value) const
-    {
-        double proportion = (value - from_.First()) / from_.ValueDifference();
-        return to_.First() + (proportion * to_.ValueDifference());
-    }
-
-    double ConvertAndClamp(const double& value) const
-    {
-        double proportion = (value - from_.First()) / from_.ValueDifference();
-        return std::clamp(to_.First() + (proportion * to_.ValueDifference()), to_.Min(), to_.Max());
-    }
-
-    const Range<double>& GetFrom() const
-    {
-        return from_;
-    }
-
-    const Range<double>& GetTo() const
-    {
-        return to_;
-    }
+    double Convert(const double& value) const;
+    double ConvertAndClamp(const double& value) const;
+    const Range<double>& GetFrom() const { return from_; }
+    const Range<double>& GetTo() const { return to_; }
 
 private:
     Range<double> from_;
     Range<double> to_;
+};
+
+class RollingStatistics {
+public:
+    void AddValue(const double& value);
+
+    uint64_t Count() const { return count_; }
+    double Mean() const { return sumOfValues_ / count_; }
+    double StandardDeviation() const;
+    double Min() const { return min_; };
+    double Max() const { return max_; };
+
+private:
+    uint64_t count_ = 0;
+    double sumOfValues_ = 0.0;
+    double sumOfValuesSquared_ = 0.0;
+    double min_ = std::numeric_limits<double>::max();
+    double max_ = std::numeric_limits<double>::min();
 };
 
 ///
