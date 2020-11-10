@@ -182,7 +182,7 @@ void NeuralNetworkInspector::paintEvent(QPaintEvent* event)
     p.translate(transformX_, transformY_);
 
     // TODO use the type of group for something
-    ForEachGroup([&](GroupType /*type*/, const Group& group)
+    ForEachGroup([&](GroupType type, const Group& group)
     {
         // Draw the connections
         for (auto& [ nodeCoordinates, node ] : group.nodes) {
@@ -221,7 +221,13 @@ void NeuralNetworkInspector::paintEvent(QPaintEvent* event)
         p.drawRect(group.area);
         p.setCompositionMode(QPainter::CompositionMode_Exclusion);
         p.setPen(Qt::white);
-        p.drawText(group.area.topLeft() + QPoint(2, 10), QString(group.name.c_str()));
+        if (type == GroupType::Effector) {
+            // Draw effector text below the neurons
+            p.drawText(group.area.bottomLeft() + QPoint(2, -fontMetrics().descent()), QString(group.name.c_str()));
+        } else {
+            // Draw Sensor/Brain text above the neurons
+            p.drawText(group.area.topLeft() + QPoint(2, fontMetrics().ascent()), QString(group.name.c_str()));
+        }
         p.setCompositionMode(QPainter::CompositionMode_SourceOver);
     });
 }
@@ -276,10 +282,10 @@ void NeuralNetworkInspector::LayoutGroupsInView()
     ForEachGroup([&](GroupType type, Group& group)
     {
         qreal titleWidth = metrics.width(QString(group.name.c_str())) + 10;
-        qreal nodesWidth = (2 * groupPadding_) + (group.horizontalNodes * (nodeWidth_ + nodeHSpacing_)) - nodeHSpacing_;
+        qreal nodesWidth = (2 * groupPadding_) + (group.horizontalNodes * (nodeWidth_ + nodeHSpacing_)) - (group.horizontalNodes ? nodeHSpacing_ : 0);
 
         qreal titleHeight = metrics.height();
-        qreal nodesHeight = (2 * groupPadding_) + (group.verticalNodes * (nodeHeight_ + nodeVSpacing_) - nodeVSpacing_);
+        qreal nodesHeight = (2 * groupPadding_) + (group.verticalNodes * (nodeHeight_ + nodeVSpacing_)) - (group.verticalNodes ? nodeVSpacing_ : 0);
 
         group.area.setSize(QSizeF(std::max(titleWidth, nodesWidth), titleHeight + nodesHeight));
 
@@ -300,6 +306,7 @@ void NeuralNetworkInspector::LayoutGroupsInView()
     qreal sensorsWidthSoFar = 0.0;
     for (auto& sense : sensorGroups_) {
         sense.area.moveTopLeft(sensesRect.topLeft());
+        // Move sense groups down so their bases are lined up
         sense.area.translate(sensorsWidthSoFar, maxSenseHeight - sense.area.height());
         sensorsWidthSoFar += sense.area.width() + groupHSpacing_;
     }
@@ -310,26 +317,31 @@ void NeuralNetworkInspector::LayoutGroupsInView()
     qreal effectorsWidthSoFar = 0.0;
     for (auto& effector : effectorGroups_) {
         effector.area.moveTopLeft(effectorsRect.topLeft());
-        effector.area.translate(effectorsWidthSoFar, maxEffectorHeight - effector.area.height());
+        // Do not move effector groups down so their tops remain aligned
+        effector.area.translate(effectorsWidthSoFar, 0);
         effectorsWidthSoFar += effector.area.width() + groupHSpacing_;
     }
 
-    ForEachGroup([&](GroupType /*type*/, Group& group)
+    ForEachGroup([&](GroupType type, Group& group)
     {
-        LayoutNodesInGroup(group);
+        LayoutNodesInGroup(type, group);
     });
 
     ResetViewTransform();
 }
 
-void NeuralNetworkInspector::LayoutNodesInGroup(NeuralNetworkInspector::Group& group)
+void NeuralNetworkInspector::LayoutNodesInGroup(GroupType type, Group& group)
 {
     for (auto& [ nodeCoordinates, node ] : group.nodes) {
         auto& [column, row] = nodeCoordinates; {}
         qreal totalNodesWidth  = (nodeWidth_ + nodeHSpacing_) * (group.horizontalNodes - 1);
         qreal totalNodesHeight = (nodeHeight_ + nodeVSpacing_) * (group.verticalNodes - 1);
         qreal xOffset = (group.area.width() - totalNodesWidth) / 2;
-        qreal yOffset = (((group.area.height() - fontMetrics().height()) - totalNodesHeight) / 2) + fontMetrics().height();
+        qreal yOffset = (((group.area.height() - fontMetrics().height()) - totalNodesHeight) / 2);
+        // Effectors have their text below the nodes, every other group has it above
+        if (type != GroupType::Effector) {
+            yOffset += fontMetrics().height();
+        }
         node.x = group.area.x() + xOffset + ((nodeWidth_ + nodeHSpacing_) * column);
         node.y = group.area.y() + yOffset + ((nodeHeight_ + nodeVSpacing_) * row);
     }

@@ -79,7 +79,7 @@ private:
     Group CreateGroup(const NeuralNetwork& network, const std::string& name);
 
     void LayoutGroupsInView();
-    void LayoutNodesInGroup(Group& group);
+    void LayoutNodesInGroup(GroupType type, Group& group);
 
     void ForwardPropogate();
 
