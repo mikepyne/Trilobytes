@@ -11,7 +11,7 @@
 
 class Swimmer : public Entity, public std::enable_shared_from_this<Swimmer> {
 public:
-    Swimmer(Energy energy, const Transform& transform);
+    Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome);
     Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, std::shared_ptr<Swimmer>&& parent);
     virtual ~Swimmer() override;
 
@@ -53,9 +53,6 @@ private:
 
     void DescendantBorn();
     void DescendantDied();
-
-    static std::vector<std::shared_ptr<Gene>> CreateDefaultGenome();
-
 };
 
 #endif // SWIMMER_H

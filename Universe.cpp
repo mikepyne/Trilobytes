@@ -5,6 +5,7 @@
 #include "FoodPellet.h"
 #include "Random.h"
 #include "MainWindow.h"
+#include "Genome/GeneFactory.h"
 
 #include <QVariant>
 
@@ -67,6 +68,16 @@ void Universe::SelectFittestSwimmer() {
         }
     });
     observerInterface_.SuggestUpdate();
+}
+
+void Universe::AddDefaultSwimmer(double x, double y)
+{
+    rootNode_.AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ x, y, Random::Bearing() }, GeneFactory::DefaultGenome()));
+}
+
+void Universe::AddRandomSwimmer(double x, double y)
+{
+    rootNode_.AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ x, y, Random::Bearing() }, GeneFactory::RandomGenome()));
 }
 
 Universe::TaskHandle Universe::AddTask(std::function<void (uint64_t)>&& task)
@@ -150,7 +161,7 @@ void Universe::Thread()
                 double distance = std::sqrt(Random::Number(0.0, 1.0)) * feeder->GetRadius();
                 double swimmerX = feeder->GetX() + distance * std::cos(rotation);
                 double swimmerY = feeder->GetY() + distance * std::sin(rotation);
-                rootNode_.AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ swimmerX, swimmerY, 0 }));
+                AddDefaultSwimmer(swimmerX, swimmerY);
             }
         }
         observerInterface_.SuggestUpdate();

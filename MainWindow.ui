@@ -81,8 +81,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>180</width>
-                 <height>707</height>
+                 <width>216</width>
+                 <height>709</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -92,7 +92,7 @@
                    <string>Global</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout">
-                   <item row="2" column="0">
+                   <item row="4" column="0">
                     <widget class="QSpinBox" name="quadLeewaySpinner">
                      <property name="prefix">
                       <string>Quad Leeway: </string>
@@ -105,7 +105,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="1" column="0">
+                   <item row="3" column="0">
                     <widget class="QSpinBox" name="quadCapacitySpinner">
                      <property name="prefix">
                       <string>Quad Capacity: </string>
@@ -121,10 +121,24 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="1" column="0">
+                    <widget class="QPushButton" name="addDefaultSwimmerButton">
+                     <property name="text">
+                      <string>Add Default Swimmer</string>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="0" column="0">
                     <widget class="QPushButton" name="resetAllButton">
                      <property name="text">
                       <string>Reset</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="0">
+                    <widget class="QPushButton" name="addRandomSwimmerButton">
+                     <property name="text">
+                      <string>Add Random Swimmer</string>
                      </property>
                     </widget>
                    </item>

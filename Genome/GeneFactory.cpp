@@ -13,7 +13,48 @@
 
 #include <vector>
 
-std::shared_ptr<Gene> GeneFactory::Random(unsigned brainWidth)
+std::shared_ptr<Genome> GeneFactory::DefaultGenome()
+{
+    return std::make_shared<Genome>(std::vector<std::shared_ptr<Gene>>{
+        std::make_shared<GenePigment>(),
+        std::make_shared<GenePigment>(),
+        std::make_shared<GeneBrain>(3, NeuralNetwork::BRAIN_WIDTH, 0.5),
+        std::make_shared<GeneSenseRandom>(1, NeuralNetwork::BRAIN_WIDTH),
+        std::make_shared<GeneSenseTraitsInArea>(std::vector{
+                                                    SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
+                                                    SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Green), },
+                                                0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, 24,  0.6}, 20),
+        std::make_shared<GeneSenseTraitsInArea>(std::vector{
+                                                    SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
+                                                    SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Green), },
+                                                0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, 24, -0.6}, 20),
+        std::make_shared<GeneSenseTraitsRaycast>(std::vector{
+                                                     SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
+                                                     SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Size), },
+                                                 0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, 0, 0 }, 30, 0),
+        std::make_shared<GeneSenseTraitsTouching>(std::vector{
+                                                      SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Energy), },
+                                                  0, NeuralNetwork::BRAIN_WIDTH, Transform{ 0, 7.5, 0 }),
+        std::make_shared<GeneSenseTraitsSelf>(std::vector{
+                                                  SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Age),
+                                                  SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Energy), },
+                                              0, NeuralNetwork::BRAIN_WIDTH),
+        std::make_shared<GeneEffectorTail>(0, NeuralNetwork::BRAIN_WIDTH),
+        std::make_shared<GeneSenseMagneticField>(0, NeuralNetwork::BRAIN_WIDTH),
+                                    });
+}
+
+std::shared_ptr<Genome> GeneFactory::RandomGenome()
+{
+    std::vector<std::shared_ptr<Gene>> genes;
+    unsigned numGenes = 20;
+    for (unsigned i = 0; i < numGenes; ++i) {
+        genes.push_back(RandomGene(NeuralNetwork::BRAIN_WIDTH));
+    }
+    return std::make_shared<Genome>(std::move(genes));
+}
+
+std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
 {
     std::vector<std::function<std::shared_ptr<Gene>()>> genes{
     []()

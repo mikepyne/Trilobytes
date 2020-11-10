@@ -45,6 +45,8 @@ public:
     void Reset() {  reset_ = true; }
     void SelectEntity(const Point& location);
     void SelectFittestSwimmer();
+    void AddDefaultSwimmer(double x, double y);
+    void AddRandomSwimmer(double x, double y);
     /**
      * @brief The Task system allows clients to have code run each tick, without
      * the Univers neding to know implementation specifics. For example, graphs

@@ -37,6 +37,16 @@ MainWindow::MainWindow(QWidget *parent)
             }
         }
     });
+    connect(ui->addDefaultSwimmerButton, &QPushButton::pressed, [&]()
+    {
+        auto point = ApplyOffset({0, 0}, Random::Bearing(), Random::Number(0.0, 1000.0));
+        universe_->AddDefaultSwimmer(point.x, point.y);
+    });
+    connect(ui->addRandomSwimmerButton, &QPushButton::pressed, [&]()
+    {
+        auto point = ApplyOffset({0, 0}, Random::Bearing(), Random::Number(0.0, 1000.0));
+        universe_->AddRandomSwimmer(point.x, point.y);
+    });
     connect(ui->quadCapacitySpinner, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](int capacity)
     {
         universe_->SetEntityTargetPerQuad(capacity, ui->quadLeewaySpinner->value());
