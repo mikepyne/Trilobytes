@@ -12,7 +12,7 @@ public:
     virtual void Draw(QPainter& paint) const override;
 
 private:
-    virtual void PerformActions(const std::vector<double>& actionValues, const EntityContainerInterface& entities) override;
+    virtual Energy PerformActions(const std::vector<double>& actionValues, const EntityContainerInterface& entities) override;
 };
 
 #endif // EFFECTORTAIL_H

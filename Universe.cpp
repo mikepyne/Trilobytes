@@ -124,6 +124,7 @@ void Universe::Render(QPainter& p) const
         p.drawText(0, line += 15, QString("   - GreatGrandChildred %1/%2").arg(f->GetLivingDescendantsCount(3)).arg(f->GetTotalDescendantsCount(3)));
         p.drawText(0, line += 15, QString("   - All Descendants %1/%2").arg(f->GetLivingDescendantsCount()).arg(f->GetTotalDescendantsCount()));
         p.drawText(0, line += 15, QString("   - Energy %1mj").arg(f->GetEnergy() / 1_mj));
+        p.drawText(0, line += 15, QString("   - Metabolism %1uj").arg(f->GetBaseMetabolism() / 1_uj));
     }
     p.restore();
 }

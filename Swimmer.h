@@ -24,6 +24,7 @@ public:
     const std::vector<std::shared_ptr<Effector>>& InspectEffectors() { return effectors_; };
 
     uint64_t GetGeneration() const { return generation_; }
+    const Energy& GetBaseMetabolism() const { return baseMetabolism_; }
     unsigned GetEggsLayedCount() const { return eggsLayed_; }
     unsigned GetTotalDescendantsCount(unsigned generation) const { return totalDescentantCounts_.count(generation) ? totalDescentantCounts_.at(generation) : 0; }
     unsigned GetLivingDescendantsCount(unsigned generation) const { return extantDescentantCounts_.count(generation) ? extantDescentantCounts_.at(generation) : 0; }
@@ -40,6 +41,9 @@ protected:
     virtual void DrawImpl(QPainter& paint) override final;
 
 private:
+    const uint64_t generation_;
+    const Energy baseMetabolism_;
+
     std::shared_ptr<Genome> genome_;
     std::shared_ptr<NeuralNetwork> brain_;
     std::vector<std::shared_ptr<Sense>> senses_;
@@ -47,7 +51,6 @@ private:
     std::vector<double> brainValues_;
 
     unsigned eggsLayed_;
-    uint64_t generation_;
     // <relative generation (where children of this are gen 1), count>
     std::map<unsigned, unsigned> totalDescentantCounts_;
     std::map<unsigned, unsigned> extantDescentantCounts_;

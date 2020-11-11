@@ -41,6 +41,11 @@ GeneSenseBase::GeneSenseBase(const std::shared_ptr<NeuralNetwork>& network, cons
     });
 }
 
+Energy GeneSenseBase::GetMetabolicCost() const
+{
+    return ( 1 + network_->GetLayerCount()) * network_->GetLayerWidth() * 0.05_uj;
+}
+
 void GeneSenseBase::AddColumnInsertedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnAdded)
 {
     // Insert a new column

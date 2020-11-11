@@ -47,7 +47,7 @@ std::shared_ptr<Genome> GeneFactory::DefaultGenome()
 std::shared_ptr<Genome> GeneFactory::RandomGenome()
 {
     std::vector<std::shared_ptr<Gene>> genes;
-    unsigned numGenes = 20;
+    unsigned numGenes = Random::Number(3u, 20u);
     for (unsigned i = 0; i < numGenes; ++i) {
         genes.push_back(RandomGene(NeuralNetwork::BRAIN_WIDTH));
     }

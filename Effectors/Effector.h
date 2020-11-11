@@ -1,6 +1,7 @@
 #ifndef EFFECTOR_H
 #define EFFECTOR_H
 
+#include "Energy.h"
 #include "NeuralNetwork.h"
 #include "NeuralNetworkConnector.h"
 
@@ -19,7 +20,7 @@ public:
     virtual std::string_view GetName() const = 0;
 
     virtual void Draw(QPainter& paint) const = 0;
-    virtual void Tick(const std::vector<double>& inputs, const EntityContainerInterface& entities) final;
+    virtual Energy Tick(const std::vector<double>& inputs, const EntityContainerInterface& entities) final;
 
     unsigned GetInputCount() const { return network_->GetInputCount(); }
 
@@ -34,7 +35,7 @@ private:
     std::shared_ptr<NeuralNetworkConnector> inputConnections_;
     std::vector<double> outputs_;
 
-    virtual void PerformActions(const std::vector<double>& actionValues, const EntityContainerInterface& entities) = 0;
+    virtual Energy PerformActions(const std::vector<double>& actionValues, const EntityContainerInterface& entities) = 0;
 };
 
 #endif // EFFECTOR_H

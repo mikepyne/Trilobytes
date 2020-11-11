@@ -18,6 +18,7 @@ GeneSenseTraitsSelf::GeneSenseTraitsSelf(std::vector<SenseTraitsBase::TraitNorma
 void GeneSenseTraitsSelf::ExpressGene(Swimmer& owner, Phenotype& target) const
 {
     target.senses.push_back(std::make_shared<SenseTraitsSelf>(GetNetwork(), GetOutputConnections(), owner, std::vector(toDetect_)));
+    target.baseMetabolism += GetMetabolicCost();
 }
 
 std::shared_ptr<Gene> GeneSenseTraitsSelf::Copy() const

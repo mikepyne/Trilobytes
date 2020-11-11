@@ -51,13 +51,11 @@ unsigned Swimmer::GetLivingDescendantsCount() const
 
 void Swimmer::AdjustVelocity(double adjustment)
 {
-    UseEnergy(350_uj * std::pow(adjustment, 2.0));
     SetVelocity(GetVelocity() + adjustment);
 }
 
 void Swimmer::AdjustBearing(double adjustment)
 {
-    UseEnergy(100_uj * std::pow(adjustment, 2.0));
     SetBearing(GetTransform().rotation + adjustment);
 }
 
@@ -67,6 +65,7 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
         closestLivingAncestor_ = FindClosestLivingAncestor();
     }
 
+    Energy energyUsed = 0_j;
     if (brain_ && brain_->GetInputCount() > 0) {
         std::fill(std::begin(brainValues_), std::end(brainValues_), 0.0);
         for (auto& sense : senses_) {
@@ -76,12 +75,11 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
         brain_->ForwardPropogate(brainValues_);
 
         for (auto& effector : effectors_) {
-            effector->Tick(brainValues_, container);
+            energyUsed += effector->Tick(brainValues_, container);
         }
     }
 
-    // Baseline energy use TODO adjust based on genome (sense + effector count e.t.c.)
-    UseEnergy(20_uj);
+    UseEnergy(baseMetabolism_ + energyUsed);
 
     std::shared_ptr<Genome> otherGenes;
     container.ForEachCollidingWith(Circle{ GetTransform().x, GetTransform().y, GetRadius() }, [&](const std::shared_ptr<Entity>& other) -> void
@@ -123,13 +121,14 @@ void Swimmer::DrawImpl(QPainter& paint)
 Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, const Phenotype& phenotype, std::shared_ptr<Swimmer>&& mother)
     : Entity(energy, transform, 6.0, phenotype.colour)
     , closestLivingAncestor_(std::move(mother))
+    , generation_(closestLivingAncestor_ ? closestLivingAncestor_->generation_ + 1 : 0)
+    , baseMetabolism_(phenotype.baseMetabolism)
     , genome_(genome)
     , brain_(phenotype.brain)
     , senses_(phenotype.senses)
     , effectors_(phenotype.effectors)
     , brainValues_(brain_->GetInputCount(), 0.0)
     , eggsLayed_(0)
-    , generation_(closestLivingAncestor_ ? closestLivingAncestor_->generation_ + 1 : 0)
 {
     if (closestLivingAncestor_) {
         closestLivingAncestor_->DescendantBorn(generation_);

@@ -79,4 +79,5 @@ void GenePigment::ExpressGene(Swimmer& /*owner*/, Phenotype& target) const
     p.fillRect(canvas.rect(), QColor::fromRgbF(r_, g_, b_, a_));
 
     target.colour = canvas.toImage().pixel(0, 0);
+    target.baseMetabolism += 0.1_uj;
 }

@@ -18,6 +18,7 @@ GeneEffectorTail::GeneEffectorTail(const std::shared_ptr<NeuralNetwork>& network
 void GeneEffectorTail::ExpressGene(Swimmer& owner, Phenotype& target) const
 {
     target.effectors.push_back(std::make_shared<EffectorTail>(GetNetwork(), GetInputConnections(), owner));
+    target.baseMetabolism += GetMetabolicCost();
 }
 
 std::shared_ptr<Gene> GeneEffectorTail::Copy() const

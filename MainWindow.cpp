@@ -78,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
-    AddGraph("Energy", { {0x00F100, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Combined Energy (mj)", [=](uint64_t tick, LineGraph& graph)
+    AddGraph("Total Energy", { {0x00F100, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Combined Energy (mj)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
             Energy foodEnergy = 0;
@@ -95,41 +95,38 @@ MainWindow::MainWindow(QWidget *parent)
             graph.AddPoint(1, tick, swimmerEnergy / 1_mj);
         }
     });
-    AddGraph("Mean Age", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Average Age (tick)", [=](uint64_t tick, LineGraph& graph)
+    AddGraph("Average Age", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Age (tick)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
-            uint64_t count = 0;
-            double totalFoodAge = 0;
-            double totalSwimmerAge = 0;
+            EoBE::RollingStatistics foodStats;
+            EoBE::RollingStatistics swimmerStats;
             universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
                 if (dynamic_cast<const FoodPellet*>(e.get())) {
-                    ++count;
-                    totalFoodAge += e->GetAge();
+                    foodStats.AddValue(e->GetAge());
                 } else if (dynamic_cast<const Swimmer*>(e.get())) {
-                    ++count;
-                    totalSwimmerAge += e->GetAge();
+                    swimmerStats.AddValue(e->GetAge());
                 }
             });
-            graph.AddPoint(0, tick, totalFoodAge / count);
-            graph.AddPoint(1, tick, totalSwimmerAge / count);
+            graph.AddPoint(0, tick, foodStats.Mean());
+            graph.AddPoint(1, tick, swimmerStats.Mean());
         }
     });
-    AddGraph("Oldest", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Oldest Individual (tick)", [=](uint64_t tick, LineGraph& graph)
+    AddGraph("Max Age", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Age (tick)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
-            uint64_t oldestFoodAge = 0;
-            uint64_t oldestSwimmerAge = 0;
+            EoBE::RollingStatistics foodStats;
+            EoBE::RollingStatistics swimmerStats;
             universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
                 if (dynamic_cast<const FoodPellet*>(e.get())) {
-                    oldestFoodAge = std::max(e->GetAge(), oldestFoodAge);
+                    foodStats.AddValue(e->GetAge());
                 } else if (dynamic_cast<const Swimmer*>(e.get())) {
-                    oldestSwimmerAge = std::max(e->GetAge(), oldestSwimmerAge);
+                    swimmerStats.AddValue(e->GetAge());
                 }
             });
-            graph.AddPoint(0, tick, oldestFoodAge);
-            graph.AddPoint(1, tick, oldestSwimmerAge);
+            graph.AddPoint(0, tick, foodStats.Max());
+            graph.AddPoint(1, tick, swimmerStats.Max());
         }
     });
     AddGraph("Generation", { { 0xDFDFDF, "Min Generation" }, { 0x0000FF, "Mean Generation" }, { 0xDFDFDF, "Max Generation" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Swimmer Generation", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
@@ -142,16 +139,40 @@ MainWindow::MainWindow(QWidget *parent)
                     stats.AddValue(swimmer->GetGeneration());
                 }
             });
-            graph.AddPoint(0, tick, stats.Min());
-            graph.AddPoint(1, tick, stats.Mean());
-            graph.AddPoint(2, tick, stats.Max());
-            // Don't let our lower bound go below min
-            graph.AddPoint(3, tick, std::max(stats.Min(), stats.Mean() - stats.StandardDeviation()));
-            // Don't let our upper  bound go above max
-            graph.AddPoint(4, tick, std::min(stats.Max(), stats.Mean() + stats.StandardDeviation()));
+            if (stats.Count() > 0) {
+                graph.AddPoint(0, tick, stats.Min());
+                graph.AddPoint(1, tick, stats.Mean());
+                graph.AddPoint(2, tick, stats.Max());
+                // Don't let our lower bound go below min
+                graph.AddPoint(3, tick, std::max(stats.Min(), stats.Mean() - stats.StandardDeviation()));
+                // Don't let our upper  bound go above max
+                graph.AddPoint(4, tick, std::min(stats.Max(), stats.Mean() + stats.StandardDeviation()));
+            }
         }
     });
-    AddGraph("Performance", { { 0xFC02DF, "Ticks per Second" } }, "Time (tick)", "Ticks per Second (mean)", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
+    AddGraph("Base Metabolism", { { 0xDFDFDF, "Min (uj)" }, { 0x0000FF, "Mean (uj)" }, { 0xDFDFDF, "Max (uj)" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Energy (uj)", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
+    {
+        if (tick % 100 == 0) {
+            EoBE::RollingStatistics stats;
+            universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
+            {
+                if (const Swimmer* swimmer = dynamic_cast<const Swimmer*>(e.get()); swimmer != nullptr) {
+                    stats.AddValue(swimmer->GetBaseMetabolism());
+                }
+            });
+            if (stats.Count() > 0) {
+                graph.AddPoint(0, tick, stats.Min() / 1_uj);
+                graph.AddPoint(1, tick, stats.Mean() / 1_uj);
+                graph.AddPoint(2, tick, stats.Max() / 1_uj);
+                // Don't let our lower bound go below min
+                graph.AddPoint(3, tick, std::max(stats.Min(), stats.Mean() - stats.StandardDeviation()) / 1_uj);
+                // Don't let our upper bound go above max
+                graph.AddPoint(4, tick, std::min(stats.Max(), stats.Mean() + stats.StandardDeviation()) / 1_uj);
+            }
+        }
+    });
+
+    AddGraph("Performance", { { 0xFC02DF, "Ticks per Second (Mean)" } }, "Time (tick)", "TPS", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         // TODO check every tick and examine interesting periodic perofrmance behaviour
         if (tick % 100 == 0) {

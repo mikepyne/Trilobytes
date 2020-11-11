@@ -18,9 +18,21 @@ void EffectorTail::Draw(QPainter& /*paint*/) const
     // TODO
 }
 
-void EffectorTail::PerformActions(const std::vector<double>& actionValues, const EntityContainerInterface& /*entities*/)
+Energy EffectorTail::PerformActions(const std::vector<double>& actionValues, const EntityContainerInterface& /*entities*/)
 {
-    owner_.AdjustVelocity(actionValues.at(0));
-    owner_.AdjustBearing(actionValues.at(1) / EoBE::Tau);
-    owner_.AdjustBearing(actionValues.at(2) / EoBE::Tau);
+    const double& acceleration = actionValues.at(0);
+    const double& clockwiseTorque = actionValues.at(1);
+    const double& antiClockwiseTorque = actionValues.at(2);
+
+    owner_.AdjustVelocity(acceleration);
+    owner_.AdjustBearing(clockwiseTorque / EoBE::Tau);
+    owner_.AdjustBearing(antiClockwiseTorque / EoBE::Tau);
+
+    /*
+     * We want to make acceleration costlier as an organism gets faster
+     */
+    Energy accelerationCost = std::abs(owner_.GetVelocity() * acceleration) * 150_uj;
+    Energy clockwiseRotationCost = std::abs(clockwiseTorque) * 100_uj;
+    Energy antiClockwiseRotationCost = std::abs(antiClockwiseTorque) * 100_uj;
+    return accelerationCost + clockwiseRotationCost + antiClockwiseRotationCost;
 }

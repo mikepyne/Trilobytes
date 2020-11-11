@@ -1,5 +1,6 @@
 #include "GeneBrain.h"
 
+#include "Energy.h"
 #include "Phenotype.h"
 
 GeneBrain::GeneBrain(unsigned layerCount, unsigned width, double mutationProbability)
@@ -40,6 +41,7 @@ GeneBrain::GeneBrain(const std::shared_ptr<NeuralNetwork>& brain, double dominan
 void GeneBrain::ExpressGene(Swimmer& /*owner*/, Phenotype& target) const
 {
     target.brain = brain_;
+    target.baseMetabolism += (1 + brain_->GetLayerCount()) * brain_->GetLayerWidth() * 0.15_uj;
 }
 
 std::shared_ptr<Gene> GeneBrain::Copy() const

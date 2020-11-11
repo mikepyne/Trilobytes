@@ -22,6 +22,7 @@ GeneSenseTraitsRaycast::GeneSenseTraitsRaycast(std::vector<SenseTraitsBase::Trai
 void GeneSenseTraitsRaycast::ExpressGene(Swimmer& owner, Phenotype& target) const
 {
     target.senses.push_back(std::make_shared<SenseTraitsRaycast>(GetNetwork(), GetOutputConnections(), owner, std::vector(toDetect_), transform_, distance_, rotation_));
+    target.baseMetabolism += GetMetabolicCost();
 }
 
 std::shared_ptr<Gene> GeneSenseTraitsRaycast::Copy() const

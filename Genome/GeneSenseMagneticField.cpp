@@ -71,6 +71,7 @@ GeneSenseMagneticField::GeneSenseMagneticField(const std::shared_ptr<NeuralNetwo
 void GeneSenseMagneticField::ExpressGene(Swimmer& owner, Phenotype& target) const
 {
     target.senses.push_back(std::make_shared<SenseMagneticField>(GetNetwork(), GetOutputConnections(), owner, target_, distanceNormaliser_, frontBackNormaliser_, leftRightNormaliser_));
+    target.baseMetabolism += GetMetabolicCost();
 }
 
 std::shared_ptr<Gene> GeneSenseMagneticField::Copy() const

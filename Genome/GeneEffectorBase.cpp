@@ -40,6 +40,11 @@ GeneEffectorBase::GeneEffectorBase(const std::shared_ptr<NeuralNetwork>& network
     });
 }
 
+Energy GeneEffectorBase::GetMetabolicCost() const
+{
+    return (1 + network_->GetLayerCount()) * network_->GetLayerWidth() * 0.05_uj;
+}
+
 void GeneEffectorBase::AddColumnInsertedMutation(double mutationWeight, std::function<void (unsigned)>&& onColumnAdded)
 {
     // Insert a new column

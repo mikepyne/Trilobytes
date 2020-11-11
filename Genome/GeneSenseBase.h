@@ -2,6 +2,7 @@
 #define GENESENSEBASE_H
 
 #include "Gene.h"
+#include "Energy.h"
 #include "NeuralNetwork.h"
 #include "NeuralNetworkConnector.h"
 
@@ -14,6 +15,8 @@ public:
     virtual ~GeneSenseBase() override {}
 
 protected:
+    Energy GetMetabolicCost() const;
+
     void AddColumnInsertedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnAdded);
     void AddColumnRemovedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnRemoved);
 

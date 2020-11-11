@@ -57,6 +57,7 @@ GeneSenseRandom::GeneSenseRandom(const std::shared_ptr<NeuralNetwork>& network, 
 void GeneSenseRandom::ExpressGene(Swimmer& owner, Phenotype& target) const
 {
     target.senses.push_back(std::make_shared<SenseRandom>(GetNetwork(), GetOutputConnections(), owner, std::vector(filteredRandoms_)));
+    target.baseMetabolism += GetMetabolicCost();
 }
 
 std::shared_ptr<Gene> GeneSenseRandom::Copy() const

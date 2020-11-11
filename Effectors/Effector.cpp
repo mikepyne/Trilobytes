@@ -14,10 +14,10 @@ Effector::~Effector()
 {
 }
 
-void Effector::Tick(const std::vector<double>& inputs, const EntityContainerInterface& entities)
+Energy Effector::Tick(const std::vector<double>& inputs, const EntityContainerInterface& entities)
 {
     std::fill(std::begin(outputs_), std::end(outputs_), 0.0);
     inputConnections_->PassForward(inputs, outputs_);
     network_->ForwardPropogate(outputs_);
-    PerformActions(outputs_, entities);
+    return PerformActions(outputs_, entities);
 }

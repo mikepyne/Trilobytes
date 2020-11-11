@@ -18,6 +18,7 @@ GeneSenseTraitsTouching::GeneSenseTraitsTouching(std::vector<SenseTraitsBase::Tr
 void GeneSenseTraitsTouching::ExpressGene(Swimmer& owner, Phenotype& target) const
 {
     target.senses.push_back(std::make_shared<SenseTraitsTouching>(GetNetwork(), GetOutputConnections(), owner, transform_, std::vector(toDetect_)));
+    target.baseMetabolism += GetMetabolicCost();
 }
 
 std::shared_ptr<Gene> GeneSenseTraitsTouching::Copy() const

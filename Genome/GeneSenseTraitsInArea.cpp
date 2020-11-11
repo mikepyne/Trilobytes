@@ -20,6 +20,7 @@ GeneSenseTraitsInArea::GeneSenseTraitsInArea(std::vector<SenseTraitsBase::TraitN
 void GeneSenseTraitsInArea::ExpressGene(Swimmer& owner, Phenotype& target) const
 {
     target.senses.push_back(std::make_shared<SenseTraitsInArea>(GetNetwork(), GetOutputConnections(), owner, radius_, transform_, std::vector(toDetect_)));
+    target.baseMetabolism += GetMetabolicCost();
 }
 
 std::shared_ptr<Gene> GeneSenseTraitsInArea::Copy() const

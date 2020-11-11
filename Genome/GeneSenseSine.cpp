@@ -57,6 +57,7 @@ GeneSenseSine::GeneSenseSine(const std::shared_ptr<NeuralNetwork>& network, cons
 void GeneSenseSine::ExpressGene(Swimmer& owner, Phenotype& target) const
 {
     target.senses.push_back(std::make_shared<SenseSine>(GetNetwork(), GetOutputConnections(), owner, std::vector(sineWaves_)));
+    target.baseMetabolism += GetMetabolicCost();
 }
 
 std::shared_ptr<Gene> GeneSenseSine::Copy() const
