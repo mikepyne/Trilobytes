@@ -14,7 +14,7 @@
 struct Phenotype {
 public:
     QColor colour;
-    Energy baseMetabolism = 10_uj;
+    Energy baseMetabolism = 20_uj;
     std::vector<std::shared_ptr<Sense>> senses;
     std::shared_ptr<NeuralNetwork> brain;
     std::vector<std::shared_ptr<Effector>> effectors;

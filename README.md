@@ -26,11 +26,25 @@ TODO
  - Improve rendering (image based? decals? OpenGL?)
  - More descriptive brain inspector view
  - Genes inspector view
- - More graphs
+ - More graphs & configurable graphs
  - Matrix based coordinate system/collisions
  - More entities (pheremones? poisons? more food types?)
- - FPS/TPS readout
  - Add Descriptions for Senses and Effectors so that Inspector can label what the inputs and outputs represent
  - Fixed number of "nodes" on a Swimmer, limiting the number of senses and effectors that can be attached to it?
- - Metabolic cost to owning sensors and effectors based on complexity (to discourage huge numbers of complex senses)
- - Slight metabolic cost for size of Genome (to discourage huge genomes)
+ - tabs in left and right GUI to split up settings (add more settings per section) and add geneome inspector on right
+ -  - Allow adding multiple swimmers at a time
+ -  - clear all swimmers
+ -  - Move feed dispenser
+ -  - adjust feed dispenser pellet energy/frequency
+ -  - Add feed dispenser
+ -  - resize feed dispenser
+ - Allow entities to be movable/draggable
+ - add settings per graph on left of each graph (also make space on left of y-axis for label so it doesn't overlap numbers)
+ -  - allow graphs to have axis ranges manually set by user
+ - add new sense MoonPhase (have a global sine value for moon phase to allow organisms to sync with each other) needs to actually be two waves added together so there can be neap and spring intervals
+ - add new effector Flagella that gives a constant speed for less energy than tail, but doesn't turn as fast
+ - add images for each sense and effector and body
+ - add gene for image decals
+ - add gene for egg size
+ - allow laid eggs to be fertilised by passing swimmers (optional, let genetics decide)
+ - allow swimmers to take damage and die, and cost energy to heal damage. dead swimmers to explode into edible meat chunks

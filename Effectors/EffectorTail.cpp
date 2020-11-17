@@ -31,8 +31,8 @@ Energy EffectorTail::PerformActions(const std::vector<double>& actionValues, con
     /*
      * We want to make acceleration costlier as an organism gets faster
      */
-    Energy accelerationCost = std::abs(owner_.GetVelocity() * acceleration) * 150_uj;
-    Energy clockwiseRotationCost = std::abs(clockwiseTorque) * 100_uj;
-    Energy antiClockwiseRotationCost = std::abs(antiClockwiseTorque) * 100_uj;
+    Energy accelerationCost = std::abs(owner_.GetVelocity() * acceleration) * 75_uj;
+    Energy clockwiseRotationCost = std::abs(clockwiseTorque) * 60_uj;
+    Energy antiClockwiseRotationCost = std::abs(antiClockwiseTorque) * 60_uj;
     return accelerationCost + clockwiseRotationCost + antiClockwiseRotationCost;
 }
