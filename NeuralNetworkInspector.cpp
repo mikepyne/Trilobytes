@@ -119,20 +119,31 @@ void NeuralNetworkInspector::SetUpdateLive(bool liveUpdate)
 
 void NeuralNetworkInspector::ResetViewTransform()
 {
-    qreal sensorsWidth = sensorGroups_.empty() ? 0.0 : sensorGroups_.back().area.right() - sensorGroups_.front().area.left();
-    qreal brainWidth = brainGroup_.area.width();
-    qreal effectorsWidth = effectorGroups_.empty() ? 0.0 : effectorGroups_.back().area.right() - effectorGroups_.front().area.left();
+    // y-axis, top < bottom
+    qreal top = std::numeric_limits<qreal>::max();
+    qreal bottom = std::numeric_limits<qreal>::lowest();
+    // x-axis, left < right
+    qreal left = std::numeric_limits<qreal>::max();
+    qreal right = std::numeric_limits<qreal>::lowest();
 
-    qreal sensorsHeight = sensorGroups_.empty() ? 0.0 : std::max_element(std::begin(sensorGroups_), std::end(sensorGroups_), [](auto a, auto b) { return a.area.height() < b.area.height(); })->area.height();
-    qreal brainHeight = brainGroup_.area.height();
-    qreal effectorsHeight = effectorGroups_.empty() ? 0.0 : std::max_element(std::begin(effectorGroups_), std::end(effectorGroups_), [](auto a, auto b) { return a.area.height() < b.area.height(); })->area.height();
+    ForEachGroup([&](GroupType, const Group& group)
+    {
+        top = std::min(top, group.area.top());
+        bottom = std::max(bottom, group.area.bottom());
+        left = std::min(left, group.area.left());
+        right = std::max(right, group.area.right());
+    });
 
-    qreal verticalTransform = height() / (sensorsHeight + brainHeight + effectorsHeight + (4 * groupPadding_));
-    qreal horizontalTransform = width() / std::max({ sensorsWidth, brainWidth, effectorsWidth });
+    qreal areaWidth = right - left;
+    qreal areaHeight = bottom - top;
+
+    // +5 to add a little margin around the edge
+    qreal verticalTransform = height() / (areaHeight + 5);
+    qreal horizontalTransform = width() / (areaWidth + 5);
 
     transformScale_ = std::min(verticalTransform, horizontalTransform);
-    transformX_ = 0.0;
-    transformY_ = 0.0;
+    transformX_ = -(left + right) / 2.0;
+    transformY_ = -(top + bottom) / 2.0;
     update();
 }
 
@@ -181,7 +192,6 @@ void NeuralNetworkInspector::paintEvent(QPaintEvent* event)
     p.scale(transformScale_, transformScale_);
     p.translate(transformX_, transformY_);
 
-    // TODO use the type of group for something
     ForEachGroup([&](GroupType type, const Group& group)
     {
         // Draw the connections

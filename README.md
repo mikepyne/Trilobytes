@@ -48,3 +48,4 @@ TODO
  - add gene for egg size
  - allow laid eggs to be fertilised by passing swimmers (optional, let genetics decide)
  - allow swimmers to take damage and die, and cost energy to heal damage. dead swimmers to explode into edible meat chunks
+ - brain inspector needs ability to adjust line culling (i.e. don't show connections below x strength...) etc
