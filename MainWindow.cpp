@@ -3,6 +3,7 @@
 
 #include "FoodPellet.h"
 #include "Swimmer.h"
+#include "GraphContainerWidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -11,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     universe_ = std::make_shared<Universe>(*(ui->universe));
     ui->universe->SetUniverse(universe_);
+    ui->graphCreationTab->setLayout(new QVBoxLayout());
 
     // Make sure graphs don't start too squashed
     ui->verticalSplitter->setSizes({ 700, 150 });
@@ -32,8 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
         ui->inspector->SetSwimmer(nullptr);
         ui->inspector->ResetViewTransform();
         for (int tabIndex = 0; tabIndex < ui->graphs->count(); ++tabIndex) {
-            if (LineGraph* graph = dynamic_cast<LineGraph*>(ui->graphs->widget(tabIndex))) {
-                graph->Reset();
+            if (GraphContainerWidget* graphContainer = dynamic_cast<GraphContainerWidget*>(ui->graphs->widget(tabIndex))) {
+                graphContainer->ResetGraph();
             }
         }
     });
@@ -66,15 +68,8 @@ MainWindow::MainWindow(QWidget *parent)
     /// Graph Controlls
     connect(ui->graphs, &QTabWidget::tabCloseRequested, [&](int index)
     {
-        // FIXME index of tabs changes whenever one closes, SO THIS DOES NOT WORK!!!!!!!
-        if (index > 0) {
-            // TODO perhaps the handle idea could be a little more RAII (destruction of handle automatically removes task from Universe)
-            // TODO need to give the graphs the RAII handle for their update function so it is removed when a graph is closed
-            // TODO need to work out how to update a graphs range when opened midway through a run
-            // TODO graphs currently collect points forever, need to have two more options, fixed width moving window, and fixed width with resolution auto reduced when filled
+        if (index != 0) {
             ui->graphs->removeTab(index);
-            universe_->RemoveTask(graphTaskHandles_.at(index));
-            graphTaskHandles_.erase(index);
         }
     });
 
@@ -150,7 +145,8 @@ MainWindow::MainWindow(QWidget *parent)
             }
         }
     });
-    AddGraph("Base Metabolism", { { 0xDFDFDF, "Min (uj)" }, { 0x0000FF, "Mean (uj)" }, { 0xDFDFDF, "Max (uj)" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Energy (uj)", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
+    AddGraph("Base Metabolism", { { 0xDFDFDF, "Min (uj)" }, { 0x0000FF, "Mean (uj)" }, { 0xDFDFDF, "Max (uj)" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Energy (uj)",
+    [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {
             EoBE::RollingStatistics stats;
@@ -185,7 +181,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     // FIXME temp hack to get inspector pane working again (priority is to get a distributable version)
-    universe_->AddTask([&](uint64_t /*tick*/)
+    static auto hackTaskHandle = universe_->AddTask([&](uint64_t /*tick*/)
     {
         ui->inspector->SetSwimmer(std::dynamic_pointer_cast<Swimmer>(universe_->GetSelectedEntity()));
         ui->inspector->UpdateConnectionStrengths(universe_->GetEntityContainer());
@@ -199,11 +195,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::AddGraph(QString graphTitle, std::vector<std::pair<QRgb, QString> >&& plots, QString xAxisTitle, QString yAxisTitle, std::function<void (uint64_t tick, LineGraph& graph)>&& task)
 {
-    LineGraph* lineGraph = new LineGraph(nullptr, xAxisTitle, yAxisTitle);
-    for (const auto& [ colour, name ] : plots) {
-        lineGraph->AddPlot(colour, name);
-    }
-    Universe::TaskHandle handle = universe_->AddTask([=, task = std::move(task)](uint64_t tick) { task(tick, *lineGraph); });
-    int index = ui->graphs->addTab(lineGraph, graphTitle);
-    graphTaskHandles_.insert({ index, handle });
+    QPushButton* button = new QPushButton(QString("Create \"%1\" graph").arg(graphTitle));
+    ui->graphCreationTab->layout()->addWidget(button);
+
+    connect(button, &QPushButton::pressed, [=]()
+    {
+        LineGraph* lineGraph = new LineGraph(nullptr, xAxisTitle, yAxisTitle);
+        for (const auto& [ colour, name ] : plots) {
+            lineGraph->AddPlot(colour, name);
+        }
+        auto handle = universe_->AddTask([=, task = std::move(task)](uint64_t tick) { task(tick, *lineGraph); });
+        ui->graphs->addTab(new GraphContainerWidget(nullptr, std::move(handle), lineGraph), graphTitle);
+    });
 }

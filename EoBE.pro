@@ -37,6 +37,7 @@ SOURCES += \
     Genome/GeneSenseTraitsSelf.cpp \
     Genome/GeneSenseTraitsTouching.cpp \
     Genome/Genome.cpp \
+    GraphContainerWidget.cpp \
     LineGraph.cpp \
     NeuralNetwork.cpp \
     NeuralNetworkConnector.cpp \
@@ -86,6 +87,7 @@ HEADERS += \
     Genome/GeneSenseTraitsTouching.h \
     Genome/Genome.h \
     Genome/Phenotype.h \
+    GraphContainerWidget.h \
     LineGraph.h \
     MainWindow.h \
     NeuralNetwork.h \

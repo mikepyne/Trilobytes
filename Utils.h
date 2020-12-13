@@ -9,6 +9,8 @@
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <map>
+#include <memory>
 #include <assert.h>
 
 namespace EoBE {
@@ -157,6 +159,116 @@ private:
     double sumOfValuesSquared_ = 0.0;
     double min_ = std::numeric_limits<double>::max();
     double max_ = std::numeric_limits<double>::min();
+};
+
+template <typename T>
+class CircularBuffer {
+public:
+    CircularBuffer(size_t capacity)
+        : items_(capacity, T{})
+        , next_(0)
+        , fill_(0)
+    {
+        items_.shrink_to_fit();
+    }
+
+    size_t Size() const
+    {
+        return fill_;
+    }
+
+    size_t Capacity() const
+    {
+        return items_.size();
+    }
+
+    void ForEach(const std::function<void(const T& item)>& action) const
+    {
+        auto iter = items_.cbegin();
+        size_t startIndex = fill_ == items_.size() ? next_ : 0;
+        std::advance(iter, startIndex);
+        for (size_t count = 0; count < fill_; ++count) {
+            action(*iter++);
+            if (iter == items_.cend()) {
+                iter = items_.cbegin();
+            }
+        }
+    }
+
+    void Resize(size_t size)
+    {
+        CircularBuffer copy(size);
+        ForEach([&](const T& item)
+        {
+            copy.PushBack(item);
+        });
+        items_ = std::move(copy.items_);
+        next_ = copy.next_;
+        fill_ = copy.fill_;
+    }
+
+    void PushBack(const T& item)
+    {
+        if (items_.size() > 0) {
+            items_[next_++] = item;
+            if (next_ == items_.size()) {
+                next_ = 0;
+            }
+            if (fill_ < items_.size()) {
+                ++fill_;
+            }
+        }
+    }
+
+    void Clear()
+    {
+        std::fill(std::begin(items_), std::end(items_), T{});
+        next_ = 0;
+        fill_ = 0;
+    }
+
+
+private:
+    std::vector<T> items_;
+    size_t next_;
+    size_t fill_;
+};
+
+/**
+ * A container that provides a handle per item contained, and lazily removes the
+ * item once no remaining instances of the handle exist.
+ */
+using Handle = std::shared_ptr<int>;
+
+template <typename ValueType>
+class AutoClearingContainer {
+public:
+
+    using value_type = ValueType;
+
+    [[nodiscard]] Handle PushBack(ValueType&& value)
+    {
+        auto lifetime = std::make_shared<int>(0);
+        values_.insert({lifetime, std::move(value)});
+        return lifetime;
+    }
+
+    void ForEach(const std::function<void(ValueType&)>& action)
+    {
+        // TODO use c++20 std::erase_if when possible
+        for(auto iter = std::begin(values_); iter != std::end(values_); ) {
+            auto& [handle, value] = *iter;
+             if (auto exists = handle.lock()) {
+                 action(value);
+                 ++iter;
+             } else {
+                 iter = values_.erase(iter);
+             }
+        }
+    }
+
+private:
+    std::map<std::weak_ptr<int>, ValueType, std::owner_less<std::weak_ptr<int>>> values_;
 };
 
 ///

@@ -82,7 +82,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>216</width>
-                 <height>709</height>
+                 <height>675</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -318,8 +318,13 @@
         <bool>false</bool>
        </property>
        <property name="tabsClosable">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
+       <widget class="QWidget" name="graphCreationTab">
+        <attribute name="title">
+         <string>Graphs</string>
+        </attribute>
+       </widget>
       </widget>
      </widget>
     </item>

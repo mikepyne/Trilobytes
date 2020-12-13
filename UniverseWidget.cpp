@@ -59,6 +59,7 @@ void UniverseWidget::wheelEvent(QWheelEvent* event)
     double d = 1.0 + (0.001 * double(event->angleDelta().y()));
     transformScale_ *= d;
     updateToRender_ = true;
+    update();
 }
 
 void UniverseWidget::mouseReleaseEvent(QMouseEvent* event)
@@ -90,6 +91,7 @@ void UniverseWidget::mouseMoveEvent(QMouseEvent* event)
         dragX_ = event->x();
         dragY_ = event->y();
         updateToRender_ = true;
+        update();
     }
 }
 
@@ -109,6 +111,7 @@ void UniverseWidget::paintEvent(QPaintEvent* event)
     p.scale(transformScale_, transformScale_);
     p.translate(transformX_, transformY_);
 
+    // TODO add some indication that sim is still running when 0 FPS selected
     if (universe_) {
         universe_->Render(p);
     }

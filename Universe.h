@@ -49,15 +49,15 @@ public:
     void AddRandomSwimmer(double x, double y);
     /**
      * @brief The Task system allows clients to have code run each tick, without
-     * the Univers neding to know implementation specifics. For example, graphs
-     * can use tasks to collect the data they wish to display.
+     * the Universe needing to know implementation specifics. For example,
+     * graphs can use tasks to collect the data they wish to display.
      *
      * @param task The code to be run each tick.
      *
-     * @return A handle that can be used to remove the task in the future.
+     * @return A Handle that defines the lifetime of the task. When no copies of
+     * the handle exist, the task is removed from the list
      */
-    TaskHandle AddTask(std::function<void(uint64_t tick)>&& task);
-    void RemoveTask(const TaskHandle& handle);
+    [[nodiscard]] EoBE::Handle AddTask(std::function<void(uint64_t tick)>&& task);
 
     bool GetPaused() const { return pauseSim_; }
     bool GetSpawnFood() const { return spawnFood_; }
@@ -88,11 +88,11 @@ private:
     QTimer mainThread_;
 
     uint64_t tickIndex_;
-    // TODO the lambda could be a "per swimmer" task, to prevent many re-iterations of all swimmers?
-    std::map<TaskHandle, std::function<void(uint64_t tick)>> perTickTasks_;
+
+    EoBE::AutoClearingContainer<std::function<void(uint64_t tick)>> perTickTasks_;
 
     void Thread();
-
+    void Tick();
     void UpdateTps();
 };
 

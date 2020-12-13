@@ -6,12 +6,13 @@
 #include <cmath>
 #include <limits>
 
-LineGraph::LineGraph(QWidget* parent, QString xAxisLabel, QString yAxisLabel)
+LineGraph::LineGraph(QWidget* parent, QString xAxisLabel, QString yAxisLabel, size_t plotDataPointCount)
     : QWidget(parent)
     , xRange_()
     , yRange_()
     , xAxisLabel_(xAxisLabel)
     , yAxisLabel_(yAxisLabel)
+    , plotDataPointCount_(plotDataPointCount)
 {
     QPalette p = palette();
     p.setColor(QPalette::ColorRole::Window, QColor(Qt::white));
@@ -19,16 +20,31 @@ LineGraph::LineGraph(QWidget* parent, QString xAxisLabel, QString yAxisLabel)
     setAutoFillBackground(true);
 }
 
+void LineGraph::ForEachPlot(const std::function<void(const Plot& plot, size_t plotIndex)>& action) const
+{
+    size_t index = 0;
+    for (const auto& plot : plots_) {
+        action(plot, index++);
+    }
+}
+
 void LineGraph::AddPlot(QRgb colour, QString name)
 {
-    plots_.push_back({ name, colour, {} });
+    plots_.push_back({ name, colour, false, decltype(Plot::points_)(plotDataPointCount_) });
+    update();
 }
 
 void LineGraph::AddPoint(size_t index, qreal x, qreal y)
 {
     xRange_.ExpandToContain(x);
     yRange_.ExpandToContain(y);
-    plots_.at(index).points_.push_back({ x, y });
+    plots_.at(index).points_.PushBack({ x, y });
+    update();
+}
+
+void LineGraph::SetPlotHidden(size_t plotIndex, bool hidden)
+{
+    plots_.at(plotIndex).hidden_ = hidden;
     update();
 }
 
@@ -36,12 +52,21 @@ void LineGraph::Reset()
 {
     xRange_.Reset();
     yRange_.Reset();
-    for (auto& [ name, colour, points ] : plots_) {
+    for (auto& [ name, colour, hidden, points ] : plots_) {
         (void) name; // unused
         (void) colour; // unused
-        points.clear();
+        (void) hidden; // unused
+        points.Clear();
     }
     update();
+}
+
+void LineGraph::SetPlotDataPointCount(size_t count)
+{
+    plotDataPointCount_ = count;
+    for (Plot& plot : plots_) {
+        plot.points_.Resize(count);
+    }
 }
 
 void LineGraph::paintEvent(QPaintEvent* event)
@@ -49,21 +74,31 @@ void LineGraph::paintEvent(QPaintEvent* event)
     QPainter paint(this);
     paint.setClipRegion(event->region());
 
-    QPointF origin = PaintAxes(paint);
-    PaintKey(paint);
-    qreal xAxisLength = width() - origin.x();
-    qreal yAxisLength = origin.y();
+    const EoBE::MinMax<qreal> xRange = { xAxisMinOverride_ ? xAxisMinOverrideValue_ : xRange_.Min(), xAxisMaxOverride_ ? xAxisMaxOverrideValue_ : xRange_.Max() };
+    const EoBE::MinMax<qreal> yRange = { yAxisMinOverride_ ? yAxisMinOverrideValue_ : yRange_.Min(), yAxisMaxOverride_ ? yAxisMaxOverrideValue_ : yRange_.Max() };
 
-    for (auto& [ name, colour, points ] : plots_) {
+    const QPointF origin = PaintAxes(paint);
+    PaintKey(paint);
+
+    const qreal xAxisLength = width() - origin.x();
+    const qreal yAxisLength = origin.y();
+
+    paint.setClipRegion(event->region().intersected(QRect(QPoint(origin.x(), 0.0), QPoint(width(), yAxisLength))));
+
+    for (auto& [ name, colour, hidden, points ] : plots_) {
         (void) name; // unused
-        paint.setPen(colour);
-        QPointF lastPoint = origin;
-        for (const auto& [ dataX, dataY ] : points) {
-            QPointF nextPoint(origin.x() + ( xAxisLength * ((dataX - xRange_.Min()) / xRange_.Range())), origin.y() - (yAxisLength * ((dataY - yRange_.Min()) / yRange_.Range())));
-            if (lastPoint != origin) {
-                paint.drawLine(lastPoint, nextPoint);
-            }
-            lastPoint = nextPoint;
+        if (!hidden) {
+            paint.setPen(colour);
+            QPointF lastPoint = origin;
+            points.ForEach([&](const auto& pair)
+            {
+                const auto& [ dataX, dataY ] = pair;{}
+                QPointF nextPoint(origin.x() + ( xAxisLength * ((dataX - xRange.Min()) / xRange.Range())), origin.y() - (yAxisLength * ((dataY - yRange.Min()) / yRange.Range())));
+                if (lastPoint != origin) {
+                    paint.drawLine(lastPoint, nextPoint);
+                }
+                lastPoint = nextPoint;
+            });
         }
     }
 }
@@ -72,13 +107,16 @@ QPointF LineGraph::PaintAxes(QPainter& p) const
 {
     QFontMetricsF metrics(p.font());
 
-    QString yMinLabel = QString("%1").arg(yRange_.Min(), 0, 'f', 2);
-    QString yMaxLabel = QString("%1").arg(yRange_.Max(), 0, 'f', 2);
-    QString xMinLabel = QString("%1").arg(xRange_.Min(), 0, 'f', 2);
-    QString xMaxLabel = QString("%1").arg(xRange_.Max(), 0, 'f', 2);
+    EoBE::MinMax<qreal> xRange = { xAxisMinOverride_ ? xAxisMinOverrideValue_ : xRange_.Min(), xAxisMaxOverride_ ? xAxisMaxOverrideValue_ : xRange_.Max() };
+    EoBE::MinMax<qreal> yRange = { yAxisMinOverride_ ? yAxisMinOverrideValue_ : yRange_.Min(), yAxisMaxOverride_ ? yAxisMaxOverrideValue_ : yRange_.Max() };
+
+    QString yMinLabel = QString("%1").arg(yRange.Min(), 0, 'f', 2);
+    QString yMaxLabel = QString("%1").arg(yRange.Max(), 0, 'f', 2);
+    QString xMinLabel = QString("%1").arg(xRange.Min(), 0, 'f', 2);
+    QString xMaxLabel = QString("%1").arg(xRange.Max(), 0, 'f', 2);
 
     // The bottem left of the graph, aka (minX, minY)
-    QPointF origin(std::max({ metrics.height(), metrics.width(yMinLabel), metrics.width(yMaxLabel) }), height() - (2 * metrics.height()));
+    QPointF origin(std::max(metrics.width(yMinLabel) + metrics.height(), metrics.width(yMaxLabel) + metrics.height()), height() - (2 * metrics.height()));
 
     /*
      * Draw the X and Y min/max values
@@ -131,24 +169,29 @@ void LineGraph::PaintKey(QPainter& p) const
     // note names for drawing a key
     qreal y = height() - metrics.height();
     qreal keyWidth = 0;
-    for (auto& [ name, colour, points ] : plots_) {
+    for (auto& [ name, colour, hidden, points ] : plots_) {
         (void) colour; // unused
         (void) points; // unused
-        keyWidth += metrics.width(name) + metrics.height() + 6;
+        if (!hidden) {
+            keyWidth += metrics.width(name) + metrics.height() + 6;
+        }
     }
 
     qreal left = (width() - keyWidth) / 2.0;
     p.setPen(Qt::black);
-    for (auto& [ name, colour, points ] : plots_) {
+    for (auto& [ name, colour, hidden, points ] : plots_) {
         (void) points; // unused
-        QRectF colourRect(0, 0, metrics.height(), metrics.height());
-        QRectF labelRect(0, 0, metrics.width(name), metrics.height());
-        colourRect.translate(left, y);
-        labelRect .translate(left + colourRect.width() + 3, y);
+        if (!hidden) {
+            QRectF colourRect(0, 0, metrics.height(), metrics.height());
+            QRectF labelRect(0, 0, metrics.width(name), metrics.height());
+            colourRect.translate(left, y);
+            labelRect .translate(left + colourRect.width() + 3, y);
 
-        p.fillRect(colourRect, QColor::fromRgb(colour));
-        p.drawText(labelRect, name);
+            p.fillRect(colourRect, QColor::fromRgb(colour));
+            p.drawText(labelRect, name);
 
-        left += labelRect.width() + colourRect.width() + 6;
+            left += labelRect.width() + colourRect.width() + 6;
+        }
     }
 }
+

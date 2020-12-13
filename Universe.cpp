@@ -80,23 +80,9 @@ void Universe::AddRandomSwimmer(double x, double y)
     rootNode_.AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ x, y, Random::Bearing() }, GeneFactory::RandomGenome()));
 }
 
-Universe::TaskHandle Universe::AddTask(std::function<void (uint64_t)>&& task)
+EoBE::Handle Universe::AddTask(std::function<void (uint64_t tick)>&& task)
 {
-    // Find lowest value task handle not in use
-    TaskHandle newHandle = static_cast<TaskHandle>(0);
-    for(auto& [ handle, task ] : perTickTasks_) {
-        (void) task; // unused
-        if (newHandle == handle) {
-            newHandle = static_cast<TaskHandle>(static_cast<size_t>(newHandle) + 1);
-        }
-    }
-    perTickTasks_.insert({ newHandle, std::move(task) });
-    return newHandle;
-}
-
-void Universe::RemoveTask(const Universe::TaskHandle& handle)
-{
-    perTickTasks_.erase(handle);
+    return perTickTasks_.PushBack(std::move(task));
 }
 
 void Universe::Render(QPainter& p) const
@@ -172,29 +158,35 @@ void Universe::Thread()
     }
 
     if (!pauseSim_ && targetTps_ > 0) {
-        observerInterface_.SuggestUpdate();
-        rootNode_.Tick();
-
-        if (autoSelectFittest_) {
-            SelectFittestSwimmer();
-        }
-
-        if (trackSelectedEntity_ && selectedEntity_ && selectedEntity_->Alive()) {
-            observerInterface_.SuggestFocus( { selectedEntity_->GetLocation().x, selectedEntity_->GetLocation().y });
-        }
-
-        if (spawnFood_) {
-            for (auto& dispenser : feedDispensers_) {
-                dispenser->Tick();
-            }
-        }
-
-        for (auto& [handle, task] : perTickTasks_) {
-            task(tickIndex_);
-        }
-
-        ++tickIndex_;
+        Tick();
     }
+}
+
+void Universe::Tick()
+{
+    observerInterface_.SuggestUpdate();
+    rootNode_.Tick();
+
+    if (autoSelectFittest_) {
+        SelectFittestSwimmer();
+    }
+
+    if (trackSelectedEntity_ && selectedEntity_ && selectedEntity_->Alive()) {
+        observerInterface_.SuggestFocus( { selectedEntity_->GetLocation().x, selectedEntity_->GetLocation().y });
+    }
+
+    if (spawnFood_) {
+        for (auto& dispenser : feedDispensers_) {
+            dispenser->Tick();
+        }
+    }
+
+    perTickTasks_.ForEach([=](auto& task) -> void
+    {
+        std::invoke(task, tickIndex_);
+    });
+
+    ++tickIndex_;
 }
 
 void Universe::UpdateTps()
