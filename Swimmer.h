@@ -25,6 +25,7 @@ public:
 
     uint64_t GetGeneration() const { return generation_; }
     const Energy& GetBaseMetabolism() const { return baseMetabolism_; }
+    double GetHealth() const { return health_; }
     unsigned GetEggsLayedCount() const { return eggsLayed_; }
     unsigned GetTotalDescendantsCount(unsigned generation) const { return totalDescentantCounts_.count(generation) ? totalDescentantCounts_.at(generation) : 0; }
     unsigned GetLivingDescendantsCount(unsigned generation) const { return extantDescentantCounts_.count(generation) ? extantDescentantCounts_.at(generation) : 0; }
@@ -33,6 +34,7 @@ public:
 
     void AdjustVelocity(double adjustment);
     void AdjustBearing(double adjustment);
+    void ApplyDamage(double damage) { health_ -= damage; }
 
 protected:
     std::shared_ptr<Swimmer> closestLivingAncestor_;
@@ -43,6 +45,8 @@ protected:
 private:
     const uint64_t generation_;
     const Energy baseMetabolism_;
+
+    double health_;
 
     std::shared_ptr<Genome> genome_;
     std::shared_ptr<NeuralNetwork> brain_;

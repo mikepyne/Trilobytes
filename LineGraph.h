@@ -33,6 +33,7 @@ public:
     void AddPoint(size_t index, qreal x, qreal y);
     void SetPlotHidden(size_t plotIndex, bool hidden);
     void Reset();
+    void RecalculateAxisBounds();
 
 public slots:
     void EnableXAxisMinOverride(bool override) { xAxisMinOverride_ = override; update(); }

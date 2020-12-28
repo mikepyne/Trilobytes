@@ -2,6 +2,7 @@
 
 #include "Random.h"
 #include "FoodPellet.h"
+#include "MeatChunk.h"
 #include "Utils.h"
 #include "Egg.h"
 #include "Genome/GeneFactory.h"
@@ -65,37 +66,66 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
         closestLivingAncestor_ = FindClosestLivingAncestor();
     }
 
-    Energy energyUsed = 0_j;
-    if (brain_ && brain_->GetInputCount() > 0) {
-        std::fill(std::begin(brainValues_), std::end(brainValues_), 0.0);
-        for (auto& sense : senses_) {
-            sense->Tick(brainValues_, container);
+    if (health_ <= 0.0) {
+        // explode into some chunks of meat
+        const Energy swimmerEnergy = GetEnergy();
+        const double swimmerSpeed = GetVelocity();
+        const Transform swimmerTransform = GetTransform();
+
+        const int chunks = swimmerEnergy / 40_mj;
+        // make sure we explode evenly outwards, and not all in one direction
+        const double rotationOffset = Random::Bearing();
+        const double rotationStep = EoBE::Tau / chunks;
+        for (int i = 0; i < chunks; i++) {
+            Vec2 swimmerMovement = GetMovementVector(swimmerTransform.rotation, swimmerSpeed);
+            Vec2 relativeMovement = GetMovementVector(rotationOffset + (i * rotationStep) + Random::Gaussian(0.0, EoBE::Tau / 10), + Random::Gaussian(10.0, 2.5));
+            Vec2 chunkMovement = { swimmerMovement.x + relativeMovement.x, swimmerMovement.y + relativeMovement.y };
+            auto [ rotation, speed ] = DeconstructMovementVector(chunkMovement);{}
+            Transform chunkTransform = { swimmerTransform.x + (chunkMovement.x / 10.0), swimmerTransform.y + (chunkMovement.y / 10.0), rotation };
+            container.AddEntity(std::make_shared<MeatChunk>(40_mj, chunkTransform, speed));
         }
+        Terminate();
+    } else {
+        Energy energyUsed = 0_j;
+        if (brain_ && brain_->GetInputCount() > 0) {
+            std::fill(std::begin(brainValues_), std::end(brainValues_), 0.0);
+            for (auto& sense : senses_) {
+                sense->Tick(brainValues_, container);
+            }
 
-        brain_->ForwardPropogate(brainValues_);
+            brain_->ForwardPropogate(brainValues_);
 
-        for (auto& effector : effectors_) {
-            energyUsed += effector->Tick(brainValues_, container);
-        }
-    }
-
-    UseEnergy(baseMetabolism_ + energyUsed);
-
-    std::shared_ptr<Genome> otherGenes;
-    container.ForEachCollidingWith(Circle{ GetTransform().x, GetTransform().y, GetRadius() }, [&](const std::shared_ptr<Entity>& other) -> void
-    {
-        if (other.get() != this) {
-            if (FoodPellet* f = dynamic_cast<FoodPellet*>(other.get())) {
-                FeedOn(*f, f->GetEnergy());
-                assert(!f->Alive());
-            } else if (Swimmer* s = dynamic_cast<Swimmer*>(other.get())) {
-                otherGenes = s->genome_;
+            for (auto& effector : effectors_) {
+                energyUsed += effector->Tick(brainValues_, container);
             }
         }
-    });
 
-    if (GetEnergy() > 300_mj) {
-        container.AddEntity(GiveBirth(otherGenes));
+        // TODO put a bunch of these parameters into genes
+        if (health_ < 100.0) {
+            // Heal up to 100.0 a max of 1.5 per tick
+            double toHeal = std::min(0.05, 100.0 - health_);
+            health_ += toHeal;
+            energyUsed += toHeal * 10_uj;
+        }
+
+        UseEnergy(baseMetabolism_ + energyUsed);
+
+        std::shared_ptr<Genome> otherGenes;
+        container.ForEachCollidingWith(Circle{ GetTransform().x, GetTransform().y, GetRadius() }, [&](const std::shared_ptr<Entity>& other) -> void
+        {
+            if (other.get() != this) {
+                if (FoodPellet* f = dynamic_cast<FoodPellet*>(other.get())) {
+                    FeedOn(*f, f->GetEnergy());
+                    assert(!f->Alive());
+                } else if (Swimmer* s = dynamic_cast<Swimmer*>(other.get())) {
+                    otherGenes = s->genome_;
+                }
+            }
+        });
+
+        if (GetEnergy() > 300_mj) {
+            container.AddEntity(GiveBirth(otherGenes));
+        }
     }
 }
 
@@ -123,6 +153,7 @@ Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Geno
     , closestLivingAncestor_(std::move(mother))
     , generation_(closestLivingAncestor_ ? closestLivingAncestor_->generation_ + 1 : 0)
     , baseMetabolism_(phenotype.baseMetabolism)
+    , health_(100.0)
     , genome_(genome)
     , brain_(phenotype.brain)
     , senses_(phenotype.senses)

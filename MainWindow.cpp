@@ -3,6 +3,7 @@
 
 #include "FoodPellet.h"
 #include "Swimmer.h"
+#include "MeatChunk.h"
 #include "GraphContainerWidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -73,21 +74,29 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
-    AddGraph("Total Energy", { {0x00F100, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Combined Energy (mj)", [=](uint64_t tick, LineGraph& graph)
+    AddGraph("Lunar Cycle", { {0x010101, "Moon Phase"} }, "Time (tick)", "Full (%)", [=](uint64_t tick, LineGraph& graph)
+    {
+        graph.AddPoint(0, tick, 50 * (universe_->GetLunarCycle() + 1));
+    });
+    AddGraph("Total Energy", { {0x00F100, "Food Pellet"}, {0xFF0000, "Meat Chunk"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Combined Energy (mj)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
             Energy foodEnergy = 0;
+            Energy chunkEnergy = 0;
             Energy swimmerEnergy = 0;
             universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
                 if (dynamic_cast<const FoodPellet*>(e.get())) {
                     foodEnergy += e->GetEnergy();
+                } else if (dynamic_cast<const MeatChunk*>(e.get())) {
+                    chunkEnergy += e->GetEnergy();
                 } else if (dynamic_cast<const Swimmer*>(e.get())) {
                     swimmerEnergy += e->GetEnergy();
                 }
             });
             graph.AddPoint(0, tick, foodEnergy / 1_mj);
-            graph.AddPoint(1, tick, swimmerEnergy / 1_mj);
+            graph.AddPoint(1, tick, chunkEnergy / 1_mj);
+            graph.AddPoint(2, tick, swimmerEnergy / 1_mj);
         }
     });
     AddGraph("Average Age", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Age (tick)", [=](uint64_t tick, LineGraph& graph)
@@ -124,7 +133,28 @@ MainWindow::MainWindow(QWidget *parent)
             graph.AddPoint(1, tick, swimmerStats.Max());
         }
     });
-    AddGraph("Generation", { { 0xDFDFDF, "Min Generation" }, { 0x0000FF, "Mean Generation" }, { 0xDFDFDF, "Max Generation" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Swimmer Generation", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
+    AddGraph("Health (%)", { { 0xFFDFDF, "Min (%)" }, { 0xFF0000, "Mean (%)" }, { 0xFFDFDF, "Max (%)" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Swimmer Health (%)", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
+    {
+        if (tick % 100 == 0) {
+            EoBE::RollingStatistics stats;
+            universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
+            {
+                if (const Swimmer* swimmer = dynamic_cast<const Swimmer*>(e.get()); swimmer != nullptr) {
+                    stats.AddValue(swimmer->GetHealth());
+                }
+            });
+            if (stats.Count() > 0) {
+                graph.AddPoint(0, tick, stats.Min());
+                graph.AddPoint(1, tick, stats.Mean());
+                graph.AddPoint(2, tick, stats.Max());
+                // Don't let our lower bound go below min
+                graph.AddPoint(3, tick, std::max(stats.Min(), stats.Mean() - stats.StandardDeviation()));
+                // Don't let our upper  bound go above max
+                graph.AddPoint(4, tick, std::min(stats.Max(), stats.Mean() + stats.StandardDeviation()));
+            }
+        }
+    });
+    AddGraph("Generation", { { 0xDFDFDF, "Min" }, { 0x0000FF, "Mean" }, { 0xDFDFDF, "Max" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Swimmer Generation", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {
             EoBE::RollingStatistics stats;
@@ -207,4 +237,5 @@ void MainWindow::AddGraph(QString graphTitle, std::vector<std::pair<QRgb, QStrin
         auto handle = universe_->AddTask([=, task = std::move(task)](uint64_t tick) { task(tick, *lineGraph); });
         ui->graphs->addTab(new GraphContainerWidget(nullptr, std::move(handle), lineGraph), graphTitle);
     });
+    emit button->pressed();
 }

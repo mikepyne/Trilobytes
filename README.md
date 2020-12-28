@@ -40,7 +40,7 @@ TODO
  -  - resize feed dispenser
  - Allow entities to be movable/draggable
  - add settings per graph on left of each graph (also make space on left of y-axis for label so it doesn't overlap numbers)
- - add new sense MoonPhase (have a global sine value for moon phase to allow organisms to sync with each other) needs to actually be two waves added together so there can be neap and spring intervals
+ - add new sense MoonPhase (Need a means of accessing Universe settings in tick for senses and mutation probability e.t.c.)
  - add new effector SpringTail that charges up energy and releases it as a burst of movement
  - add images for each sense and effector and body
  - add gene for image decals

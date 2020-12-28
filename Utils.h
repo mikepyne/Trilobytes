@@ -172,15 +172,10 @@ public:
         items_.shrink_to_fit();
     }
 
-    size_t Size() const
-    {
-        return fill_;
-    }
-
-    size_t Capacity() const
-    {
-        return items_.size();
-    }
+    size_t Size() const { return fill_; }
+    size_t Capacity() const { return items_.size(); }
+    bool Full() const { return Size() == Capacity(); }
+    bool Empty() const { return Size() == 0; }
 
     void ForEach(const std::function<void(const T& item)>& action) const
     {
@@ -226,7 +221,6 @@ public:
         next_ = 0;
         fill_ = 0;
     }
-
 
 private:
     std::vector<T> items_;

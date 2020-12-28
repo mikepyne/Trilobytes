@@ -8,6 +8,11 @@
 #include <stdint.h>
 #include <assert.h>
 
+struct Vec2 {
+    double x;
+    double y;
+};
+
 struct Point {
     double x;
     double y;
@@ -82,6 +87,18 @@ inline double GetBearing(const Point& from, const Point& to)
 inline Point ApplyOffset(Point start, double bearing, double distance)
 {
     return { start.x + (std::sin(bearing) * distance), start.y + (std::cos(bearing) * distance) };
+}
+
+inline Vec2 GetMovementVector(double bearing, double speed)
+{
+    return { std::sin(bearing) * speed, std::cos(bearing) * speed };
+}
+
+inline std::tuple<double, double> DeconstructMovementVector(const Vec2& movementVector)
+{
+    double bearing = GetBearing({ 0, 0 }, { movementVector.x, movementVector.y });
+    double speed = GetDistance({ 0, 0 }, { movementVector.x, movementVector.y });
+    return { bearing, speed };
 }
 
 inline bool Contains(const Line& l, const Point& p)

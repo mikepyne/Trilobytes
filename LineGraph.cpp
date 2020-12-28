@@ -39,12 +39,16 @@ void LineGraph::AddPoint(size_t index, qreal x, qreal y)
     xRange_.ExpandToContain(x);
     yRange_.ExpandToContain(y);
     plots_.at(index).points_.PushBack({ x, y });
+    if (plots_.at(index).points_.Full()) {
+        RecalculateAxisBounds();
+    }
     update();
 }
 
 void LineGraph::SetPlotHidden(size_t plotIndex, bool hidden)
 {
     plots_.at(plotIndex).hidden_ = hidden;
+    RecalculateAxisBounds();
     update();
 }
 
@@ -59,6 +63,24 @@ void LineGraph::Reset()
         points.Clear();
     }
     update();
+}
+
+void LineGraph::RecalculateAxisBounds()
+{
+    xRange_.Reset();
+    yRange_.Reset();
+    for (auto& [ name, colour, hidden, points ] : plots_) {
+        (void) name; // unused
+        (void) colour; // unused
+        if (!hidden) {
+            points.ForEach([&](const auto& pair)
+            {
+                const auto& [ dataX, dataY ] = pair;{}
+                xRange_.ExpandToContain(dataX);
+                yRange_.ExpandToContain(dataY);
+            });
+        }
+    }
 }
 
 void LineGraph::SetPlotDataPointCount(size_t count)

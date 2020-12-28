@@ -68,6 +68,7 @@ public:
     void Render(QPainter& painter) const;
     void ForEach(const std::function<void (const std::shared_ptr<Entity>& e)>& action) const;
 
+    double GetLunarCycle() const;
 
 private:
     UniverseObserver& observerInterface_;

@@ -3,6 +3,7 @@
 #include "Swimmer.h"
 #include "FeedDispenser.h"
 #include "FoodPellet.h"
+#include "Spike.h"
 #include "Random.h"
 #include "MainWindow.h"
 #include "Genome/GeneFactory.h"
@@ -120,6 +121,13 @@ void Universe::ForEach(const std::function<void (const std::shared_ptr<Entity>&)
     rootNode_.ForEach(action);
 }
 
+double Universe::GetLunarCycle() const
+{
+    double shortCycle = 32; // ~1 full->new->full cycle 150 ticks
+    double longCycle = 20; // 1 spring->neap->spring cycle per n short cycles
+    return std::sin(tickIndex_ / shortCycle) * (0.75 - (0.25 * (std::sin(tickIndex_ / (shortCycle * longCycle)))));
+}
+
 void Universe::Thread()
 {
     if (reset_) {
@@ -137,6 +145,14 @@ void Universe::Thread()
         for (auto& feeder : feedDispensers_) {
             observerInterface_.SuggestFocus({ feeder->GetX(), feeder->GetY() });
             feeder->AddPelletsImmediately(feeder->GetMaxPellets() / 8);
+        }
+
+        for (unsigned i = 0; i < 25u; ++i) {
+            double rotation = Random::Bearing();
+            double distance = std::sqrt(Random::Number(0.0, 1.0)) * 500.0;
+            double spikeX = distance * std::cos(rotation);
+            double spikeY = distance * std::sin(rotation);
+            rootNode_.AddEntity(std::make_shared<Spike>(Transform{ spikeX, spikeY, Random::Bearing() }));
         }
 
         rootNode_.SetEntityTargetPerQuad(25, 5);

@@ -39,6 +39,7 @@ SOURCES += \
     Genome/Genome.cpp \
     GraphContainerWidget.cpp \
     LineGraph.cpp \
+    MeatChunk.cpp \
     NeuralNetwork.cpp \
     NeuralNetworkConnector.cpp \
     NeuralNetworkInspector.cpp \
@@ -52,6 +53,7 @@ SOURCES += \
     Sensors/SenseTraitsRaycast.cpp \
     Sensors/SenseTraitsSelf.cpp \
     Sensors/SenseTraitsTouching.cpp \
+    Spike.cpp \
     Swimmer.cpp \
     Transform.cpp \
     Universe.cpp \
@@ -90,6 +92,7 @@ HEADERS += \
     GraphContainerWidget.h \
     LineGraph.h \
     MainWindow.h \
+    MeatChunk.h \
     NeuralNetwork.h \
     NeuralNetworkConnector.h \
     NeuralNetworkInspector.h \
@@ -105,6 +108,7 @@ HEADERS += \
     Sensors/SenseTraitsSelf.h \
     Sensors/SenseTraitsTouching.h \
     Shape.h \
+    Spike.h \
     Swimmer.h \
     Transform.h \
     Universe.h \

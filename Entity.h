@@ -50,6 +50,7 @@ protected:
     void SetColour(double red, double green, double blue) { colour_.setRgbF(red, green, blue); }
     void SetBearing(double bearing);
     void SetVelocity(double speed) { speed_ = speed; }
+    void SetRadius(double radius) { radius_ = radius; }
 
 private:
     Energy energy_; // TODO consider tracking energy used recenty via some sort of low pass filtered heat variable that decays over time
