@@ -43,7 +43,7 @@ Phenotype Genome::GetPhenoType(Swimmer& owner) const
         gene.ExpressGene(owner, phenotype);
     });
     if (!phenotype.brain) {
-        phenotype.brain = std::make_shared<NeuralNetwork>(0, NeuralNetwork::BRAIN_WIDTH, NeuralNetwork::InitialWeights::PassThrough);
+        phenotype.brain = std::make_shared<NeuralNetwork>(1, NeuralNetwork::BRAIN_WIDTH, NeuralNetwork::InitialWeights::PassThrough);
     }
     return phenotype;
 }

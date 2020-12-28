@@ -4,6 +4,7 @@
 #include "GeneBrain.h"
 #include "GenePigment.h"
 #include "GeneSenseRandom.h"
+#include "GeneSenseSine.h"
 #include "GeneEffectorTail.h"
 #include "GeneSenseMagneticField.h"
 #include "GeneSenseTraitsInArea.h"
@@ -40,7 +41,7 @@ std::shared_ptr<Genome> GeneFactory::DefaultGenome()
                                                   SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Energy), },
                                               0, NeuralNetwork::BRAIN_WIDTH),
         std::make_shared<GeneEffectorTail>(0, NeuralNetwork::BRAIN_WIDTH),
-        std::make_shared<GeneSenseMagneticField>(0, NeuralNetwork::BRAIN_WIDTH),
+        std::make_shared<GeneSenseMagneticField>(0, NeuralNetwork::BRAIN_WIDTH, Point{Random::Number(-1000.0, 1000.0), Random::Number(-1000.0, 1000.0)}),
                                     });
 }
 
@@ -83,7 +84,11 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
     },
     [=]()
     {
-        return std::make_shared<GeneSenseMagneticField>(Random::Number(0, 2), brainWidth);
+        return std::make_shared<GeneSenseSine>(Random::Number(1, 3), brainWidth);
+    },
+    [=]()
+    {
+        return std::make_shared<GeneSenseMagneticField>(Random::Number(0, 2), brainWidth, Point{Random::Number(-1000.0, 1000.0), Random::Number(-1000.0, 1000.0)});
     },
     [=]()
     {

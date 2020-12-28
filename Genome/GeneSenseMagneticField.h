@@ -7,7 +7,7 @@
 
 class GeneSenseMagneticField : public GeneSenseBase {
 public:
-    GeneSenseMagneticField(unsigned hiddenLayers, unsigned outputCount);
+    GeneSenseMagneticField(unsigned hiddenLayers, unsigned outputCount, const Point& point);
     GeneSenseMagneticField(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Point& target, const EoBE::RangeConverter& distanceNormaliser, const EoBE::Range<double>& frontBackNormaliser, const EoBE::Range<double>& leftRightNormaliser, double dominance, double mutationProbability);
     virtual ~GeneSenseMagneticField() override {}
 

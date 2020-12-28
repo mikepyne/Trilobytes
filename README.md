@@ -22,7 +22,7 @@ TODO
  - Tests
  - More GUI controlls
  - More effectors (mouthparts? body armor? spikes? sex organs? pheremone creators? poison creators? decoy creators? food creators? Egg layers?)
- - Genes that encode more than a single effector or sensor (Pair of antenna? pair of eyes? memory (loop output to input)?
+ - Genes that encode more than a single effector or sensor (Pair of antenna? pair of eyes? memory/flip-flop (loop output to input)?
  - Improve rendering (image based? decals? OpenGL?)
  - More descriptive brain inspector view
  - Genes inspector view
@@ -30,7 +30,7 @@ TODO
  - Matrix based coordinate system/collisions
  - More entities (pheremones? poisons? more food types?)
  - Add Descriptions for Senses and Effectors so that Inspector can label what the inputs and outputs represent
- - Fixed number of "nodes" on a Swimmer, limiting the number of senses and effectors that can be attached to it?
+ - MAYBE Fixed number of "nodes" on a Swimmer, limiting the number of senses and effectors that can be attached to it?
  - tabs in left and right GUI to split up settings (add more settings per section) and add geneome inspector on right
  -  - Allow adding multiple swimmers at a time
  -  - clear all swimmers
@@ -40,9 +40,8 @@ TODO
  -  - resize feed dispenser
  - Allow entities to be movable/draggable
  - add settings per graph on left of each graph (also make space on left of y-axis for label so it doesn't overlap numbers)
- -  - allow graphs to have axis ranges manually set by user
  - add new sense MoonPhase (have a global sine value for moon phase to allow organisms to sync with each other) needs to actually be two waves added together so there can be neap and spring intervals
- - add new effector Flagella that gives a constant speed for less energy than tail, but doesn't turn as fast
+ - add new effector SpringTail that charges up energy and releases it as a burst of movement
  - add images for each sense and effector and body
  - add gene for image decals
  - add gene for egg size
