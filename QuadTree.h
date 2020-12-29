@@ -4,6 +4,7 @@
 #include "Shape.h"
 #include "EntityContainerInterface.h"
 #include "Entity.h"
+#include "UniverseParameters.h"
 
 #include <memory>
 #include <vector>
@@ -16,7 +17,7 @@ class QuadTree {
 public:
     QuadTree(const Rect& startingArea);
 
-    void Tick();
+    void Tick(const UniverseParameters& universeParameters);
     void Draw(QPainter& paint) const;
 
     EntityContainerInterface& GetContainer() { return *root_; }
@@ -74,7 +75,7 @@ private:
         static std::vector<std::shared_ptr<Quad>> CreateChildren(Rect parentRect, QuadTree& baseTree, Quad* parent);
         virtual void AddEntity(const std::shared_ptr<Entity>& entity) override final;
 
-        void TickRecursive();
+        void TickRecursive(const UniverseParameters& universeParameters);
         void ResolveRecursive();
         void DrawRecursive(QPainter& paint) const;
         void RehomeRecursive(const std::shared_ptr<Entity>& entity, bool delayed);

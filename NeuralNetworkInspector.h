@@ -2,6 +2,7 @@
 #define NEURALNETWORKINSPECTOR_H
 
 #include "Shape.h"
+#include "UniverseParameters.h"
 
 #include <QWidget>
 
@@ -18,7 +19,7 @@ public:
     explicit NeuralNetworkInspector(QWidget *parent);
 
     void SetSwimmer(std::shared_ptr<Swimmer> toInspect);
-    void UpdateConnectionStrengths(EntityContainerInterface& container);
+    void UpdateConnectionStrengths(EntityContainerInterface& container, const UniverseParameters& universeParameters);
 
     void SetUpdateLive(bool update);
     void ResetViewTransform();

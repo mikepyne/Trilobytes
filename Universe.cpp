@@ -191,8 +191,10 @@ void Universe::Thread()
 
 void Universe::Tick()
 {
+    universeParameters_.lunarCycle_ = GetLunarCycle();
+
     observerInterface_.SuggestUpdate();
-    rootNode_.Tick();
+    rootNode_.Tick(universeParameters_);
 
     if (autoSelectFittest_) {
         SelectFittestSwimmer();

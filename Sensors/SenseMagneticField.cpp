@@ -15,7 +15,7 @@ SenseMagneticField::SenseMagneticField(const std::shared_ptr<NeuralNetwork>& net
 {
 }
 
-void SenseMagneticField::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface&) const
+void SenseMagneticField::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface&, const UniverseParameters& /*universeParameters*/) const
 {
     double distance = GetDistance(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, target_);
     double bearing = GetBearing(Point{ owner_.GetTransform().x, owner_.GetTransform().y }, target_);

@@ -12,7 +12,7 @@ Spike::~Spike()
 {
 }
 
-void Spike::TickImpl(EntityContainerInterface& container)
+void Spike::TickImpl(EntityContainerInterface& container, const UniverseParameters& /*universeParameters*/)
 {
     container.ForEachCollidingWith(Circle{ GetLocation().x, GetLocation().y, GetRadius() }, [](const std::shared_ptr<Entity>& entity)
     {

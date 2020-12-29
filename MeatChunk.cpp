@@ -11,7 +11,7 @@ MeatChunk::~MeatChunk()
 {
 }
 
-void MeatChunk::TickImpl(EntityContainerInterface& /*container*/)
+void MeatChunk::TickImpl(EntityContainerInterface& /*container*/, const UniverseParameters& /*universeParameters*/)
 {
     UseEnergy(GetEnergy() / 500.0);
     SetRadius(GetRadius(GetEnergy()));

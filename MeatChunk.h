@@ -11,7 +11,7 @@ public:
     virtual std::string_view GetName() const override { return "MeatChunk"; }
 
 protected:
-    virtual void TickImpl(EntityContainerInterface& container) override final;
+    virtual void TickImpl(EntityContainerInterface& container, const UniverseParameters& universeParameters) override final;
     virtual void DrawImpl(QPainter& paint) override final;
 
 private:

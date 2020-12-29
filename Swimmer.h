@@ -39,7 +39,7 @@ public:
 protected:
     std::shared_ptr<Swimmer> closestLivingAncestor_;
 
-    virtual void TickImpl(EntityContainerInterface& container) override final;
+    virtual void TickImpl(EntityContainerInterface& container, const UniverseParameters& universeParameters) override final;
     virtual void DrawImpl(QPainter& paint) override final;
 
 private:

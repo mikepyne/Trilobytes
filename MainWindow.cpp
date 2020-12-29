@@ -222,7 +222,7 @@ MainWindow::MainWindow(QWidget *parent)
     static auto hackTaskHandle = universe_->AddTask([&](uint64_t /*tick*/)
     {
         ui->inspector->SetSwimmer(std::dynamic_pointer_cast<Swimmer>(universe_->GetSelectedEntity()));
-        ui->inspector->UpdateConnectionStrengths(universe_->GetEntityContainer());
+        ui->inspector->UpdateConnectionStrengths(universe_->GetEntityContainer(), universe_->GetUniverseParameters());
     });
 }
 

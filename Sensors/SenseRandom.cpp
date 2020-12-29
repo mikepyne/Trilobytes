@@ -9,7 +9,7 @@ SenseRandom::SenseRandom(const std::shared_ptr<NeuralNetwork>& network, const st
 {
 }
 
-void SenseRandom::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& /*entities*/) const
+void SenseRandom::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& /*entities*/, const UniverseParameters& /*universeParameters*/) const
 {
     EoBE::IterateBoth<double, double>(inputs, last_, [](double& input, const double& last)
     {

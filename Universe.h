@@ -61,6 +61,7 @@ public:
      */
     [[nodiscard]] EoBE::Handle AddTask(std::function<void(uint64_t tick)>&& task);
 
+    const UniverseParameters& GetUniverseParameters() const { return universeParameters_; }
     bool GetPaused() const { return pauseSim_; }
     bool GetSpawnFood() const { return spawnFood_; }
     bool GetAutoSelectFittest() const { return autoSelectFittest_; }
@@ -87,6 +88,7 @@ private:
     bool trackSelectedEntity_ = false;
     std::shared_ptr<Entity> selectedEntity_;
 
+    UniverseParameters universeParameters_;
     QuadTree rootNode_;
     std::vector<std::shared_ptr<FeedDispenser>> feedDispensers_;
 

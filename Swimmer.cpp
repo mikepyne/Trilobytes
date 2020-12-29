@@ -60,7 +60,7 @@ void Swimmer::AdjustBearing(double adjustment)
     SetBearing(GetTransform().rotation + adjustment);
 }
 
-void Swimmer::TickImpl(EntityContainerInterface& container)
+void Swimmer::TickImpl(EntityContainerInterface& container, const UniverseParameters& universeParameters)
 {
     if (closestLivingAncestor_ && !closestLivingAncestor_->Alive()) {
         closestLivingAncestor_ = FindClosestLivingAncestor();
@@ -90,13 +90,13 @@ void Swimmer::TickImpl(EntityContainerInterface& container)
         if (brain_ && brain_->GetInputCount() > 0) {
             std::fill(std::begin(brainValues_), std::end(brainValues_), 0.0);
             for (auto& sense : senses_) {
-                sense->Tick(brainValues_, container);
+                sense->Tick(brainValues_, container, universeParameters);
             }
 
             brain_->ForwardPropogate(brainValues_);
 
             for (auto& effector : effectors_) {
-                energyUsed += effector->Tick(brainValues_, container);
+                energyUsed += effector->Tick(brainValues_, container, universeParameters);
             }
         }
 

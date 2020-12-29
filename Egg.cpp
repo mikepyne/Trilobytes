@@ -17,7 +17,7 @@ Egg::~Egg()
 {
 }
 
-void Egg::TickImpl(EntityContainerInterface& container)
+void Egg::TickImpl(EntityContainerInterface& container, const UniverseParameters& /*universeParameters*/)
 {
     // TODO could delay depending on ammount of energy in the egg
     // could delay based on the number of genes / their complexity

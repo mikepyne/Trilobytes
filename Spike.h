@@ -11,7 +11,7 @@ public:
     virtual std::string_view GetName() const override { return "Spike"; }
 
 protected:
-    virtual void TickImpl(EntityContainerInterface& container) override;
+    virtual void TickImpl(EntityContainerInterface& container, const UniverseParameters& universeParameters) override;
     virtual void DrawImpl(QPainter& paint) override;
 };
 

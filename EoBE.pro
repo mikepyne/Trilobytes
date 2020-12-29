@@ -112,6 +112,7 @@ HEADERS += \
     Swimmer.h \
     Transform.h \
     Universe.h \
+    UniverseParameters.h \
     UniverseWidget.h \
     Utils.h
 

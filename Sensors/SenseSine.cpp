@@ -6,7 +6,7 @@ SenseSine::SenseSine(const std::shared_ptr<NeuralNetwork>& network, const std::s
 {
 }
 
-void SenseSine::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& /*entities*/) const
+void SenseSine::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& /*entities*/, const UniverseParameters& /*universeParameters*/) const
 {
     EoBE::IterateBoth<double, SineWave>(inputs, sineWaves_, [](double& input, const SineWave& sine)
     {

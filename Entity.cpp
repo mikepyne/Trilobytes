@@ -34,13 +34,10 @@ void Entity::FeedOn(Entity& other, Energy quantity)
     energy_ += other.TakeEnergy(quantity);
 }
 
-bool Entity::Tick(EntityContainerInterface& container)
+bool Entity::Tick(EntityContainerInterface& container, const UniverseParameters& universeParameters)
 {
-
-    TickImpl(container);
-
+    TickImpl(container, universeParameters);
     age_++;
-
     return Move();
 }
 

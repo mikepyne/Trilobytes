@@ -5,6 +5,7 @@
 #include "Energy.h"
 #include "Transform.h"
 #include "EntityContainerInterface.h"
+#include "UniverseParameters.h"
 
 #include <QColor>
 
@@ -36,11 +37,11 @@ public:
     void FeedOn(Entity& other, Energy quantity);
 
     // returns true if the entity has moved
-    bool Tick(EntityContainerInterface& container);
+    bool Tick(EntityContainerInterface& container, const UniverseParameters& universeParameters);
     void Draw(QPainter& paint);
 
 protected:
-    virtual void TickImpl(EntityContainerInterface& container) = 0;
+    virtual void TickImpl(EntityContainerInterface& container, const UniverseParameters& universeParameters) = 0;
     virtual void DrawImpl(QPainter& paint) = 0;
 
     void UseEnergy(Energy quantity) { energy_ -= quantity; }

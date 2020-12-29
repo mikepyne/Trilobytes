@@ -86,7 +86,7 @@ void NeuralNetworkInspector::SetSwimmer(std::shared_ptr<Swimmer> toInspect)
     }
 }
 
-void NeuralNetworkInspector::UpdateConnectionStrengths(EntityContainerInterface& container)
+void NeuralNetworkInspector::UpdateConnectionStrengths(EntityContainerInterface& container, const UniverseParameters& universeParameters)
 {
     if (inspectedSwimmer_ && liveUpdate_) {
         // zeroise every input value everywhere
@@ -101,7 +101,7 @@ void NeuralNetworkInspector::UpdateConnectionStrengths(EntityContainerInterface&
         EoBE::IterateBoth<std::shared_ptr<Sense>, Group>(inspectedSwimmer_->InspectSenses(), sensorGroups_, [&](const std::shared_ptr<Sense>& sense, NeuralNetworkInspector::Group& senseGroup)
         {
             std::vector<double> inputs(senseGroup.horizontalNodes);
-            sense->PrimeInputs(inputs, container);
+            sense->PrimeInputs(inputs, container, universeParameters);
             for (unsigned x = 0; x < senseGroup.horizontalNodes; ++x) {
                 senseGroup.nodes.at({ x, 0 }).value = inputs.at(x);
             }

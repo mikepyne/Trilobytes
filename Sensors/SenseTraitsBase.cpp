@@ -9,7 +9,7 @@ SenseTraitsBase::SenseTraitsBase(const std::shared_ptr<NeuralNetwork>& network, 
 {
 }
 
-void SenseTraitsBase::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const
+void SenseTraitsBase::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseParameters& /*universeParameters*/) const
 {
     // First adjust inputs for each entity detected
     FilterEntities(entities, [&](const Entity& entity, const double& scale)

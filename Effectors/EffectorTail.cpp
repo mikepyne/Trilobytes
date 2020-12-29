@@ -18,7 +18,7 @@ void EffectorTail::Draw(QPainter& /*paint*/) const
     // TODO
 }
 
-Energy EffectorTail::PerformActions(const std::vector<double>& actionValues, const EntityContainerInterface& /*entities*/)
+Energy EffectorTail::PerformActions(const std::vector<double>& actionValues, const EntityContainerInterface& /*entities*/, const UniverseParameters& /*universeParameters*/)
 {
     const double& acceleration = actionValues.at(0);
     const double& clockwiseTorque = actionValues.at(1);

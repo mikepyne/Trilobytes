@@ -68,7 +68,7 @@ public:
 
     SenseTraitsBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, const Transform& transform, std::vector<TraitNormaliser>&& toDetect);
 
-    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const override final;
+    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseParameters& universeParameters) const override final;
 
 protected:
     const Transform transform_;

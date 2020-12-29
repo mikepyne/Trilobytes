@@ -6,6 +6,7 @@ class QPainter;
 
 #include "NeuralNetwork.h"
 #include "NeuralNetworkConnector.h"
+#include "UniverseParameters.h"
 
 #include <string_view>
 #include <memory>
@@ -21,10 +22,10 @@ public:
     virtual ~Sense();
 
     virtual std::string_view GetName() const = 0;
-    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities) const = 0;
+    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseParameters& universeParameters) const = 0;
 
     virtual void Draw(QPainter& paint) const;
-    virtual void Tick(std::vector<double>& outputs, const EntityContainerInterface& entities) final;
+    virtual void Tick(std::vector<double>& outputs, const EntityContainerInterface& entities, const UniverseParameters& universeParameters) final;
 
     unsigned GetOutputCount() const { return network_->GetOutputCount(); }
 

@@ -16,13 +16,13 @@ QuadTree::QuadTree(const Rect& startingArea)
 {
 }
 
-void QuadTree::Tick()
+void QuadTree::Tick(const UniverseParameters& universeParameters)
 {
     if (requiresRebalance_) {
         root_->Rebalance(targetCount_, leewayCount_);
         requiresRebalance_ = false;
     }
-    root_->TickRecursive();
+    root_->TickRecursive(universeParameters);
     root_->ResolveRecursive();
 }
 
@@ -126,17 +126,17 @@ void QuadTree::Quad::AddEntity(const std::shared_ptr<Entity>& entity)
     RehomeRecursive(entity, true);
 }
 
-void QuadTree::Quad::TickRecursive()
+void QuadTree::Quad::TickRecursive(const UniverseParameters& universeParameters)
 {
     if (!children_.empty()) {
         assert(entities_.empty());
         for (auto& child : children_) {
-            child->TickRecursive();
+            child->TickRecursive(universeParameters);
         }
     } else {
         // Tick entities and register moved entities with their new home
         for (auto e : entities_) {
-            if (e->Tick(*this)) {
+            if (e->Tick(*this, universeParameters)) {
                 if (!Contains(rect_, e->GetLocation())) {
                     exitingEntities_.push_back(e);
                     RehomeRecursive(e, true);
