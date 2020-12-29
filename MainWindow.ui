@@ -82,7 +82,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>216</width>
-                 <height>675</height>
+                 <height>663</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -92,7 +92,35 @@
                    <string>Global</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout">
+                   <item row="1" column="0">
+                    <widget class="QPushButton" name="removeAllSwimmersButton">
+                     <property name="text">
+                      <string>Remove all Swimmers</string>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="4" column="0">
+                    <widget class="QPushButton" name="addRandomSwimmerButton">
+                     <property name="text">
+                      <string>Add Random Swimmer</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="0">
+                    <widget class="QPushButton" name="addDefaultSwimmerButton">
+                     <property name="text">
+                      <string>Add Default Swimmer</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QPushButton" name="resetAllButton">
+                     <property name="text">
+                      <string>Reset</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="6" column="0">
                     <widget class="QSpinBox" name="quadLeewaySpinner">
                      <property name="prefix">
                       <string>Quad Leeway: </string>
@@ -105,7 +133,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="3" column="0">
+                   <item row="5" column="0">
                     <widget class="QSpinBox" name="quadCapacitySpinner">
                      <property name="prefix">
                       <string>Quad Capacity: </string>
@@ -121,24 +149,10 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="1" column="0">
-                    <widget class="QPushButton" name="addDefaultSwimmerButton">
-                     <property name="text">
-                      <string>Add Default Swimmer</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QPushButton" name="resetAllButton">
-                     <property name="text">
-                      <string>Reset</string>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="2" column="0">
-                    <widget class="QPushButton" name="addRandomSwimmerButton">
+                    <widget class="QPushButton" name="removeAllFoodButton">
                      <property name="text">
-                      <string>Add Random Swimmer</string>
+                      <string>Remove all Food</string>
                      </property>
                     </widget>
                    </item>

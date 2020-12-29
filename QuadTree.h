@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 #include <functional>
+#include <type_traits>
 
 class QPainter;
 
@@ -24,6 +25,16 @@ public:
     void SetEntityTargetPerQuad(uint64_t target, uint64_t leeway);
     void Clear();
     void ForEach(const std::function<void(const std::shared_ptr<Entity>&)>& action) const;
+
+    template<typename... T>
+    void Clear() const
+    {
+        static_assert(sizeof...(T) > 0, "Must have at least one type.");
+        static_assert((std::is_base_of<Entity, T>::value,...), "All types must extend Entity");
+
+        (root_->ClearRecursive<T>(),...);
+        root_->Rebalance(targetCount_, leewayCount_);
+    }
 
     /**
      * Applies the action to every entity that is contained within the specified
@@ -68,6 +79,26 @@ private:
         void DrawRecursive(QPainter& paint) const;
         void RehomeRecursive(const std::shared_ptr<Entity>& entity, bool delayed);
         void ClearRecursive();
+        template <typename T>
+        void ClearRecursive()
+        {
+            entities_.erase(std::remove_if(std::begin(entities_), std::end(entities_), [](const std::shared_ptr<Entity>& entity)
+            {
+                return dynamic_cast<const T*>(entity.get());
+            }), std::end(entities_));
+            enteringEntities_.erase(std::remove_if(std::begin(enteringEntities_), std::end(enteringEntities_), [](const std::shared_ptr<Entity>& entity)
+            {
+                return dynamic_cast<const T*>(entity.get());
+            }), std::end(enteringEntities_));
+            exitingEntities_.erase(std::remove_if(std::begin(exitingEntities_), std::end(exitingEntities_), [](const std::shared_ptr<Entity>& entity)
+            {
+                return dynamic_cast<const T*>(entity.get());
+            }), std::end(exitingEntities_));
+
+            for (auto& child : children_) {
+                child->ClearRecursive<T>();
+            }
+        }
         void ForEachRecursive(const std::function<void(const std::shared_ptr<Entity>&)>& action) const;
         uint64_t RecursiveEntityCount() const;
 

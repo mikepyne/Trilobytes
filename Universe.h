@@ -43,6 +43,8 @@ public:
     void SetEntityTargetPerQuad(uint64_t target, uint64_t leeway);
     void Respawn() { respawn_ = true; }
     void Reset() {  reset_ = true; }
+    void RemoveAllSwimmers() { removeAllSwimmers_ = true; }
+    void RemoveAllFood() { removeAllFood_ = true; }
     void SelectEntity(const Point& location);
     void SelectFittestSwimmer();
     void AddDefaultSwimmer(double x, double y);
@@ -79,6 +81,8 @@ private:
     unsigned targetTps_ = 1000 / 60;
     bool respawn_ = true;
     bool reset_ = false;
+    bool removeAllSwimmers_ = false;
+    bool removeAllFood_ = false;
     bool autoSelectFittest_ = false;
     bool trackSelectedEntity_ = false;
     std::shared_ptr<Entity> selectedEntity_;

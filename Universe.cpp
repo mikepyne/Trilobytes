@@ -3,6 +3,7 @@
 #include "Swimmer.h"
 #include "FeedDispenser.h"
 #include "FoodPellet.h"
+#include "Egg.h"
 #include "Spike.h"
 #include "Random.h"
 #include "MainWindow.h"
@@ -157,6 +158,16 @@ void Universe::Thread()
 
         rootNode_.SetEntityTargetPerQuad(25, 5);
         observerInterface_.SuggestUpdate();
+    }
+
+    if (removeAllSwimmers_) {
+        removeAllSwimmers_ = false;
+        rootNode_.Clear<Swimmer, Egg>();
+    }
+
+    if (removeAllFood_) {
+        removeAllFood_ = false;
+        rootNode_.Clear<FoodPellet>();
     }
 
     if (respawn_) {

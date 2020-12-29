@@ -52,9 +52,16 @@ double SenseTraitsBase::GetTraitFrom(const Entity& target, Trait trait) const
         return target.GetAge();
     case Trait::Size :
         return target.GetRadius();
-    case Trait::Distance :
+    case Trait::Distance : {
         Transform senseLocation = transform_ + owner_.GetTransform();
         return GetDistance({ senseLocation.x, senseLocation.y }, target.GetLocation());
+    }
+    case Trait::Health :
+        if (const Swimmer* targetSwimmer = dynamic_cast<const Swimmer*>(&target)) {
+            return targetSwimmer->GetHealth();
+        } else {
+            return 0.0;
+        }
     }
     assert(false && "Entity::GetTrait, unimplemented trait.");
     return 0.0;

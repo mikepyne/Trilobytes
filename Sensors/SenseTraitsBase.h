@@ -20,9 +20,10 @@ public:
         Age,
         Size,
         Distance,
+        Health,
     };
 
-    static constexpr std::array ALL_TRAITS = { Trait::Red, Trait::Green, Trait::Blue, Trait::Energy, Trait::Age, Trait::Size, Trait::Distance };
+    static constexpr std::array ALL_TRAITS = { Trait::Red, Trait::Green, Trait::Blue, Trait::Energy, Trait::Age, Trait::Size, Trait::Distance, Trait::Health };
 
     /**
      * Used to convert the combined values of all detected traits into a value
@@ -57,6 +58,8 @@ public:
         case Trait::Size :
             return { trait, { 0, 30 } };
         case Trait::Distance :
+            return { trait, { 0, 100 } };
+        case Trait::Health :
             return { trait, { 0, 100 } };
         }
         assert(false && "Unimplemented Trait");

@@ -40,6 +40,14 @@ MainWindow::MainWindow(QWidget *parent)
             }
         }
     });
+    connect(ui->removeAllSwimmersButton, &QPushButton::pressed, [&]()
+    {
+        universe_->RemoveAllSwimmers();
+    });
+    connect(ui->removeAllFoodButton, &QPushButton::pressed, [&]()
+    {
+        universe_->RemoveAllFood();
+    });
     connect(ui->addDefaultSwimmerButton, &QPushButton::pressed, [&]()
     {
         auto point = ApplyOffset({0, 0}, Random::Bearing(), Random::Number(0.0, 1000.0));
