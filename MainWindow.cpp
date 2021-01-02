@@ -89,7 +89,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     AddGraph("Lunar Cycle", { {0x010101, "Moon Phase"} }, "Time (tick)", "Full (%)", [=](uint64_t tick, LineGraph& graph)
     {
-        graph.AddPoint(0, tick, 50 * (universe_->GetLunarCycle() + 1));
+        graph.AddPoint(0, tick, 50 * (universe_->GetUniverseParameters().lunarCycle_ + 1));
     });
     AddGraph("Total Energy", { {0x00F100, "Food Pellet"}, {0xFF0000, "Meat Chunk"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Combined Energy (mj)", [=](uint64_t tick, LineGraph& graph)
     {

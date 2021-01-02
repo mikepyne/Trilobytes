@@ -75,8 +75,6 @@ public:
     void Render(QPainter& painter) const;
     void ForEach(const std::function<void (const std::shared_ptr<Entity>& e)>& action) const;
 
-    double GetLunarCycle() const;
-
 private:
     UniverseObserver& observerInterface_;
 
@@ -101,6 +99,8 @@ private:
     uint64_t tickIndex_;
 
     EoBE::AutoClearingContainer<std::function<void(uint64_t tick)>> perTickTasks_;
+
+    double GetLunarCycle() const;
 
     void Thread();
     void Tick();

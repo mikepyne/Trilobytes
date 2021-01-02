@@ -28,6 +28,7 @@ SOURCES += \
     Genome/GeneFactory.cpp \
     Genome/GenePigment.cpp \
     Genome/GeneSenseBase.cpp \
+    Genome/GeneSenseLunarCycle.cpp \
     Genome/GeneSenseMagneticField.cpp \
     Genome/GeneSenseRandom.cpp \
     Genome/GeneSenseSine.cpp \
@@ -45,6 +46,7 @@ SOURCES += \
     NeuralNetworkInspector.cpp \
     QuadTree.cpp \
     Sensors/Sense.cpp \
+    Sensors/SenseLunarCycle.cpp \
     Sensors/SenseMagneticField.cpp \
     Sensors/SenseRandom.cpp \
     Sensors/SenseSine.cpp \
@@ -79,6 +81,7 @@ HEADERS += \
     Genome/GeneFactory.h \
     Genome/GenePigment.h \
     Genome/GeneSenseBase.h \
+    Genome/GeneSenseLunarCycle.h \
     Genome/GeneSenseMagneticField.h \
     Genome/GeneSenseRandom.h \
     Genome/GeneSenseSine.h \
@@ -99,6 +102,7 @@ HEADERS += \
     QuadTree.h \
     Random.h \
     Sensors/Sense.h \
+    Sensors/SenseLunarCycle.h \
     Sensors/SenseMagneticField.h \
     Sensors/SenseRandom.h \
     Sensors/SenseSine.h \

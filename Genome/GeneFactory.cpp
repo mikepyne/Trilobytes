@@ -7,6 +7,7 @@
 #include "GeneSenseSine.h"
 #include "GeneEffectorTail.h"
 #include "GeneSenseMagneticField.h"
+#include "GeneSenseLunarCycle.h"
 #include "GeneSenseTraitsInArea.h"
 #include "GeneSenseTraitsTouching.h"
 #include "GeneSenseTraitsRaycast.h"
@@ -88,7 +89,11 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
     },
     [=]()
     {
-        return std::make_shared<GeneSenseMagneticField>(Random::Number(0, 2), brainWidth, Point{Random::Number(-1000.0, 1000.0), Random::Number(-1000.0, 1000.0)});
+        return std::make_shared<GeneSenseMagneticField>(Random::Number(0, 2), brainWidth, Point{ Random::Number(-1000.0, 1000.0), Random::Number(-1000.0, 1000.0) });
+    },
+    [=]()
+    {
+        return std::make_shared<GeneSenseLunarCycle>(Random::Number(0, 2), brainWidth);
     },
     [=]()
     {
