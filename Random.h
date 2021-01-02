@@ -56,11 +56,17 @@ public:
             return Generate(distribution);
         } else if constexpr (std::is_floating_point<NumericType>::value) {
             static std::uniform_real_distribution<NumericType> distribution;
-            distribution.param(typename std::uniform_real_distribution<NumericType>::param_type(min, max));
+            distribution.param(typename std::uniform_real_distribution<NumericType>::param_type(min, std::nextafter(max, std::numeric_limits<double>::max())));
             return Generate(distribution);
         } else {
             static_assert(std::is_floating_point<NumericType>::value, "Random::Number requires an integral OR floating point number type to work.");
         }
+    }
+
+    static size_t WeightedIndex(std::initializer_list<double>&& weights)
+    {
+        std::discrete_distribution<size_t> d(std::move(weights));
+        return Generate(d);
     }
 
     static double Percent()
@@ -70,7 +76,8 @@ public:
 
     static bool PercentChance(double chance)
     {
-        return chance >= Number(0.0, 100.0);
+        std::bernoulli_distribution d(chance / 100.0);
+        return Generate(d);
     }
 
     static uint64_t Round(const double& v)

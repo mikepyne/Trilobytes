@@ -36,13 +36,17 @@ void LineGraph::AddPlot(QRgb colour, QString name)
 
 void LineGraph::AddPoint(size_t index, qreal x, qreal y)
 {
-    xRange_.ExpandToContain(x);
-    yRange_.ExpandToContain(y);
-    plots_.at(index).points_.PushBack({ x, y });
-    if (plots_.at(index).points_.Full()) {
-        RecalculateAxisBounds();
+    if (plots_.size() > index) {
+        plots_.at(index).points_.PushBack({ x, y });
+        if (!plots_.at(index).hidden_) {
+            xRange_.ExpandToContain(x);
+            yRange_.ExpandToContain(y);
+            if (plots_.at(index).points_.Full()) {
+                RecalculateAxisBounds();
+            }
+        }
+        update();
     }
-    update();
 }
 
 void LineGraph::SetPlotHidden(size_t plotIndex, bool hidden)

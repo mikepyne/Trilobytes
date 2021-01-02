@@ -48,3 +48,4 @@ TODO
  - allow laid eggs to be fertilised by passing swimmers (optional, let genetics decide)
  - allow swimmers to take damage and die, and cost energy to heal damage. dead swimmers to explode into edible meat chunks
  - brain inspector needs ability to adjust line culling (i.e. don't show connections below x strength...) etc
+ - Would be very insightful to record which mutations have been accumulated over the generations (could be useful to refine mutations and detect anything too lethal to be useful)

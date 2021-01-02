@@ -47,8 +47,8 @@ std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithMutatedConne
 {
     std::vector<std::vector<double>> newWeights = weights_;
 
-    double percent = Random::Percent();
-    if (percent > 10) {
+    switch (Random::WeightedIndex({ 90, 8, 2 })) {
+    case 0:
         // 90% Chance mutate a single connection
         if (newWeights.size() > 0) {
             unsigned input = Random::Number<size_t>(0, newWeights.size() - 1);
@@ -57,18 +57,21 @@ std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithMutatedConne
                 newWeights.at(input).at(output) += Random::Gaussian(0.0, 0.2);
             }
         }
-    } else if (percent > 2) {
+        break;
+    case 1:
         // 8% Chance mutate all connections
         for (auto& input : newWeights) {
             for (auto& output : input) {
                 output += Random::Gaussian(0.0, 0.1);
             }
         }
-    } else {
+        break;
+    case 2:
         // 2% Chance shuffle connections
         for (auto& input : newWeights) {
             Random::Shuffle(input);
         }
+        break;
     }
 
     return std::make_shared<NeuralNetworkConnector>(std::move(newWeights));
