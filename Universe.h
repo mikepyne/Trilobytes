@@ -37,6 +37,10 @@ public:
     void SetPaused(bool paused) { pauseSim_ = paused; }
     void SetLimitTickRate(bool limited);
     void SetTpsTarget(int tps);
+    void SetMeanGeneMutationCount(double mean) { universeParameters_.meanGeneMutationCount_ = mean; }
+    void SetGeneMutationStdDev(double stdDev) { universeParameters_.geneMutationCountStdDev_ = stdDev; }
+    void SetMeanChromosomeMutationCount(double mean) { universeParameters_.meanStructuralMutationCount_ = mean; }
+    void SetChromosomeMutationStdDev(double stdDev) { universeParameters_.structuralMutationCountStdDev_ = stdDev; }
     void SetSpawnFood(bool spawn) { spawnFood_ = spawn; }
     void SetAutoSelectFittest(bool autoSelect) { autoSelectFittest_ = autoSelect; }
     void SetTrackSelected(bool track) { trackSelectedEntity_ = track; }

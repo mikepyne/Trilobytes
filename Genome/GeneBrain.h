@@ -8,8 +8,8 @@
 
 class GeneBrain : public Gene {
 public:
-    GeneBrain(unsigned layerCount, unsigned width, double mutationProbability);
-    GeneBrain(const std::shared_ptr<NeuralNetwork>& brain, double dominance, double mutationProbability);
+    GeneBrain(unsigned layerCount, unsigned width);
+    GeneBrain(const std::shared_ptr<NeuralNetwork>& brain, double dominance);
 
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 

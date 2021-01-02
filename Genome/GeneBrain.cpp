@@ -3,13 +3,13 @@
 #include "Energy.h"
 #include "Phenotype.h"
 
-GeneBrain::GeneBrain(unsigned layerCount, unsigned width, double mutationProbability)
-    : GeneBrain(std::make_shared<NeuralNetwork>(layerCount, width, NeuralNetwork::InitialWeights::Random), Random::Number(0.0, 100.0), mutationProbability)
+GeneBrain::GeneBrain(unsigned layerCount, unsigned width)
+    : GeneBrain(std::make_shared<NeuralNetwork>(layerCount, width, NeuralNetwork::InitialWeights::Random), Random::Number(0.0, 100.0))
 {
 }
 
-GeneBrain::GeneBrain(const std::shared_ptr<NeuralNetwork>& brain, double dominance, double mutationProbability)
-    : Gene(dominance, mutationProbability)
+GeneBrain::GeneBrain(const std::shared_ptr<NeuralNetwork>& brain, double dominance)
+    : Gene(dominance)
     , brain_(brain)
 {
     // Modify connections
@@ -46,5 +46,5 @@ void GeneBrain::ExpressGene(Swimmer& /*owner*/, Phenotype& target) const
 
 std::shared_ptr<Gene> GeneBrain::Copy() const
 {
-    return std::make_shared<GeneBrain>(brain_, GetDominance(), GetMutationProbability());
+    return std::make_shared<GeneBrain>(brain_, GetDominance());
 }

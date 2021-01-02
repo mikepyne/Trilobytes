@@ -9,7 +9,7 @@
 class GeneSenseSine : public GeneSenseBase {
 public:
     GeneSenseSine(unsigned inputCount, unsigned outputCount);
-    GeneSenseSine(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, std::vector<SenseSine::SineWave>&& sineWaves, double dominance, double mutationProbability);
+    GeneSenseSine(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, std::vector<SenseSine::SineWave>&& sineWaves, double dominance);
     virtual ~GeneSenseSine() override {}
 
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;

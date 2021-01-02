@@ -16,10 +16,20 @@ public:
     /// A value that can hopefully be used by swimmers to coordinate behaviour
     /// through time
     double lunarCycle_ = 0.0;
-    /// The average number of mutations each offspring will contain, using a
-    /// gaussian/normal distribution
-    double meanMutationCount_ = 2.0;
-    double mutationCountStdDev_ = 1.0;
+    /// These mutations will result in behavioral/ability changes but will not
+    /// affect the structure of the chromosomes, so will not affect breeding
+    /// compatibility.
+    /// The parameters are used to create a gaussian curve, from which the real
+    /// count is taken from.
+    double meanGeneMutationCount_ = 1.0;
+    double geneMutationCountStdDev_ = 0.5;
+    /// These mutations are to the chromososmes that comprise the genome and
+    /// will rarely confer changes in ability, but will affect breeding
+    /// compatibility
+    /// The parameters are used to create a gaussian curve, from which the real
+    /// count is taken from.
+    double meanStructuralMutationCount_ = 0.8;
+    double structuralMutationCountStdDev_ = 0.2;
 };
 
 #endif // UNIVERSEPARAMETERS_H

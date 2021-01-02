@@ -3,6 +3,7 @@
 
 #include "Utils.h"
 #include "Gene.h"
+#include "UniverseParameters.h"
 
 #include <map>
 #include <vector>
@@ -15,14 +16,14 @@ public:
     // Create two identical chromosomes
     ChromosomePair(std::vector<std::shared_ptr<Gene>>&& genes);
 
+    void ForEach(const std::function<void(const Gene& gene)>& action) const;
+
     static std::optional<ChromosomePair> Recombine(const ChromosomePair& maternal, const ChromosomePair& paternal);
 
-    void ForEach(const std::function<void(const Gene& gene)>& action) const;
-    void Mutate();
+    void MutateGene();
+    void MutateStructure();
 
 private:
-    constexpr static double MUTATIONS_PER_COPY = 1.5;
-
     EoBE::Range<unsigned> aChromosomeRange_;
     EoBE::Range<unsigned> bChromosomeRange_;
     std::map<unsigned, std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene>>> chromosomePair_;

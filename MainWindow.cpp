@@ -67,6 +67,11 @@ MainWindow::MainWindow(QWidget *parent)
         universe_->SetEntityTargetPerQuad(ui->quadCapacitySpinner->value(), leeway);
     });
 
+    connect(ui->meanGeneMutationSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&](double mean) { universe_->SetMeanGeneMutationCount(mean); });
+    connect(ui->geneMutationStdDevSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&](double stdDev) { universe_->SetGeneMutationStdDev(stdDev); });
+    connect(ui->meanChromosomeMutationSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&](double mean) { universe_->SetMeanChromosomeMutationCount(mean); });
+    connect(ui->chromosomeMutationStdDevSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&](double stdDev) { universe_->SetChromosomeMutationStdDev(stdDev); });
+
     /// Food Controlls
     connect(ui->spawnFoodToggle, &QPushButton::toggled, [&](bool state) { universe_->SetSpawnFood(state); });
 
@@ -180,6 +185,26 @@ MainWindow::MainWindow(QWidget *parent)
                 graph.AddPoint(3, tick, std::max(stats.Min(), stats.Mean() - stats.StandardDeviation()));
                 // Don't let our upper  bound go above max
                 graph.AddPoint(4, tick, std::min(stats.Max(), stats.Mean() + stats.StandardDeviation()));
+            }
+        }
+    });
+    AddGraph("Mutations", { { 0xF0F000, "Mean Gene Mutations" }, { 0xF000FF, "Mean Chromosome Mutations" } }, "Time (tick)", "Mutations per Genome", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
+    {
+        if (tick % 100 == 0) {
+            EoBE::RollingStatistics geneStats;
+            EoBE::RollingStatistics chromosomeStats;
+            universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
+            {
+                if (const Swimmer* swimmer = dynamic_cast<const Swimmer*>(e.get()); swimmer != nullptr) {
+                    geneStats.AddValue(swimmer->GetGeneMutationCount());
+                    chromosomeStats.AddValue(swimmer->GetChromosomeMutationCount());
+                }
+            });
+            if (geneStats.Count() > 0) {
+                graph.AddPoint(0, tick, geneStats.Mean());
+            }
+            if (chromosomeStats.Count() > 0) {
+                graph.AddPoint(1, tick, chromosomeStats.Mean());
             }
         }
     });

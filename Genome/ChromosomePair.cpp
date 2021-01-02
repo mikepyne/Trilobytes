@@ -3,6 +3,7 @@
 #include "Random.h"
 #include "GeneFactory.h"
 #include "NeuralNetwork.h"
+#include "Utils.h"
 
 ChromosomePair::ChromosomePair(std::vector<std::shared_ptr<Gene> >&& genes)
     : aChromosomeRange_(Random::Number<unsigned>(), Random::Number<unsigned>())
@@ -24,6 +25,7 @@ std::optional<ChromosomePair> ChromosomePair::Recombine(const ChromosomePair& ma
 
     // TODO consider how this prevents evolution of sexual dimorphism
     // Incompatible if chromosome ranges are too different
+    // TODO make the acceptible range a parameter?
     if (newAChromosomeRange_.Similarity(newBChromosomeRange_) < Random::Number(0.95, 0.99)) {
         return {};
     }
@@ -53,7 +55,7 @@ std::optional<ChromosomePair> ChromosomePair::Recombine(const ChromosomePair& ma
     }
 
     // TODO consider how this prevents evolution of sexual dimorphism
-    // Incompatible iff too many unpaired genes
+    // Incompatible if too many unpaired genes
     if (unpairedGeneCount / newPair.size() > Random::Number(0.01, 0.05)) {
         return {};
     }
@@ -93,7 +95,7 @@ std::optional<ChromosomePair> ChromosomePair::Recombine(const ChromosomePair& ma
         }
 
         for (auto& [ location, genePair ] : newPair) {
-            auto& [ a, b ] = genePair;
+            auto& [ a, b ] = genePair;{}
             while (swapLocation != crossoverLocations.cend() && *swapLocation <= location) {
                 ++swapLocation;
                 swap = !swap;
@@ -117,23 +119,37 @@ void ChromosomePair::ForEach(const std::function<void (const Gene&)>& action) co
     }
 }
 
-void ChromosomePair::Mutate()
+void ChromosomePair::MutateGene()
 {
-    // MAYBE inversions
-
-    // chromosome range change
-    for (auto range : { &aChromosomeRange_, &bChromosomeRange_ }) {
-        if (Random::Percent() < 0.5) {
-            unsigned first = static_cast<unsigned>(Random::Gaussian<float>(0, range->ValueRange() / 200) + range->First());
-            unsigned last = static_cast<unsigned>(Random::Gaussian<float>(0, range->ValueRange() / 200) + range->Last());
-            range->SetRange(first, last);
+    if (!chromosomePair_.empty()) {
+        // Select random Gene from the pair of chromosomes
+        auto& [ position, genePair ] = Random::Item(chromosomePair_);{}
+        (void) position; // unused
+        // Select a random Gene from the pair
+        std::shared_ptr<Gene>& allele = Gene::GetRandom(genePair);
+        // A pair may have a missing gene in it, so check for null
+        if (allele) {
+            allele = allele->Copy(1);
         }
     }
+}
 
-    if (chromosomePair_.size() > 0) {
+void ChromosomePair::MutateStructure()
+{
+    // All equally weighted for now
+    switch (Random::WeightedIndex({ 1, 1, 1, 1, 1, 1 })) {
+    case 0:
+        // chromosome range change
+        for (EoBE::Range<unsigned>* range : { &aChromosomeRange_, &bChromosomeRange_ }) {
+            unsigned first = range->First() + std::round(Random::Gaussian<double>(0, 50));
+            unsigned last = range->Last() + std::round(Random::Gaussian<double>(0, 50));
+            range->SetRange(first, last);
+        }
+        break;
+    case 1:
         // gene duplication
-        if (Random::Percent() < 0.5) {
-            auto& [ location, genePair ] = Random::Item(chromosomePair_);
+        if (!chromosomePair_.empty()) {
+            auto& [ location, genePair ] = Random::Item(chromosomePair_);{}
             (void) location;
             std::shared_ptr<Gene>& randomGene = Gene::GetRandom(genePair);
             if (randomGene != nullptr) {
@@ -142,22 +158,24 @@ void ChromosomePair::Mutate()
                 addToA ? chromosomePair_[randomLocation].first = randomGene : chromosomePair_[randomLocation].second = randomGene;
             }
         }
-
+        break;
+    case 2:
         // allele loss
-        if (Random::Percent() < 0.5) {
-            auto& [ location, genePair ] = Random::Item(chromosomePair_);
+        if (!chromosomePair_.empty()) {
+            auto& [ location, genePair ] = Random::Item(chromosomePair_);{}
             (void) location;
             Gene::GetRandom(genePair).reset();
         }
-
+        break;
+    case 3:
         // gene loss
-        if (Random::Percent() < 0.5) {
+        if (!chromosomePair_.empty()) {
             chromosomePair_.erase(Random::Item(chromosomePair_).first);
         }
-
+        break;
+    case 4: {
         // gene addition
-        if (Random::Percent() < 0.5) {
-            /*
+        /*
              * FIXME perhaps the brain should be a fixed feature of the genome
              * and not a gene?
              *
@@ -167,51 +185,63 @@ void ChromosomePair::Mutate()
              *
              * Perhaps each gene needs a "BrainWidthMutated(newWidth)" function?
              */
-            std::shared_ptr<Gene> randomGene = GeneFactory::RandomGene(NeuralNetwork::BRAIN_WIDTH);
-            bool addToA = Random::Boolean();
-            size_t randomLocation = Random::Number<size_t>(addToA ? aChromosomeRange_.Min() : bChromosomeRange_.Min(), addToA ? aChromosomeRange_.Max() : bChromosomeRange_.Max());
-            addToA ? chromosomePair_[randomLocation].first = randomGene : chromosomePair_[randomLocation].second = randomGene;
-        }
-
-        // gene transposition
-        if (Random::Percent() < 0.5) {
-            auto& [ location, genePair ] = Random::Item(chromosomePair_);
+        std::shared_ptr<Gene> randomGene = GeneFactory::RandomGene(NeuralNetwork::BRAIN_WIDTH);
+        bool addToA = Random::Boolean();
+        const auto& range = addToA ? aChromosomeRange_ : bChromosomeRange_;
+        size_t randomLocation = Random::Number<size_t>(range.Min(), range.Max());
+        addToA ? chromosomePair_[randomLocation].first = randomGene : chromosomePair_[randomLocation].second = randomGene;
+    }
+        break;
+    case 5: {
+        if (!chromosomePair_.empty()) {
+            // gene transposition
+            auto& [ location, genePair ] = Random::Item(chromosomePair_);{}
             (void) location;
             std::shared_ptr<Gene>& randomGene = Gene::GetRandom(genePair);
             if (randomGene) {
                 bool addToA = Random::Boolean();
-                size_t randomLocation = Random::Number<size_t>(addToA ? aChromosomeRange_.Min() : bChromosomeRange_.Min(), addToA ? aChromosomeRange_.Max() : bChromosomeRange_.Max());
+                const auto& range = addToA ? aChromosomeRange_ : bChromosomeRange_;
+                size_t randomLocation = Random::Number<size_t>(range.Min(), range.Max());
                 addToA ? chromosomePair_[randomLocation].first = randomGene : chromosomePair_[randomLocation].second = randomGene;
                 randomGene.reset();
             }
         }
     }
+        break;
+        // TODO case 6 : // invert part of a chromosome
+    }
 
-    // Remove any gene pairs that are no longer on either chromosome
+    /*
+     * Now do some tidying, by removing alleles or gene pairs that are no longer
+     * on the chromosomes.
+     */
+
     // Sadly std::remove_if doesn't work for std::map, perhaps future erase_if will...
     for (auto iter = chromosomePair_.begin(); iter != chromosomePair_.end();) {
         const unsigned& location = iter->first;
-        if ((location < aChromosomeRange_.Min() && location < bChromosomeRange_.Min())
-         || (location > aChromosomeRange_.Max() && location > bChromosomeRange_.Max())) {
+        auto& [ geneA, geneB ] = iter->second;{}
+
+        /*
+         * As each chromosome in the pair may have a slightly different range
+         * remove any alleles that fall out of the range of their specific
+         * chromosome.
+         */
+        if (geneA != nullptr && !aChromosomeRange_.Contains(location)) {
+            // trim genes outside of their chromosome range
+            geneA = nullptr;
+        }
+        if (geneB != nullptr && !bChromosomeRange_.Contains(location)) {
+            // trim genes outside of their chromosome range
+            geneB = nullptr;
+        }
+
+        bool bothOutOfRange = !aChromosomeRange_.Contains(location) && !bChromosomeRange_.Contains(location);
+        bool bothNull = !geneA && !geneB;
+        if (bothOutOfRange || bothNull) {
+            // Remove any gene pairs that are no longer on either chromosome
             iter = chromosomePair_.erase(iter);
         } else {
             ++iter;
-        }
-    }
-
-    for (auto& [location, genes ] : chromosomePair_) {
-        auto& [ geneA, geneB ] = genes;
-        if (geneA != nullptr && (location < aChromosomeRange_.Min() || location > aChromosomeRange_.Max())) {
-            // trim genes outside of their chromosome range
-            geneA = nullptr;
-        } else if (geneA != nullptr && Random::Number(0.0, 1.0) < geneA->GetMutationProbability()) {
-            geneA = geneA->Copy(MUTATIONS_PER_COPY);
-        }
-        if (geneB != nullptr && (location < bChromosomeRange_.Min() || location > bChromosomeRange_.Max())) {
-            // trim genes outside of their chromosome range
-            geneB = nullptr;
-        } else if (geneB != nullptr && Random::Number(0.0, 1.0) < geneB->GetMutationProbability()) {
-            geneB = geneB->Copy(MUTATIONS_PER_COPY);
         }
     }
 }

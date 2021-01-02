@@ -81,7 +81,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>216</width>
+                 <width>235</width>
                  <height>663</height>
                 </rect>
                </property>
@@ -92,17 +92,16 @@
                    <string>Global</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout">
-                   <item row="1" column="0">
-                    <widget class="QPushButton" name="removeAllSwimmersButton">
-                     <property name="text">
-                      <string>Remove all Swimmers</string>
+                   <item row="9" column="0">
+                    <widget class="QDoubleSpinBox" name="meanChromosomeMutationSpinBox">
+                     <property name="prefix">
+                      <string>Mean Chromosome Mutations: </string>
                      </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="0">
-                    <widget class="QPushButton" name="addRandomSwimmerButton">
-                     <property name="text">
-                      <string>Add Random Swimmer</string>
+                     <property name="maximum">
+                      <double>20.000000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>0.800000000000000</double>
                      </property>
                     </widget>
                    </item>
@@ -113,6 +112,35 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="7" column="0">
+                    <widget class="QDoubleSpinBox" name="meanGeneMutationSpinBox">
+                     <property name="prefix">
+                      <string>Mean Gene Mutations: </string>
+                     </property>
+                     <property name="maximum">
+                      <double>20.000000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>1.000000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="8" column="0">
+                    <widget class="QDoubleSpinBox" name="geneMutationStdDevSpinBox">
+                     <property name="prefix">
+                      <string>Gene Mutation StdDev: </string>
+                     </property>
+                     <property name="maximum">
+                      <double>5.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.100000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>0.500000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="0" column="0">
                     <widget class="QPushButton" name="resetAllButton">
                      <property name="text">
@@ -120,16 +148,10 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="6" column="0">
-                    <widget class="QSpinBox" name="quadLeewaySpinner">
-                     <property name="prefix">
-                      <string>Quad Leeway: </string>
-                     </property>
-                     <property name="maximum">
-                      <number>500</number>
-                     </property>
-                     <property name="value">
-                      <number>5</number>
+                   <item row="1" column="0">
+                    <widget class="QPushButton" name="removeAllSwimmersButton">
+                     <property name="text">
+                      <string>Remove all Swimmers</string>
                      </property>
                     </widget>
                    </item>
@@ -149,10 +171,46 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="6" column="0">
+                    <widget class="QSpinBox" name="quadLeewaySpinner">
+                     <property name="prefix">
+                      <string>Quad Leeway: </string>
+                     </property>
+                     <property name="maximum">
+                      <number>500</number>
+                     </property>
+                     <property name="value">
+                      <number>5</number>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="0">
+                    <widget class="QPushButton" name="addRandomSwimmerButton">
+                     <property name="text">
+                      <string>Add Random Swimmer</string>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="2" column="0">
                     <widget class="QPushButton" name="removeAllFoodButton">
                      <property name="text">
                       <string>Remove all Food</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="10" column="0">
+                    <widget class="QDoubleSpinBox" name="chromosomeMutationStdDevSpinBox">
+                     <property name="prefix">
+                      <string>Chromosome Mutation StdDev: </string>
+                     </property>
+                     <property name="maximum">
+                      <double>5.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.100000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>0.200000000000000</double>
                      </property>
                     </widget>
                    </item>

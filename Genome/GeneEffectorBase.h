@@ -11,7 +11,7 @@
 class GeneEffectorBase : public Gene {
 public:
     GeneEffectorBase(unsigned hiddenLayers, unsigned inputCount, unsigned outputCount);
-    GeneEffectorBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance, double mutationProbability);
+    GeneEffectorBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance);
     virtual ~GeneEffectorBase() {}
 
 protected:

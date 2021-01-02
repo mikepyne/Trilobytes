@@ -11,8 +11,8 @@ GeneSenseTraitsRaycast::GeneSenseTraitsRaycast(std::vector<SenseTraitsBase::Trai
     AddMutations();
 }
 
-GeneSenseTraitsRaycast::GeneSenseTraitsRaycast(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Transform& transform, const double& distance, const double& rotation, double dominance, double mutationProbability)
-    : GeneSenseTraitsBase(std::move(toDetect), network, outputConnections, transform, dominance, mutationProbability)
+GeneSenseTraitsRaycast::GeneSenseTraitsRaycast(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Transform& transform, const double& distance, const double& rotation, double dominance)
+    : GeneSenseTraitsBase(std::move(toDetect), network, outputConnections, transform, dominance)
     , distance_(distance)
     , rotation_(rotation)
 {
@@ -27,7 +27,7 @@ void GeneSenseTraitsRaycast::ExpressGene(Swimmer& owner, Phenotype& target) cons
 
 std::shared_ptr<Gene> GeneSenseTraitsRaycast::Copy() const
 {
-    return std::make_shared<GeneSenseTraitsRaycast>(std::vector(toDetect_), GetNetwork(),GetOutputConnections(), transform_, distance_, rotation_, GetDominance(), GetMutationProbability());
+    return std::make_shared<GeneSenseTraitsRaycast>(std::vector(toDetect_), GetNetwork(),GetOutputConnections(), transform_, distance_, rotation_, GetDominance());
 }
 
 void GeneSenseTraitsRaycast::AddMutations()

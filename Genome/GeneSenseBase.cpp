@@ -2,12 +2,12 @@
 
 
 GeneSenseBase::GeneSenseBase(unsigned hiddenLayers, unsigned inputCount, unsigned outputCount)
-    : GeneSenseBase(std::make_shared<NeuralNetwork>(hiddenLayers, inputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(inputCount, outputCount), Random::Number(0.0, 100.0), Random::Number(0.0, 1.0))
+    : GeneSenseBase(std::make_shared<NeuralNetwork>(hiddenLayers, inputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(inputCount, outputCount), Random::Number(0.0, 100.0))
 {
 }
 
-GeneSenseBase::GeneSenseBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, double dominance, double mutationProbability)
-    : Gene(dominance, mutationProbability)
+GeneSenseBase::GeneSenseBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, double dominance)
+    : Gene(dominance)
     , network_(network)
     , outputConnections_(outputConnections)
 {

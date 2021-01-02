@@ -6,7 +6,7 @@
 class GenePigment : public Gene {
 public:
     GenePigment();
-    GenePigment(double a, double r, double g, double b, double dominance, double mutationProbability);
+    GenePigment(double a, double r, double g, double b, double dominance);
     virtual ~GenePigment() override;
 
 protected:

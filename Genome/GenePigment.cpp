@@ -7,12 +7,12 @@
 #include <QPainter>
 
 GenePigment::GenePigment()
-    : GenePigment(Random::Number(0.0, 1.0), Random::Number(0.0, 1.0), Random::Number(0.0, 1.0), Random::Number(0.0, 1.0), Random::Number(0.0, 100.0), Random::Number(0.0, 0.2))
+    : GenePigment(Random::Number(0.0, 1.0), Random::Number(0.0, 1.0), Random::Number(0.0, 1.0), Random::Number(0.0, 1.0), Random::Number(0.0, 100.0))
 {
 }
 
-GenePigment::GenePigment(double a, double r, double g, double b, double dominance, double mutationProbability)
-    : Gene(dominance, mutationProbability)
+GenePigment::GenePigment(double a, double r, double g, double b, double dominance)
+    : Gene(dominance)
     , a_(std::clamp(a, 0.0, 1.0))
     , r_(std::clamp(r, 0.0, 1.0))
     , g_(std::clamp(g, 0.0, 1.0))
@@ -65,7 +65,7 @@ GenePigment::~GenePigment()
 
 std::shared_ptr<Gene> GenePigment::Copy() const
 {
-    return std::make_shared<GenePigment>(a_, r_, g_, b_, GetDominance(), GetMutationProbability());
+    return std::make_shared<GenePigment>(a_, r_, g_, b_, GetDominance());
 }
 
 void GenePigment::ExpressGene(Swimmer& /*owner*/, Phenotype& target) const

@@ -4,12 +4,12 @@
 #include "Sensors/SenseRandom.h"
 
 GeneSenseRandom::GeneSenseRandom(unsigned inputCount, unsigned outputCount)
-    : GeneSenseRandom(std::make_shared<NeuralNetwork>(0, inputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(NeuralNetworkConnector(inputCount, outputCount)), CreateRandomFilteredRandoms(inputCount), Random::Number(0.0, 100.0), Random::Number(0.0, 0.01))
+    : GeneSenseRandom(std::make_shared<NeuralNetwork>(0, inputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(NeuralNetworkConnector(inputCount, outputCount)), CreateRandomFilteredRandoms(inputCount), Random::Number(0.0, 100.0))
 {
 }
 
-GeneSenseRandom::GeneSenseRandom(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, std::vector<SenseRandom::FilteredRandom>&& filteredRandoms, double dominance, double mutationProbability)
-    : GeneSenseBase(network, outputConnections, dominance, mutationProbability)
+GeneSenseRandom::GeneSenseRandom(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, std::vector<SenseRandom::FilteredRandom>&& filteredRandoms, double dominance)
+    : GeneSenseBase(network, outputConnections, dominance)
     , filteredRandoms_(std::move(filteredRandoms))
 {
     // Modify one
@@ -62,7 +62,7 @@ void GeneSenseRandom::ExpressGene(Swimmer& owner, Phenotype& target) const
 
 std::shared_ptr<Gene> GeneSenseRandom::Copy() const
 {
-    return std::make_shared<GeneSenseRandom>(GetNetwork(), GetOutputConnections(), std::vector(filteredRandoms_), GetDominance(), GetMutationProbability());
+    return std::make_shared<GeneSenseRandom>(GetNetwork(), GetOutputConnections(), std::vector(filteredRandoms_), GetDominance());
 }
 
 std::vector<SenseRandom::FilteredRandom> GeneSenseRandom::CreateRandomFilteredRandoms(unsigned count)

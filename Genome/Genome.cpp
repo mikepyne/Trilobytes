@@ -3,16 +3,21 @@
 #include "Random.h"
 
 Genome::Genome(std::vector<std::shared_ptr<Gene> >&& genes)
-    : chromosomes_({ ChromosomePair(std::move(genes)), })
+    : geneMutationCount_(0)
+    , chromosomeMutationCount_(0)
+    , chromosomes_({ ChromosomePair(std::move(genes)), })
+
 {
 }
 
-Genome::Genome(std::vector<ChromosomePair>&& chromosomes)
-    : chromosomes_(std::move(chromosomes))
+Genome::Genome(std::vector<ChromosomePair>&& chromosomes, uint64_t geneMutationCount, uint64_t chromosomeMutationCount)
+    : geneMutationCount_(geneMutationCount)
+    , chromosomeMutationCount_(chromosomeMutationCount)
+    , chromosomes_(std::move(chromosomes))
 {
 }
 
-std::shared_ptr<Genome> Genome::CreateOffspring(const Genome& aGenome, const Genome& bGenome)
+std::shared_ptr<Genome> Genome::CreateOffspring(const Genome& aGenome, const Genome& bGenome, const UniverseParameters& universeParameters)
 {
     if (aGenome.chromosomes_.size() == bGenome.chromosomes_.size()) {
         std::vector<ChromosomePair> newChromosomes;
@@ -26,8 +31,8 @@ std::shared_ptr<Genome> Genome::CreateOffspring(const Genome& aGenome, const Gen
             }
             return {};
         }
-        auto offspring = std::make_shared<Genome>(std::move(newChromosomes));
-        offspring->Mutate();
+        auto offspring = std::make_shared<Genome>(std::move(newChromosomes), (aGenome.GetGeneMutationCount() + bGenome.GetGeneMutationCount()) / 2, (aGenome.GetChromosomeMutationCount() + bGenome.GetChromosomeMutationCount()) / 2);
+        offspring->Mutate(universeParameters);
         if (offspring->chromosomes_.size() > 0) {
             return offspring;
         }
@@ -54,33 +59,49 @@ void Genome::ForEach(const std::function<void (const Gene&)>& action) const {
     }
 }
 
-void Genome::Mutate()
+void Genome::Mutate(const UniverseParameters& universeParameters)
 {
-    // TODO allow the probabilities for various mutations to be controlled globally (perhaps allow genes that increase/reduce the rates of various mutations?)
-    if (chromosomes_.size() > 0){
-        // duplicate a chromosome
-        if (!chromosomes_.empty() && Random::Number(0.0, 1.0) < (1.0 / 1000.0)) {
-            size_t randomChromosome = Random::Number<size_t>(0, chromosomes_.size() - 1);
-            chromosomes_.push_back(chromosomes_.at(randomChromosome));
-        }
+    // Floor the count, rounding would bias values > 0
+    const unsigned geneMutations = std::max(0.0, Random::Gaussian(universeParameters.meanGeneMutationCount_, universeParameters.geneMutationCountStdDev_));
+    const unsigned structuralMutations = std::max(0.0, Random::Gaussian(universeParameters.meanStructuralMutationCount_, universeParameters.structuralMutationCountStdDev_));
 
-        // delete a chromosome
-        if (!chromosomes_.empty() && Random::Number(0.0, 1.0) < (1.0 / 1000.0)) {
-            int randomChromosome = Random::Number<int>(0, static_cast<int>(chromosomes_.size()) - 1);
-            chromosomes_.erase(chromosomes_.begin() + Random::Number<int>(0, randomChromosome));
-        }
+    geneMutationCount_ += geneMutations;
+    chromosomeMutationCount_ += structuralMutations;
 
-        // duplicate all chromosomes
-        if (Random::Number(0.0, 1.0) < (1.0 / 1000000.0)) {
+    for (unsigned i = 0; i < structuralMutations; ++i) {
+        switch (Random::WeightedIndex({ 0.9, 0.04, 0.04, 0.002 })) {
+        case 0:
+            if (!chromosomes_.empty()) {
+                Random::Item(chromosomes_).MutateStructure();
+            }
+            break;
+        case 1:
+            // duplicate a chromosome
+            if (!chromosomes_.empty()) {
+                size_t randomChromosome = Random::Number<size_t>(0, chromosomes_.size() - 1);
+                chromosomes_.push_back(chromosomes_.at(randomChromosome));
+            }
+            break;
+        case 2:
+            // delete a chromosome
+            if (!chromosomes_.empty()) {
+                int randomChromosome = Random::Number<int>(0, static_cast<int>(chromosomes_.size()) - 1);
+                chromosomes_.erase(chromosomes_.begin() + Random::Number<int>(0, randomChromosome));
+            }
+            break;
+        case 3:
+            // duplicate all chromosomes
             std::vector<ChromosomePair> copy = chromosomes_;
             std::move(std::begin(copy), std::end(copy), std::back_inserter(chromosomes_));
+            break;
+            // TODO case 4: chromosome fusing
+            // TODO case 5: chromosome fragmenting
         }
     }
 
-    // TODO chromosome fusing and fragmenting
-
-    for (auto& chromosome : chromosomes_) {
-        chromosome.Mutate();
+    if (!chromosomes_.empty()) {
+        for (unsigned i = 0; i < geneMutations; ++i) {
+            Random::Item(chromosomes_).MutateGene();
+        }
     }
-
 }

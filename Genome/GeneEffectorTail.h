@@ -8,7 +8,7 @@
 class GeneEffectorTail : public GeneEffectorBase {
 public:
     GeneEffectorTail(unsigned hiddenLayers, unsigned inputCount);
-    GeneEffectorTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance, double mutationProbability);
+    GeneEffectorTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance);
     virtual ~GeneEffectorTail() {}
 
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;

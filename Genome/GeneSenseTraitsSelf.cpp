@@ -9,8 +9,8 @@ GeneSenseTraitsSelf::GeneSenseTraitsSelf(std::vector<SenseTraitsBase::TraitNorma
     // No additional mutations
 }
 
-GeneSenseTraitsSelf::GeneSenseTraitsSelf(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, double dominance, double mutationProbability)
-    : GeneSenseTraitsBase(std::move(toDetect), network, outputConnections, {}, dominance, mutationProbability)
+GeneSenseTraitsSelf::GeneSenseTraitsSelf(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, double dominance)
+    : GeneSenseTraitsBase(std::move(toDetect), network, outputConnections, {}, dominance)
 {
     // No additional mutations
 }
@@ -23,5 +23,5 @@ void GeneSenseTraitsSelf::ExpressGene(Swimmer& owner, Phenotype& target) const
 
 std::shared_ptr<Gene> GeneSenseTraitsSelf::Copy() const
 {
-    return std::make_shared<GeneSenseTraitsSelf>(std::vector(toDetect_), GetNetwork(), GetOutputConnections(), GetDominance(), GetMutationProbability());
+    return std::make_shared<GeneSenseTraitsSelf>(std::vector(toDetect_), GetNetwork(), GetOutputConnections(), GetDominance());
 }

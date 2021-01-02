@@ -19,7 +19,7 @@ std::shared_ptr<Genome> GeneFactory::DefaultGenome()
     return std::make_shared<Genome>(std::vector<std::shared_ptr<Gene>>{
         std::make_shared<GenePigment>(),
         std::make_shared<GenePigment>(),
-        std::make_shared<GeneBrain>(3, NeuralNetwork::BRAIN_WIDTH, 0.5),
+        std::make_shared<GeneBrain>(3u, NeuralNetwork::BRAIN_WIDTH),
         std::make_shared<GeneSenseRandom>(1, NeuralNetwork::BRAIN_WIDTH),
         std::make_shared<GeneSenseTraitsInArea>(std::vector{
                                                     SenseTraitsBase::DefaultNormalisation(SenseTraitsBase::Trait::Distance),
@@ -64,7 +64,7 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
     },
     [=]()
     {
-        return std::make_shared<GeneBrain>(Random::Number(1, 5), brainWidth, Random::Number(0.0, 1.0));
+        return std::make_shared<GeneBrain>(Random::Number(1, 5), brainWidth);
     },
     [=]()
     {

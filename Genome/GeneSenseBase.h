@@ -11,7 +11,7 @@
 class GeneSenseBase : public Gene {
 public:
     GeneSenseBase(unsigned inputCount, unsigned hiddenLayers, unsigned outputCount);
-    GeneSenseBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, double dominance, double mutationProbability);
+    GeneSenseBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, double dominance);
     virtual ~GeneSenseBase() override {}
 
 protected:

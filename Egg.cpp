@@ -17,7 +17,7 @@ Egg::~Egg()
 {
 }
 
-void Egg::TickImpl(EntityContainerInterface& container, const UniverseParameters& /*universeParameters*/)
+void Egg::TickImpl(EntityContainerInterface& container, const UniverseParameters& universeParameters)
 {
     // TODO could delay depending on ammount of energy in the egg
     // could delay based on the number of genes / their complexity
@@ -30,7 +30,7 @@ void Egg::TickImpl(EntityContainerInterface& container, const UniverseParameters
         hatchingDelay_--;
     } else {
         // cross with self for now
-        std::shared_ptr<Genome> genome = Genome::CreateOffspring(*genomeOne_, *genomeTwo_);
+        std::shared_ptr<Genome> genome = Genome::CreateOffspring(*genomeOne_, *genomeTwo_, universeParameters);
         if (genome) {
             container.AddEntity(std::make_shared<Swimmer>(GetEnergy(), GetTransform(), genome, std::move(mother_)));
         }

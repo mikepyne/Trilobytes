@@ -31,6 +31,9 @@ public:
     unsigned GetLivingDescendantsCount(unsigned generation) const { return extantDescentantCounts_.count(generation) ? extantDescentantCounts_.at(generation) : 0; }
     unsigned GetTotalDescendantsCount() const;
     unsigned GetLivingDescendantsCount() const;
+    uint64_t GetGeneMutationCount() const { return genome_->GetGeneMutationCount(); }
+    uint64_t GetChromosomeMutationCount() const { return genome_->GetChromosomeMutationCount(); }
+
 
     void AdjustVelocity(double adjustment);
     void AdjustBearing(double adjustment);

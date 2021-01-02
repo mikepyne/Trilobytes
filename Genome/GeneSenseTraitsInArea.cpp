@@ -10,8 +10,8 @@ GeneSenseTraitsInArea::GeneSenseTraitsInArea(std::vector<SenseTraitsBase::TraitN
     AddMutations();
 }
 
-GeneSenseTraitsInArea::GeneSenseTraitsInArea(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Transform& transform, double radius, double dominance, double mutationProbability)
-    : GeneSenseTraitsBase(std::move(toDetect), network, outputConnections, transform, dominance, mutationProbability)
+GeneSenseTraitsInArea::GeneSenseTraitsInArea(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Transform& transform, double radius, double dominance)
+    : GeneSenseTraitsBase(std::move(toDetect), network, outputConnections, transform, dominance)
     , radius_(radius)
 {
     AddMutations();
@@ -25,7 +25,7 @@ void GeneSenseTraitsInArea::ExpressGene(Swimmer& owner, Phenotype& target) const
 
 std::shared_ptr<Gene> GeneSenseTraitsInArea::Copy() const
 {
-    return std::make_shared<GeneSenseTraitsInArea>(std::vector(toDetect_), GetNetwork(), GetOutputConnections(), transform_, radius_, GetDominance(), GetMutationProbability());
+    return std::make_shared<GeneSenseTraitsInArea>(std::vector(toDetect_), GetNetwork(), GetOutputConnections(), transform_, radius_, GetDominance());
 
 }
 

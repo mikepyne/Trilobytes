@@ -4,12 +4,12 @@
 #include "Sensors/SenseMagneticField.h"
 
 GeneSenseMagneticField::GeneSenseMagneticField(unsigned hiddenLayers, unsigned outputCount, const Point& point)
-    : GeneSenseMagneticField(std::make_shared<NeuralNetwork>(hiddenLayers, 3, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(3, outputCount), point, EoBE::RangeConverter({0, 1000}, {0, 0.3}), {-0.1, 0.1}, {-0.1, 0.1}, Random::Number(0.0, 100.0), Random::Number(0.0, 1.0))
+    : GeneSenseMagneticField(std::make_shared<NeuralNetwork>(hiddenLayers, 3, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(3, outputCount), point, EoBE::RangeConverter({0, 1000}, {0, 0.3}), {-0.1, 0.1}, {-0.1, 0.1}, Random::Number(0.0, 100.0))
 {
 }
 
-GeneSenseMagneticField::GeneSenseMagneticField(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Point& target, const EoBE::RangeConverter& distanceNormaliser, const EoBE::Range<double>& frontBackNormaliser, const EoBE::Range<double>& leftRightNormaliser, double dominance, double mutationProbability)
-    : GeneSenseBase(network, outputConnections, dominance, mutationProbability)
+GeneSenseMagneticField::GeneSenseMagneticField(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Point& target, const EoBE::RangeConverter& distanceNormaliser, const EoBE::Range<double>& frontBackNormaliser, const EoBE::Range<double>& leftRightNormaliser, double dominance)
+    : GeneSenseBase(network, outputConnections, dominance)
     , target_(target)
     , distanceNormaliser_(distanceNormaliser)
     , frontBackNormaliser_(frontBackNormaliser)
@@ -76,5 +76,5 @@ void GeneSenseMagneticField::ExpressGene(Swimmer& owner, Phenotype& target) cons
 
 std::shared_ptr<Gene> GeneSenseMagneticField::Copy() const
 {
-    return std::make_shared<GeneSenseMagneticField>(GetNetwork(), GetOutputConnections(), target_, distanceNormaliser_, frontBackNormaliser_, leftRightNormaliser_, GetDominance(), GetMutationProbability());
+    return std::make_shared<GeneSenseMagneticField>(GetNetwork(), GetOutputConnections(), target_, distanceNormaliser_, frontBackNormaliser_, leftRightNormaliser_, GetDominance());
 }

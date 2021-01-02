@@ -11,7 +11,7 @@ struct Phenotype;
 
 class Gene {
 public:
-    Gene(double dominance, double mutationProbability);
+    Gene(double dominance);
     Gene(const Gene& other) = delete;
     virtual ~Gene();
 
@@ -20,14 +20,13 @@ public:
     static std::shared_ptr<Gene>& GetRandom(std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene>>& alleles);
     static bool Empty(const std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene>>& alleles) { return !(alleles.first || alleles.second); };
 
-    std::shared_ptr<Gene> Copy(double mutationCount) const;
+    std::shared_ptr<Gene> Copy(unsigned mutationCount) const;
 
     // MAYBE ExpressCodominantGene(Swimmer& owner, Phenotype& target, Gene& other)
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const = 0;
 
     // MAYBE Splice (implement a function that will create a new Gene by splicing two parent genes together)
     double GetDominance() const { return dominance_; }
-    double GetMutationProbability() const { return mutationProbability_; }
 
     Gene& operator=(Gene&& other) = delete;
     Gene& operator=(const Gene& other) = delete;
@@ -42,7 +41,6 @@ protected:
 
 private:
     double dominance_;
-    double mutationProbability_;
     /*
      * Add mutations to this in child class constructors. A normal mutation
      * should be given a weight of BASE_WEIGHT

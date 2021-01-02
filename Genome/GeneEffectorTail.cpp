@@ -9,8 +9,8 @@ GeneEffectorTail::GeneEffectorTail(unsigned hiddenLayers, unsigned inputCount)
     // No additional mutations
 }
 
-GeneEffectorTail::GeneEffectorTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance, double mutationProbability)
-    : GeneEffectorBase(network, inputConnections, dominance, mutationProbability)
+GeneEffectorTail::GeneEffectorTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance)
+    : GeneEffectorBase(network, inputConnections, dominance)
 {
     // No additional mutations
 }
@@ -23,5 +23,5 @@ void GeneEffectorTail::ExpressGene(Swimmer& owner, Phenotype& target) const
 
 std::shared_ptr<Gene> GeneEffectorTail::Copy() const
 {
-    return std::make_shared<GeneEffectorTail>(GetNetwork(), GetInputConnections(), GetDominance(), GetMutationProbability());
+    return std::make_shared<GeneEffectorTail>(GetNetwork(), GetInputConnections(), GetDominance());
 }

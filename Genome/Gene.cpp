@@ -2,12 +2,9 @@
 
 #include "Random.h"
 
-Gene::Gene(double dominance, double mutationProbability)
+Gene::Gene(double dominance)
     : dominance_(dominance)
-    , mutationProbability_(mutationProbability)
 {
-    AddMutation(BASE_WEIGHT, [&]() { dominance_ += Random::Gaussian(0.0, 5.0); });
-    AddMutation(BASE_WEIGHT, [&]() { mutationProbability_ += Random::Gaussian(0.0, 0.05); });
 }
 
 Gene::~Gene()
@@ -41,10 +38,10 @@ std::shared_ptr<Gene>& Gene::GetRandom(std::pair<std::shared_ptr<Gene>, std::sha
     return Random::Boolean() ? alleles.first : alleles.second;
 }
 
-std::shared_ptr<Gene> Gene::Copy(double mutationCount) const
+std::shared_ptr<Gene> Gene::Copy(unsigned mutationCount) const
 {
     auto copy = Copy();
-    copy->Mutate(Random::Round(mutationCount));
+    copy->Mutate(mutationCount);
     return copy;
 }
 
@@ -53,6 +50,8 @@ void Gene::Mutate(unsigned mutationCount)
     for (unsigned i = 0; i < mutationCount; ++i) {
         // pick from weighted distribution
         mutations_.RandomItem()();
+        // Always mutate dominance when a mutation occurs
+        dominance_ += Random::Gaussian(0.0, 5.0);
     }
 }
 

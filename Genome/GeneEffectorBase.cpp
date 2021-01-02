@@ -1,12 +1,12 @@
 #include "GeneEffectorBase.h"
 
 GeneEffectorBase::GeneEffectorBase(unsigned hiddenLayers, unsigned inputCount, unsigned outputCount)
-    : GeneEffectorBase(std::make_shared<NeuralNetwork>(hiddenLayers, outputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(inputCount, outputCount), Random::Number(0.0, 100.0), Random::Number(0.0, 1.0))
+    : GeneEffectorBase(std::make_shared<NeuralNetwork>(hiddenLayers, outputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(inputCount, outputCount), Random::Number(0.0, 100.0))
 {
 }
 
-GeneEffectorBase::GeneEffectorBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance, double mutationProbability)
-    : Gene(dominance, mutationProbability)
+GeneEffectorBase::GeneEffectorBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance)
+    : Gene(dominance)
     , network_(network)
     , inputConnections_(inputConnections)
 {

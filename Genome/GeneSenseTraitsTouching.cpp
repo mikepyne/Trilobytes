@@ -9,8 +9,8 @@ GeneSenseTraitsTouching::GeneSenseTraitsTouching(std::vector<SenseTraitsBase::Tr
     AddMutations();
 }
 
-GeneSenseTraitsTouching::GeneSenseTraitsTouching(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Transform& transform, double dominance, double mutationProbability)
-    : GeneSenseTraitsBase(std::move(toDetect), network, outputConnections, transform, dominance, mutationProbability)
+GeneSenseTraitsTouching::GeneSenseTraitsTouching(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Transform& transform, double dominance)
+    : GeneSenseTraitsBase(std::move(toDetect), network, outputConnections, transform, dominance)
 {
     AddMutations();
 }
@@ -23,7 +23,7 @@ void GeneSenseTraitsTouching::ExpressGene(Swimmer& owner, Phenotype& target) con
 
 std::shared_ptr<Gene> GeneSenseTraitsTouching::Copy() const
 {
-    return std::make_shared<GeneSenseTraitsTouching>(std::vector(toDetect_), GetNetwork(), GetOutputConnections(), transform_, GetDominance(), GetMutationProbability());
+    return std::make_shared<GeneSenseTraitsTouching>(std::vector(toDetect_), GetNetwork(), GetOutputConnections(), transform_, GetDominance());
 }
 
 void GeneSenseTraitsTouching::AddMutations()
