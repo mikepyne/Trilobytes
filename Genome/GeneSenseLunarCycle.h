@@ -7,6 +7,7 @@ class GeneSenseLunarCycle : public GeneSenseBase {
 public:
     GeneSenseLunarCycle(unsigned hiddenLayers, unsigned outputCount);
     GeneSenseLunarCycle(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, double dominance);
+    virtual ~GeneSenseLunarCycle() override;
 
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 

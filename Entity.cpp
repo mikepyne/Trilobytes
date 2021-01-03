@@ -38,7 +38,7 @@ bool Entity::Tick(EntityContainerInterface& container, const UniverseParameters&
 {
     TickImpl(container, universeParameters);
     age_++;
-    return Move();
+    return Move(/* TODO user adjustable coefficient of friction */);
 }
 
 void Entity::Draw(QPainter& paint)

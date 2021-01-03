@@ -13,6 +13,10 @@ GeneSenseLunarCycle::GeneSenseLunarCycle(const std::shared_ptr<NeuralNetwork>& n
 {
 }
 
+GeneSenseLunarCycle::~GeneSenseLunarCycle()
+{
+}
+
 void GeneSenseLunarCycle::ExpressGene(Swimmer& owner, Phenotype& target) const
 {
     target.senses.push_back(std::make_shared<SenseLunarCycle>(GetNetwork(), GetOutputConnections(), owner));
