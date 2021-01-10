@@ -7,6 +7,7 @@
 #include "GeneSenseSine.h"
 #include "GeneEffectorTail.h"
 #include "GeneEffectorFilterMouth.h"
+#include "GeneEffectorSpike.h"
 #include "GeneSenseMagneticField.h"
 #include "GeneSenseLunarCycle.h"
 #include "GeneSenseTraitsInArea.h"
@@ -140,6 +141,12 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
     {
         unsigned hiddenLayers = Random::Number(0u, 1u);
         return std::make_shared<GeneEffectorFilterMouth>(hiddenLayers, NeuralNetwork::BRAIN_WIDTH);
+    },
+    [=]()
+    {
+        double bearing = Random::Bearing();
+        double length = Random::Number(3.5, 15.5);
+        return std::make_shared<GeneEffectorSpike>(NeuralNetwork::BRAIN_WIDTH, bearing, length);
     },
     };
     return Random::Item(genes)();

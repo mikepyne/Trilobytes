@@ -230,7 +230,28 @@ MainWindow::MainWindow(QWidget *parent)
             }
         }
     });
-
+    AddGraph("Swimmer Velocity", { { 0xDFDFDF, "Min" }, { 0x0000FF, "Mean)" }, { 0xDFDFDF, "Max)" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Velocity (pixels per tick)",
+    [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
+    {
+        if (tick % 100 == 0) {
+            EoBE::RollingStatistics stats;
+            universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
+            {
+                if (const Swimmer* swimmer = dynamic_cast<const Swimmer*>(e.get()); swimmer != nullptr) {
+                    stats.AddValue(std::abs(swimmer->GetVelocity()));
+                }
+            });
+            if (stats.Count() > 0) {
+                graph.AddPoint(0, tick, stats.Min());
+                graph.AddPoint(1, tick, stats.Mean());
+                graph.AddPoint(2, tick, stats.Max());
+                // Don't let our lower bound go below min
+                graph.AddPoint(3, tick, std::max(stats.Min(), stats.Mean() - stats.StandardDeviation()));
+                // Don't let our upper bound go above max
+                graph.AddPoint(4, tick, std::min(stats.Max(), stats.Mean() + stats.StandardDeviation()));
+            }
+        }
+    });
     AddGraph("Performance", { { 0xFC02DF, "Ticks per Second (Mean)" } }, "Time (tick)", "TPS", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         // TODO check every tick and examine interesting periodic perofrmance behaviour

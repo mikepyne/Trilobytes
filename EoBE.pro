@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     Effectors/Effector.cpp \
     Effectors/EffectorFilterMouth.cpp \
+    Effectors/EffectorSpike.cpp \
     Effectors/EffectorTail.cpp \
     Egg.cpp \
     Entity.cpp \
@@ -26,6 +27,7 @@ SOURCES += \
     Genome/GeneBrain.cpp \
     Genome/GeneEffectorBase.cpp \
     Genome/GeneEffectorFilterMouth.cpp \
+    Genome/GeneEffectorSpike.cpp \
     Genome/GeneEffectorTail.cpp \
     Genome/GeneFactory.cpp \
     Genome/GenePigment.cpp \
@@ -69,6 +71,7 @@ SOURCES += \
 HEADERS += \
     Effectors/Effector.h \
     Effectors/EffectorFilterMouth.h \
+    Effectors/EffectorSpike.h \
     Effectors/EffectorTail.h \
     Egg.h \
     Energy.h \
@@ -81,6 +84,7 @@ HEADERS += \
     Genome/GeneBrain.h \
     Genome/GeneEffectorBase.h \
     Genome/GeneEffectorFilterMouth.h \
+    Genome/GeneEffectorSpike.h \
     Genome/GeneEffectorTail.h \
     Genome/GeneFactory.h \
     Genome/GenePigment.h \
