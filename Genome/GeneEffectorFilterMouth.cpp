@@ -4,8 +4,9 @@
 #include "Phenotype.h"
 #include "Effectors/EffectorFilterMouth.h"
 
-GeneEffectorFilterMouth::GeneEffectorFilterMouth(unsigned hiddenLayers, unsigned inputCount)
-    : GeneEffectorBase(hiddenLayers, inputCount, 1)
+GeneEffectorFilterMouth::GeneEffectorFilterMouth(unsigned /*hiddenLayers*/, unsigned inputCount)
+    : GeneEffectorBase(0, inputCount, 0)
+    // : GeneEffectorBase(hiddenLayers, inputCount, 1)
 {
 }
 

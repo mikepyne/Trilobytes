@@ -14,15 +14,16 @@ EffectorFilterMouth::~EffectorFilterMouth()
 {
 }
 
-Energy EffectorFilterMouth::PerformActions(const std::vector<double>& actionValues, const EntityContainerInterface& entities, const UniverseParameters& /*universeParameters*/)
+Energy EffectorFilterMouth::PerformActions(const std::vector<double>& /*actionValues*/, const EntityContainerInterface& entities, const UniverseParameters& /*universeParameters*/)
 {
-    static EoBE::RangeConverter inputToMouthOpen{ { -1.0, 1.0 }, { 0.0, 1.0 } };
+    // This is stupid, no point in having mouth closed ever for any reason
+    //static EoBE::RangeConverter inputToMouthOpen{ { -1.0, 1.0 }, { 0.0, 1.0 } };
 
-    const double mouthOpenProportion = inputToMouthOpen.ConvertAndClamp(actionValues.at(0));
+    //const double mouthOpenProportion = inputToMouthOpen.ConvertAndClamp(actionValues.at(0));
     Energy foodEaten = 0_j;
     entities.ForEachCollidingWith(Circle{ owner_.GetTransform().x, owner_.GetTransform().y, owner_.GetRadius() }, [&](const std::shared_ptr<Entity>& entity)
     {
-        if (entity->GetRadius() <= FOOD_RADIUS_THRESHOLD && Random::PercentChance(mouthOpenProportion * 100.0)) {
+        if (entity->GetRadius() <= FOOD_RADIUS_THRESHOLD /*&& Random::PercentChance(mouthOpenProportion * 100.0)*/) {
             foodEaten += entity->GetEnergy();
             owner_.FeedOn(*entity, entity->GetEnergy());
         }
