@@ -15,7 +15,7 @@ protected:
     virtual void DrawImpl(QPainter& paint) override final;
 
 private:
-    static double GetRadius(const Energy& energy);
+    static double GetMeatChunkRadius(const Energy& energy);
 };
 
 #endif // MEATCHUNK_H

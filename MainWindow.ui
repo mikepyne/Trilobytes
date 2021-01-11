@@ -81,7 +81,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>235</width>
+                 <width>292</width>
                  <height>663</height>
                 </rect>
                </property>
@@ -131,13 +131,13 @@
                       <string>Gene Mutation StdDev: </string>
                      </property>
                      <property name="maximum">
-                      <double>5.000000000000000</double>
+                      <double>100.000000000000000</double>
                      </property>
                      <property name="singleStep">
                       <double>0.100000000000000</double>
                      </property>
                      <property name="value">
-                      <double>0.500000000000000</double>
+                      <double>5.000000000000000</double>
                      </property>
                     </widget>
                    </item>

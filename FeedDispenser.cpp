@@ -1,7 +1,6 @@
 #include "FeedDispenser.h"
 
 #include "Random.h"
-#include "Energy.h"
 #include "FoodPellet.h"
 #include "QuadTree.h"
 
@@ -56,7 +55,7 @@ void FeedDispenser::SpawnPellet()
     double foodX = x_ + distance * std::cos(rotation);
     double foodY = y_ + distance * std::sin(rotation);
     if (entityContainer_.CountEntities(Point{ foodX, foodY }) == 0) {
-        entityContainer_.AddEntity(std::make_shared<FoodPellet>(shared_from_this(), 25_mj, Transform{ foodX, foodY, 0 }));
+        entityContainer_.AddEntity(std::make_shared<FoodPellet>(shared_from_this(), pelletEnergyContent_, Transform{ foodX, foodY, 0 }));
         ++currentPelletCount_;
         auto proportion = double(currentPelletCount_) / double(maxPellets_);
         ticksTillNext_ += 10.0 * ((-0.8 * (std::pow(proportion, 2.0) * -std::pow(proportion - 2, 2.0))) + 0.1);

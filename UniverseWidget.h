@@ -43,8 +43,8 @@ private:
 
     std::shared_ptr<Universe> universe_;
 
-    Point TransformLocalToSimCoords(const Point& local);
-    Point TransformSimToLocalCoords(const Point& sim);
+    Point TransformLocalToSimCoords(const Point& local) const;
+    Point TransformSimToLocalCoords(const Point& sim) const;
 };
 
 #endif // UNIVERSEWIDGET_H

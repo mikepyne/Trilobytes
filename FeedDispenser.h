@@ -1,10 +1,12 @@
 #ifndef FEEDDISPENSER_H
 #define FEEDDISPENSER_H
 
-class QuadTree;
-class QPainter;
+#include "Energy.h"
 
 #include <memory>
+
+class QuadTree;
+class QPainter;
 
 class FeedDispenser : public std::enable_shared_from_this<FeedDispenser> {
 public:
@@ -21,6 +23,8 @@ public:
     unsigned GetMaxPellets() const { return maxPellets_; }
 
 private:
+    constexpr static Energy pelletEnergyContent_ = 30_mj;
+
     QuadTree& entityContainer_;
 
     double x_;

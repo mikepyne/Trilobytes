@@ -19,6 +19,8 @@ private:
 
     virtual void TickImpl(EntityContainerInterface& /*container*/, const UniverseParameters& /*universeParameters*/) override final {}
     virtual void DrawImpl(QPainter& paint) override final;
+
+    static double GetPelletRadius(const Energy& energy);
 };
 
 #endif // FOODPELLET_H

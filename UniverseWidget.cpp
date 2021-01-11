@@ -117,7 +117,7 @@ void UniverseWidget::paintEvent(QPaintEvent* event)
     }
 }
 
-Point UniverseWidget::TransformLocalToSimCoords(const Point& local)
+Point UniverseWidget::TransformLocalToSimCoords(const Point& local) const
 {
     double x = local.x;
     double y = local.y;
@@ -133,7 +133,7 @@ Point UniverseWidget::TransformLocalToSimCoords(const Point& local)
     return { x, y };
 }
 
-Point UniverseWidget::TransformSimToLocalCoords(const Point& sim)
+Point UniverseWidget::TransformSimToLocalCoords(const Point& sim) const
 {
     double x = sim.x;
     double y = sim.y;

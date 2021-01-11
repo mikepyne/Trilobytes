@@ -22,7 +22,7 @@ public:
     /// The parameters are used to create a gaussian curve, from which the real
     /// count is taken from.
     double meanGeneMutationCount_ = 1.0;
-    double geneMutationCountStdDev_ = 0.5;
+    double geneMutationCountStdDev_ = 5.0;
     /// These mutations are to the chromososmes that comprise the genome and
     /// will rarely confer changes in ability, but will affect breeding
     /// compatibility
