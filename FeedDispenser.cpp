@@ -54,7 +54,7 @@ void FeedDispenser::SpawnPellet()
     double distance = std::sqrt(Random::Number(0.0, 1.0)) * radius_;
     double foodX = x_ + distance * std::cos(rotation);
     double foodY = y_ + distance * std::sin(rotation);
-    if (entityContainer_.CountEntities(Point{ foodX, foodY }) == 0) {
+    if (entityContainer_.CountEntities(Circle{ foodX, foodY, FoodPellet::GetPelletRadius(pelletEnergyContent_) }) == 0) {
         entityContainer_.AddEntity(std::make_shared<FoodPellet>(shared_from_this(), pelletEnergyContent_, Transform{ foodX, foodY, 0 }));
         ++currentPelletCount_;
         auto proportion = double(currentPelletCount_) / double(maxPellets_);

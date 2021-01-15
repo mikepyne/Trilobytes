@@ -4,6 +4,12 @@
 
 #include <QPainter>
 
+double FoodPellet::GetPelletRadius(const Energy& energy)
+{
+    static EoBE::RangeConverter energyToSize({ 1_mj, 30_mj }, { 0.5, 2.5 });
+    return energyToSize.Convert(energy);
+}
+
 FoodPellet::FoodPellet(const std::shared_ptr<FeedDispenser>& spawner, Energy energy, const Transform& transform)
     : Entity(energy, transform, GetPelletRadius(energy), QColor::fromRgb(15, 235, 15))
     , spawner_(spawner)
@@ -18,10 +24,4 @@ FoodPellet::~FoodPellet()
 void FoodPellet::DrawImpl(QPainter& paint)
 {
     paint.drawEllipse(QPointF{ GetTransform().x, GetTransform().y }, GetRadius(), GetRadius());
-}
-
-double FoodPellet::GetPelletRadius(const Energy& energy)
-{
-    static EoBE::RangeConverter energyToSize({ 1_mj, 30_mj }, { 0.5, 2.5 });
-    return energyToSize.Convert(energy);
 }

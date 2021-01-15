@@ -9,6 +9,8 @@ class QPainter;
 
 class FoodPellet : public Entity {
 public:
+    static double GetPelletRadius(const Energy& energy);
+
     FoodPellet(const std::shared_ptr<FeedDispenser>& spawner, Energy energy, const Transform& transform);
     ~FoodPellet() override;
 
@@ -19,8 +21,6 @@ private:
 
     virtual void TickImpl(EntityContainerInterface& /*container*/, const UniverseParameters& /*universeParameters*/) override final {}
     virtual void DrawImpl(QPainter& paint) override final;
-
-    static double GetPelletRadius(const Energy& energy);
 };
 
 #endif // FOODPELLET_H
