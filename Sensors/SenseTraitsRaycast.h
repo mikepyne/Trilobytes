@@ -9,6 +9,8 @@ public:
     virtual ~SenseTraitsRaycast() override {}
 
     virtual std::string_view GetName() const override { return "TraitsRaycast"; }
+    virtual std::string GetDescription() const override;
+
     virtual void Draw(QPainter& paint) const override;
 
 private:
@@ -16,7 +18,7 @@ private:
     double rayCastAngle_;
     Line GetLine() const;
 
-    virtual void FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity&, const double&)>& forEachEntity) const override;
+    virtual void FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity&)>& forEachEntity) const override;
 };
 
 #endif // SENSEENTITYRAYCAST_H

@@ -10,13 +10,15 @@ public:
     virtual ~SenseTraitsInArea() override {}
 
     virtual std::string_view GetName() const override { return "TraitsInArea"; }
+    virtual std::string GetDescription() const override;
+
     virtual void Draw(QPainter& paint) const override;
 
 private:
     double senseRadius_;
     Circle GetArea() const;
 
-    virtual void FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity&, const double&)>& forEachEntity) const override;
+    virtual void FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity&)>& forEachEntity) const override;
 };
 
 #endif // SENSEENTITIESINAREA_H

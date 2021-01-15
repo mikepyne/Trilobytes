@@ -15,6 +15,8 @@ public:
     virtual ~EffectorFilterMouth() override;
 
     virtual std::string_view GetName() const override { return "FilterMouth"; }
+    virtual std::string GetDescription() const override;
+
     virtual void Draw(QPainter& /*paint*/) const override { /* TODO once the mouth actually has a position/shape */ }
 
 private:

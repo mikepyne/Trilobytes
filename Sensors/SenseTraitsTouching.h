@@ -12,12 +12,14 @@ public:
     virtual ~SenseTraitsTouching() override {}
 
     virtual std::string_view GetName() const override { return "TraitsTouching"; }
+    virtual std::string GetDescription() const override;
+
     virtual void Draw(QPainter& paint) const override;
 
 private:
     Point GetPoint() const;
 
-    virtual void FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity&, const double&)>& forEachEntity) const override;
+    virtual void FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity&)>& forEachEntity) const override;
 };
 
 #endif // SENSEENTITIESTOUCHING_H

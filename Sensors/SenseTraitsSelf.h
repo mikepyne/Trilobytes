@@ -9,9 +9,10 @@ public:
     virtual ~SenseTraitsSelf() override;
 
     virtual std::string_view GetName() const override { return "TraitsSelf"; }
+    virtual std::string GetDescription() const override;
 
 private:
-    virtual void FilterEntities(const EntityContainerInterface& /*entities*/, const std::function<void (const Entity&, const double&)>& forEachEntity) const override;
+    virtual void FilterEntities(const EntityContainerInterface& /*entities*/, const std::function<void (const Entity&)>& forEachEntity) const override;
 };
 
 #endif // SENSETRAITSSELF_H

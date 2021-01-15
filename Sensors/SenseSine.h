@@ -14,6 +14,8 @@ public:
     SenseSine(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, std::vector<SineWave>&& sineWaves);
 
     virtual std::string_view GetName() const override { return "SineWaves"; }
+    virtual std::string GetDescription() const override;
+
     virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseParameters& universeParameters) const override;
 
 private:

@@ -14,6 +14,12 @@ EffectorFilterMouth::~EffectorFilterMouth()
 {
 }
 
+std::string EffectorFilterMouth::GetDescription() const
+{
+    return "<p>The filter mouth consumes any entity on contact, so long as it "
+    "is small enough. It consumes food with a 75% energy efficiency.</p>";
+}
+
 Energy EffectorFilterMouth::PerformActions(const std::vector<double>& /*actionValues*/, const EntityContainerInterface& entities, const UniverseParameters& /*universeParameters*/)
 {
     // This is stupid, no point in having mouth closed ever for any reason

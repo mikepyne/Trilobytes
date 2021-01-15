@@ -23,14 +23,26 @@ GeneSenseTraitsBase::GeneSenseTraitsBase(std::vector<SenseTraitsBase::TraitNorma
         };
     });
 
-    // Adjust trait strength
+    // Adjust trait detection range
     AddMutation(BASE_WEIGHT, [&]()
     {
         if (!toDetect_.empty()) {
             auto& item = Random::Item(toDetect_);
-            double newMin = Random::GaussianAdjustment<double>(item.range.Min(), 0.1);
-            double newMax = Random::GaussianAdjustment<double>(item.range.Max(), 0.1);
-            item.range = { newMin, newMax };
+            double newMin = Random::GaussianAdjustment<double>(item.range.GetFrom().Min(), 0.1);
+            double newMax = Random::GaussianAdjustment<double>(item.range.GetFrom().Max(), 0.1);
+            item.range = { EoBE::Range(newMin, newMax), item.range.GetTo() };
+        }
+    });
+
+    // Randomise trait normalised range
+    AddMutation(0.1 * BASE_WEIGHT, [&]()
+    {
+        if (!toDetect_.empty()) {
+            auto& item = Random::Item(toDetect_);
+            bool changeMin = Random::Boolean();
+            double newMin = changeMin ? Random::Number(-1.0, 1.0) : item.range.GetTo().Min();
+            double newMax = changeMin ? item.range.GetTo().Max() : Random::Number(-1.0, 1.0);
+            item.range = { item.range.GetFrom(), EoBE::Range(newMin, newMax) };
         }
     });
 

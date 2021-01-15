@@ -5,11 +5,33 @@
 
 #include <QPainter>
 
+#include <iomanip>
+
 SenseTraitsRaycast::SenseTraitsRaycast(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, std::vector<TraitNormaliser>&& toDetect, const Transform& transform, double maxDistance, double angle)
     : SenseTraitsBase(network, outputConnections, owner, transform, std::move(toDetect))
     , rayCastDistance_(maxDistance)
     , rayCastAngle_(angle)
 {
+}
+
+std::string SenseTraitsRaycast::GetDescription() const
+{
+    std::stringstream desc;
+    desc << std::fixed << std::setprecision(2);
+
+    desc << "<p>This sense detects the nearest entity it collides with, within "
+            "its range of " << rayCastDistance_ << " pixels.</p>";
+
+    desc << "<p>Inputs:<ol>";
+    for (const TraitNormaliser& trait : GetDetectableTraits()) {
+        desc << "<li>" << ToString(trait.trait) << ", "
+             << "Detection range[" << trait.range.GetFrom().First() << "->" << trait.range.GetFrom().Last() << "]"
+             << "Normalised range[" << trait.range.GetTo().First() << "->" << trait.range.GetTo().Last() << "]"
+             << "</li>";
+    }
+    desc << "</ol></p>";
+
+    return desc.str();
 }
 
 void SenseTraitsRaycast::Draw(QPainter& paint) const
@@ -27,7 +49,7 @@ Line SenseTraitsRaycast::GetLine() const
     return { begin, end };
 }
 
-void SenseTraitsRaycast::FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity& e, const double& scale)>& forEachEntity) const
+void SenseTraitsRaycast::FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity& e)>& forEachEntity) const
 {
     Line rayCastLine = GetLine();
     std::shared_ptr<Entity> nearestEntity;
@@ -46,7 +68,7 @@ void SenseTraitsRaycast::FilterEntities(const EntityContainerInterface& entities
     });
 
     if (nearestEntity != nullptr) {
-        // Only nearest entity detected, scaled by distance from detector
-        forEachEntity(*nearestEntity, ( 1.0 - (std::sqrt(distanceToNearestSquared) / rayCastDistance_)));
+        // Only nearest entity detected
+        forEachEntity(*nearestEntity);
     }
 }

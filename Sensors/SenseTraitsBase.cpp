@@ -2,6 +2,22 @@
 
 #include "Swimmer.h"
 
+std::string SenseTraitsBase::ToString(SenseTraitsBase::Trait trait)
+{
+    switch (trait) {
+    case Trait::Red : return "Red";
+    case Trait::Green : return "Green";
+    case Trait::Blue : return "Blue";
+    case Trait::Energy : return "Energy";
+    case Trait::Age : return "Age";
+    case Trait::Size : return "Size";
+    case Trait::Distance : return "Distance";
+    case Trait::Health : return "Health";
+    }
+    assert(false && "SenseTraitsBase::ToString(Trait), invalid trait.");
+    return "";
+}
+
 SenseTraitsBase::SenseTraitsBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, const Transform& transform, std::vector<TraitNormaliser>&& toDetect)
     : Sense(network, outputConnections, owner)
     , transform_(transform)
@@ -12,28 +28,17 @@ SenseTraitsBase::SenseTraitsBase(const std::shared_ptr<NeuralNetwork>& network, 
 void SenseTraitsBase::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseParameters& /*universeParameters*/) const
 {
     // First adjust inputs for each entity detected
-    FilterEntities(entities, [&](const Entity& entity, const double& scale)
+    FilterEntities(entities, [&](const Entity& entity)
     {
         EoBE::IterateBoth<TraitNormaliser, double>(toDetect_, inputs, [&](const TraitNormaliser& norm, double& input)
         {
-            /*
-             * FIXME Scale is usually based on distance, so when detecting
-             * Distance, the distance gets squared, which gives undesired values
-             * so the value needs to be adjusted to fall between the
-             * normalisation range...
-             */
-            if (norm.trait == Trait::Distance) {
-                input += scale * (norm.range.ValueRange() - GetTraitFrom(entity, norm.trait));
-            } else {
-                input += scale * GetTraitFrom(entity, norm.trait);
-            }
+            input += GetTraitFrom(entity, norm.trait);
         });
     });
     // Then normalise each input to a 0.0 -> 1.0 range
     EoBE::IterateBoth<TraitNormaliser, double>(toDetect_, inputs, [&](const TraitNormaliser& norm, double& input)
     {
-        double value = std::clamp(input, norm.range.Min(), norm.range.Max());
-        input = (value - norm.range.Min()) / norm.range.ValueRange();
+        input = norm.range.ConvertAndClamp(input);
     });
 }
 

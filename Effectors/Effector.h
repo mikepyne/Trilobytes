@@ -19,6 +19,7 @@ public:
     virtual ~Effector();
 
     virtual std::string_view GetName() const = 0;
+    virtual std::string GetDescription() const = 0;
 
     virtual void Draw(QPainter& paint) const = 0;
     virtual Energy Tick(const std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseParameters& universeParameters) final;

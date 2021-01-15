@@ -17,6 +17,16 @@ EffectorSpike::~EffectorSpike()
 {
 }
 
+std::string EffectorSpike::GetDescription() const
+{
+    return "<p>The spike applies damage to swimmers that are colliding with the"
+    " point. The quantity of damage is both speed and angle dependant, glancing"
+    " or low speed collisions will not cause much damage, movements away from "
+    "the point will cause no damage. Therefore it is safe to swim through a "
+    "spike from base to tip, but dangerous to swim through a spike from tip to"
+    "base.</p>";
+}
+
 void EffectorSpike::Draw(QPainter& paint) const
 {
     Point tip = GetTipOfSpike();

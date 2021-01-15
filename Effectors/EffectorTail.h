@@ -6,9 +6,11 @@
 class EffectorTail : public Effector {
 public:
     EffectorTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, Swimmer& owner);
-    virtual ~EffectorTail() override final;
+    virtual ~EffectorTail() override;
 
     virtual std::string_view GetName() const override { return "Tail"; }
+    virtual std::string GetDescription() const override;
+
     virtual void Draw(QPainter& paint) const override;
 
 private:

@@ -22,6 +22,8 @@ public:
     virtual ~Sense();
 
     virtual std::string_view GetName() const = 0;
+    virtual std::string GetDescription() const = 0;
+
     virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseParameters& universeParameters) const = 0;
 
     virtual void Draw(QPainter& paint) const;

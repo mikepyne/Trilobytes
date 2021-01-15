@@ -6,6 +6,8 @@
 
 #include <QPainter>
 
+#include <iomanip>
+
 SenseMagneticField::SenseMagneticField(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, const Point& target, const EoBE::RangeConverter& distanceNormaliser, const EoBE::Range<double>& frontBackNormaliser, const EoBE::Range<double>& leftRightNormaliser)
     : Sense(network, outputConnections, owner)
     , target_(target)
@@ -13,6 +15,27 @@ SenseMagneticField::SenseMagneticField(const std::shared_ptr<NeuralNetwork>& net
     , frontBackNormaliser_({0, EoBE::Pi}, frontBackNormaliser)
     , leftRightNormaliser_({0, EoBE::Pi}, leftRightNormaliser)
 {
+}
+
+std::string SenseMagneticField::GetDescription() const
+{
+    std::stringstream desc;
+    desc << std::fixed << std::setprecision(2);
+
+    desc << "<p>This sense allows the owner to track itself relative to the "
+            "fixed point {" << target_.x << ", " << target_.y << "}. The three "
+            "inputs correspont to:</p>"
+            "<p><ol>"
+              "<li>Distance to the point, Detected range [" << distanceNormaliser_.GetFrom().First() << "->" << distanceNormaliser_.GetFrom().Last() << "],"
+                                        " Normalised range [" << distanceNormaliser_.GetTo().First() << "->" << distanceNormaliser_.GetTo().Last() << "]</li>"
+              "<li>Orientation, Detected range [front->back],"
+                              " Normalised range [" << frontBackNormaliser_.GetTo().First() << "->" << frontBackNormaliser_.GetTo().Last() << "]</li>"
+              "<li>Orientation, Detected range [left->right],"
+                              " Normalised range [" << frontBackNormaliser_.GetTo().First() << "->" << frontBackNormaliser_.GetTo().Last() << "]</li>"
+            "</ol></p>"
+            "<p>Orientation is implemented as two inputs as it allows for more "
+            "intuitive input values.</p>";
+    return desc.str();
 }
 
 void SenseMagneticField::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface&, const UniverseParameters& /*universeParameters*/) const

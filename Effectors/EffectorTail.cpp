@@ -13,6 +13,18 @@ EffectorTail::~EffectorTail()
 {
 }
 
+std::string EffectorTail::GetDescription() const
+{
+    // TODO prevent backwards swimming with tail, or at least make it slower for more energy
+    return "<p>The tail allows a swimmer to accelerate either forwards or "
+           "backwards, and turn either left or right.</p>"
+           "<p>Outputs:<ol>"
+             "<li>Forward(+ve)/Backward(-ve) acceleration.</li>"
+             "<li>Clockwise(+ve)/Anti-clockwise(-ve) turn.</li>"
+             "<li>Anti-clockwise(+ve)/Clockwise(-ve) turn.</li>"
+           "</ol></p>";
+}
+
 void EffectorTail::Draw(QPainter& /*paint*/) const
 {
     // TODO
@@ -20,6 +32,7 @@ void EffectorTail::Draw(QPainter& /*paint*/) const
 
 Energy EffectorTail::PerformActions(const std::vector<double>& actionValues, const EntityContainerInterface& /*entities*/, const UniverseParameters& /*universeParameters*/)
 {
+    // TODO allow evolvable range conversions for each of these
     const double& acceleration = actionValues.at(0);
     const double& clockwiseTorque = actionValues.at(1);
     const double& antiClockwiseTorque = actionValues.at(2);

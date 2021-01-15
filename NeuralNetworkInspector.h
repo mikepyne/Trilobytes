@@ -53,6 +53,8 @@ private:
         std::map<std::pair<unsigned, unsigned>, Node> nodes;
         unsigned horizontalNodes;
         unsigned verticalNodes;
+        bool selected;
+        QString description;
     };
 
     const qreal nodeHeight_ = 15.0;
@@ -77,7 +79,12 @@ private:
     std::shared_ptr<Swimmer> inspectedSwimmer_;
     bool liveUpdate_ = false;
 
-    Group CreateGroup(const NeuralNetwork& network, const std::string& name);
+    QPointF TransformLocalToSimCoords(const QPointF& local) const;
+    QPointF TransformSimToLocalCoords(const QPointF& sim) const;
+
+    std::string GetBrainDescription() const;
+
+    Group CreateGroup(const NeuralNetwork& network, const std::string& name, const std::string& description);
 
     void LayoutGroupsInView();
     void LayoutNodesInGroup(GroupType type, Group& group);

@@ -10,6 +10,8 @@ public:
     ~EffectorSpike() override;
 
     virtual std::string_view GetName() const override { return "Spike"; }
+    virtual std::string GetDescription() const override;
+
     virtual void Draw(QPainter& paint) const override;
 
 private:

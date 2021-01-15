@@ -6,10 +6,12 @@
 
 #include <QMouseEvent>
 #include <QPainter>
+#include <QToolTip>
 
 NeuralNetworkInspector::NeuralNetworkInspector(QWidget* parent)
     : QWidget(parent)
 {
+    setMouseTracking(true);
 }
 
 void NeuralNetworkInspector::SetSwimmer(std::shared_ptr<Swimmer> toInspect)
@@ -22,11 +24,11 @@ void NeuralNetworkInspector::SetSwimmer(std::shared_ptr<Swimmer> toInspect)
 
         if (inspectedSwimmer_ != nullptr) {
             if (inspectedSwimmer_->InspectBrain()) {
-                brainGroup_ = CreateGroup(*inspectedSwimmer_->InspectBrain(), "Brain");
+                brainGroup_ = CreateGroup(*inspectedSwimmer_->InspectBrain(), "Brain", GetBrainDescription());
             }
 
             for (auto& sense : inspectedSwimmer_->InspectSenses()) {
-                sensorGroups_.push_back(CreateGroup(sense->Inspect(), std::string(sense->GetName())));
+                sensorGroups_.push_back(CreateGroup(sense->Inspect(), std::string(sense->GetName()), sense->GetDescription()));
                 Group& senseGroup = sensorGroups_.back();
 
                 unsigned neuronIndex = 0;
@@ -54,7 +56,7 @@ void NeuralNetworkInspector::SetSwimmer(std::shared_ptr<Swimmer> toInspect)
             }
 
             for (auto& effector : inspectedSwimmer_->InspectEffectors()) {
-                effectorGroups_.push_back(CreateGroup(effector->Inspect(), std::string(effector->GetName())));
+                effectorGroups_.push_back(CreateGroup(effector->Inspect(), std::string(effector->GetName()), std::string(effector->GetDescription())));
                 Group& effectorGroup = effectorGroups_.back();
 
                 unsigned neuronIndex = 0;
@@ -182,6 +184,18 @@ void NeuralNetworkInspector::mouseMoveEvent(QMouseEvent* event)
         // QT paint call
         update();
     }
+
+    ForEachGroup([&](GroupType /*type*/, Group& group)
+    {
+        bool selected = group.area.contains(TransformLocalToSimCoords(event->pos()));
+        if (selected != group.selected) {
+            group.selected = selected;
+            if (group.selected) {
+                QToolTip::showText(TransformSimToLocalCoords(group.area.bottomLeft()).toPoint() + mapToGlobal(QPoint(0, 0)), group.description, this);
+            }
+            update();
+        }
+    });
 }
 
 void NeuralNetworkInspector::paintEvent(QPaintEvent* event)
@@ -227,7 +241,7 @@ void NeuralNetworkInspector::paintEvent(QPaintEvent* event)
 
         // Draw last so can be seen over over stimulated neurons
         p.setPen(Qt::black);
-        p.setBrush(Qt::NoBrush);
+        p.setBrush(group.selected ? QBrush(QColor::fromRgb(90, 25, 110, 45)): QBrush(Qt::NoBrush));
         p.drawRect(group.area);
         p.setCompositionMode(QPainter::CompositionMode_Exclusion);
         p.setPen(Qt::white);
@@ -242,9 +256,73 @@ void NeuralNetworkInspector::paintEvent(QPaintEvent* event)
     });
 }
 
-NeuralNetworkInspector::Group NeuralNetworkInspector::CreateGroup(const NeuralNetwork& network, const std::string& name)
+QPointF NeuralNetworkInspector::TransformLocalToSimCoords(const QPointF& local) const
 {
-    Group group = { name, rect(), {}, 0, 0};
+    double x = local.x();
+    double y = local.y();
+    // Sim is centred on screen
+    x -= (width() / 2);
+    y -= (height() / 2);
+    // Sim is scaled
+    x /= transformScale_;
+    y /= transformScale_;
+    // Sim is transformed
+    x -= transformX_;
+    y -= transformY_;
+    return QPointF(x, y);
+}
+
+QPointF NeuralNetworkInspector::TransformSimToLocalCoords(const QPointF& sim) const
+{
+    double x = sim.x();
+    double y = sim.y();
+    // Sim is transformed
+    x += transformX_;
+    y += transformY_;
+    // Sim is scaled
+    x *= transformScale_;
+    y *= transformScale_;
+    // Sim is centred on screen
+    x += (width() / 2);
+    y += (height() / 2);
+    return QPointF(x, y);
+}
+
+std::string NeuralNetworkInspector::GetBrainDescription() const
+{
+    return "<p>Each of the senses at the top, effectors at the bottom and the "
+    "brain here in the middle are neural networks. The values are propogated "
+    "from the top to the bottom.</p>"
+
+    "<p>Each simulation tick, the sense's input nodes (the top most row) are "
+    "set, and then all of the sense's neural networks are propogated in "
+    "parallel, they each output the same number of values, which are summed and"
+    " passed to the brain's input layer. The brain's network is then "
+    "propogated, and the output values are then copied to each of the "
+    "effector's networks, which are in turn propogated. The end result is that "
+    "each of the effectors has a series of values which it translates into "
+    "actions. Mouse over each sense for details about how the input values are "
+    "calculated, and each effector to see how the output values are translated "
+    "into actions.</p>"
+
+    "<p>When viewing the live values, blue nodes contain a positive value, red "
+    "nodes contain a negative value and transparency denotes the magnitude, "
+    "where opaque represents -1 or 1, depending on the colour, and transparent "
+    "represents 0. The connections are also colour coded, black for positive, "
+    "and red for negative, but their values are not constrained between -1 and "
+    "1, the width of the connection denotes the strength of the connection and "
+    "the transparency shows how active the connected input node is blue "
+    "denoting it contains a positive value, red denoting a negative value.</p>"
+
+    "<p>Sometimes an input node will contain a value greater than 1 and will be"
+    " drawn larger than normal, this occurs because input values are not "
+    "constrained, however when they are passed forward, part of the process "
+    "normalises the values to between -1 and 1.</p>";
+}
+
+NeuralNetworkInspector::Group NeuralNetworkInspector::CreateGroup(const NeuralNetwork& network, const std::string& name, const std::string& description)
+{
+    Group group = { name, rect(), {}, 0, 0, false, QString::fromStdString(description) };
 
     network.ForEach([&](unsigned x, unsigned y, const NeuralNetwork::Node& node)
     {

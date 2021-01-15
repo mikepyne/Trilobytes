@@ -2,11 +2,38 @@
 
 #include "Random.h"
 
+#include <iomanip>
+
 SenseRandom::SenseRandom(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, std::vector<FilteredRandom>&& filteredRandoms)
     : Sense(network, outputConnections, owner)
     , filteredRandoms_(std::move(filteredRandoms))
     , last_(filteredRandoms_.size(), 0.0)
 {
+}
+
+std::string SenseRandom::GetDescription() const
+{
+    std::stringstream desc;
+    desc << std::fixed << std::setprecision(2);
+
+    desc << "<p>This sense acts as a source of randomness, each tick, a random"
+            "value is selected for each input from within the input's range. "
+            "The value is filtered however to smooth out the changes and "
+            "prevent anything too abrupt. The value is calculated as follows:"
+            "</p>"
+            "<p>input = ((1 - beta) * previousValue) + (beta * randomValue)</p>"
+            "<p>Where beta is a value between 0 and 1. The lower the beta value"
+            ", the more smoothing there is.</p>";
+
+    desc << "<p>Entropy sources:<ol>";
+
+    for (const FilteredRandom& rand : filteredRandoms_) {
+        desc << "<li> Range " << rand.min_ << " -> " << rand.max_ << ", " << "Beta " << rand.beta_ << "</li>";
+    }
+
+    desc << "</p></ol>";
+
+    return desc.str();
 }
 
 void SenseRandom::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& /*entities*/, const UniverseParameters& /*universeParameters*/) const

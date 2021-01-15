@@ -15,6 +15,8 @@ public:
     virtual ~SenseRandom() override {}
 
     virtual std::string_view GetName() const override { return "Random"; }
+    virtual std::string GetDescription() const override;
+
     virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& entities, const UniverseParameters& universeParameters) const override;
 
 private:

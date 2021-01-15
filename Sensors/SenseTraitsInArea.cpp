@@ -4,12 +4,37 @@
 
 #include <QPainter>
 
+#include <iomanip>
+
 SenseTraitsInArea::SenseTraitsInArea(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, double radius, const Transform& transform, std::vector<TraitNormaliser>&& toDetect)
     : SenseTraitsBase(network, outputConnections, owner, transform, std::move(toDetect))
     , senseRadius_(radius)
 {
 }
 
+std::string SenseTraitsInArea::GetDescription() const
+{
+    std::stringstream desc;
+    desc << std::fixed << std::setprecision(2);
+
+    desc << "<p>This sense detects every entity whose centre is within its "
+            "radius of " << senseRadius_ << " pixels.</p>"
+            "<p>When multiple entities are detected by this sense, the detected"
+            " trait values are all summed, then the final total is normalised"
+            "</p>";
+
+
+    desc << "<p>Inputs:<ol>";
+    for (const TraitNormaliser& trait : GetDetectableTraits()) {
+        desc << "<li>" << ToString(trait.trait) << ", "
+             << "Detection range[" << trait.range.GetFrom().First() << "->" << trait.range.GetFrom().Last() << "]"
+             << "Normalised range[" << trait.range.GetTo().First() << "->" << trait.range.GetTo().Last() << "]"
+             << "</li>";
+    }
+    desc << "</ol></p>";
+
+    return desc.str();
+}
 void SenseTraitsInArea::Draw(QPainter& paint) const
 {
     Circle c = GetArea();
@@ -24,7 +49,7 @@ Circle SenseTraitsInArea::GetArea() const
     return { centre.x, centre.y, senseRadius_ };
 }
 
-void SenseTraitsInArea::FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity&, const double&)>& forEachEntity) const
+void SenseTraitsInArea::FilterEntities(const EntityContainerInterface& entities, const std::function<void (const Entity&)>& forEachEntity) const
 {
     const Circle senseArea = GetArea();
     const Point senseCentre = { senseArea.x, senseArea.y };
@@ -35,8 +60,7 @@ void SenseTraitsInArea::FilterEntities(const EntityContainerInterface& entities,
         if (e.get() != &owner_) {
             double distanceSquare = GetDistanceSquare(senseCentre, e->GetLocation());
             if (distanceSquare < senseRadiusSquare) {
-                // Traits scaled by distance entity is from centre of sense
-                forEachEntity(*e, 1.0 - (std::sqrt(distanceSquare) / senseArea.radius));
+                forEachEntity(*e);
             }
         }
     });

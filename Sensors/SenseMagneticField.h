@@ -22,8 +22,9 @@ public:
     virtual ~SenseMagneticField() override {}
 
     virtual std::string_view GetName() const override { return "MagneticField"; }
-    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& /*entities*/, const UniverseParameters& universeParameters) const override;
+    virtual std::string GetDescription() const override;
 
+    virtual void PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& /*entities*/, const UniverseParameters& universeParameters) const override;
     virtual void Draw(QPainter& paint) const override;
 
 private:
