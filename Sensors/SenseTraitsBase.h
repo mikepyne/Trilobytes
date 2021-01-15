@@ -21,9 +21,10 @@ public:
         Size,
         Distance,
         Health,
+        Presence,
     };
 
-    static constexpr std::array ALL_TRAITS = { Trait::Red, Trait::Green, Trait::Blue, Trait::Energy, Trait::Age, Trait::Size, Trait::Distance, Trait::Health };
+    static constexpr std::array ALL_TRAITS = { Trait::Red, Trait::Green, Trait::Blue, Trait::Energy, Trait::Age, Trait::Size, Trait::Distance, Trait::Health, Trait::Presence };
 
     static std::string ToString(Trait trait);
 
@@ -44,29 +45,7 @@ public:
      * the value will be normalised to a number between 0.0 -> 1.0 for a single
      * entity being detected at full strength.
      */
-    static TraitNormaliser DefaultNormalisation(const Trait& trait)
-    {
-        switch (trait) {
-        case Trait::Red :
-            return { trait, { EoBE::Range(0.0, 0.9), EoBE::Range(-1.0, 1.0) } };
-        case Trait::Green :
-            return { trait, { EoBE::Range(0.0, 0.9), EoBE::Range(-1.0, 1.0) } };
-        case Trait::Blue :
-            return { trait, { EoBE::Range(0.0, 0.9), EoBE::Range(-1.0, 1.0) } };
-        case Trait::Energy :
-            return { trait, { EoBE::Range(0_j, 500_j), EoBE::Range(-1.0, 1.0) } };
-        case Trait::Age :
-            return { trait, { EoBE::Range(0.0, 50'000.9), EoBE::Range(-1.0, 1.0) } };
-        case Trait::Size :
-            return { trait, { EoBE::Range(0.0, 30.0), EoBE::Range(-1.0, 1.0) } };
-        case Trait::Distance :
-            return { trait, { EoBE::Range(0.0, 100.0), EoBE::Range(-1.0, 1.0) } };
-        case Trait::Health :
-            return { trait, { EoBE::Range(0.0, 100.0), EoBE::Range(-1.0, 1.0) } };
-        }
-        assert(false && "Unimplemented Trait");
-        return { static_cast<Trait>(-1), { EoBE::Range(0.0, 0.0), EoBE::Range(-1.0, 1.0) }};
-    }
+    static TraitNormaliser DefaultNormalisation(const Trait& trait);
 
     SenseTraitsBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, const Transform& transform, std::vector<TraitNormaliser>&& toDetect);
 
