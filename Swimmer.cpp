@@ -131,6 +131,10 @@ void Swimmer::DrawImpl(QPainter& paint)
     paint.save();
     paint.setBrush(GetColour());
     paint.drawEllipse({ GetTransform().x, GetTransform().y }, GetRadius(), GetRadius());
+    if (health_ < 100.0) {
+        paint.fillRect(QRectF(GetTransform().x - (26.0), GetTransform().y - GetRadius() + 13, 52.0, 7), Qt::black);
+        paint.fillRect(QRectF(GetTransform().x - (25.0), GetTransform().y - GetRadius() + 14, 50.0 * health_ / 100.0, 5), Qt::red);
+    }
     paint.restore();
 
     for (auto& sense : senses_) {
