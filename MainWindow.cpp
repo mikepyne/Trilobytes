@@ -2,6 +2,7 @@
 #include "ui_MainWindow.h"
 
 #include "FoodPellet.h"
+#include "Egg.h"
 #include "Swimmer.h"
 #include "MeatChunk.h"
 #include "GraphContainerWidget.h"
@@ -91,12 +92,38 @@ MainWindow::MainWindow(QWidget *parent)
     {
         graph.AddPoint(0, tick, 50 * (universe_->GetUniverseParameters().lunarCycle_ + 1));
     });
-    AddGraph("Total Energy", { {0x00F100, "Food Pellet"}, {0xFF0000, "Meat Chunk"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Combined Energy (mj)", [=](uint64_t tick, LineGraph& graph)
+    AddGraph("Population", { {0x00F100, "Food Pellet"}, {0xFF0000, "Meat Chunk"}, {0x3333FF, "Swimmer"}, {0xFF44FF, "Egg"} }, "Time (tick)", "Number of Entities", [=](uint64_t tick, LineGraph& graph)
+    {
+        if (tick % 100 == 0) {
+            uint64_t foodCount = 0;
+            uint64_t chunkCount = 0;
+            uint64_t swimmerCount = 0;
+            uint64_t eggCount = 0;
+            universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
+            {
+                if (dynamic_cast<const FoodPellet*>(e.get())) {
+                    ++foodCount;
+                } else if (dynamic_cast<const MeatChunk*>(e.get())) {
+                    ++chunkCount;
+                } else if (dynamic_cast<const Swimmer*>(e.get())) {
+                    ++swimmerCount;
+                } else if (dynamic_cast<const Egg*>(e.get())) {
+                    ++eggCount;
+                }
+            });
+            graph.AddPoint(0, tick, foodCount);
+            graph.AddPoint(1, tick, chunkCount);
+            graph.AddPoint(2, tick, swimmerCount);
+            graph.AddPoint(3, tick, eggCount);
+        }
+    });
+    AddGraph("Total Energy", { {0x00F100, "Food Pellet"}, {0xFF0000, "Meat Chunk"}, {0x3333FF, "Swimmer"}, {0xFF44FF, "Egg"} }, "Time (tick)", "Combined Energy (mj)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
             Energy foodEnergy = 0;
             Energy chunkEnergy = 0;
             Energy swimmerEnergy = 0;
+            Energy eggEnergy = 0;
             universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
                 if (dynamic_cast<const FoodPellet*>(e.get())) {
@@ -105,11 +132,14 @@ MainWindow::MainWindow(QWidget *parent)
                     chunkEnergy += e->GetEnergy();
                 } else if (dynamic_cast<const Swimmer*>(e.get())) {
                     swimmerEnergy += e->GetEnergy();
+                } else if (dynamic_cast<const Egg*>(e.get())) {
+                    eggEnergy += e->GetEnergy();
                 }
             });
             graph.AddPoint(0, tick, foodEnergy / 1_mj);
             graph.AddPoint(1, tick, chunkEnergy / 1_mj);
             graph.AddPoint(2, tick, swimmerEnergy / 1_mj);
+            graph.AddPoint(3, tick, eggEnergy / 1_mj);
         }
     });
     AddGraph("Average Age", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Age (tick)", [=](uint64_t tick, LineGraph& graph)
