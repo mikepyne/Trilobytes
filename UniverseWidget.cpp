@@ -31,13 +31,6 @@ UniverseWidget::~UniverseWidget()
 {
 }
 
-void UniverseWidget::SuggestFocus(const Point& focus)
-{
-    transformX_ = -focus.x;
-    transformY_ = -focus.y;
-    updateToRender_ = true;
-}
-
 void UniverseWidget::SetUniverse(std::shared_ptr<Universe> universe)
 {
     universe_ = universe;
@@ -78,7 +71,7 @@ void UniverseWidget::mousePressEvent(QMouseEvent* event)
     } else if (event->button() == Qt::RightButton) {
         if (universe_) {
             Point simLocation = TransformLocalToSimCoords({ static_cast<double>(event->x()), static_cast<double>(event->y()) });
-            universe_->SelectEntity(simLocation);
+            emit EntitySelected(universe_->SelectEntity(simLocation));
         }
     }
 }
@@ -105,14 +98,20 @@ void UniverseWidget::paintEvent(QPaintEvent* event)
 {
     updateToRender_ = false;
 
-    QPainter p(this);
-    p.setClipRegion(event->region());
-    p.translate(width() / 2, height() / 2);
-    p.scale(transformScale_, transformScale_);
-    p.translate(transformX_, transformY_);
-
     // TODO add some indication that sim is still running when 0 FPS selected
     if (universe_) {
+        // TODO draw something to indicate the selected Entity!
+        if (universe_->GetTrackSelected() && universe_->GetSelectedEntity()) {
+            Point focus = { universe_->GetSelectedEntity()->GetTransform().x, universe_->GetSelectedEntity()->GetTransform().y };
+            transformX_ = -focus.x;
+            transformY_ = -focus.y;
+        }
+        QPainter p(this);
+        p.setClipRegion(event->region());
+        p.translate(width() / 2, height() / 2);
+        p.scale(transformScale_, transformScale_);
+        p.translate(transformX_, transformY_);
+
         universe_->Render(p);
     }
 }

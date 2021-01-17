@@ -16,10 +16,12 @@
 /*
  * Allows the Universe, which has no other notion of being observed, let an
  * observer know where to look.
+ *
+ * TODO deprecate this interface, remove the thread from this class and drive it
+ * externally, this will remove the need for SuggestUpdate()
  */
 class UniverseObserver {
 public:
-    virtual void SuggestFocus(const Point& focus) = 0;
     virtual void SuggestUpdate() = 0;
 };
 
@@ -49,7 +51,7 @@ public:
     void Reset() {  reset_ = true; }
     void RemoveAllSwimmers() { removeAllSwimmers_ = true; }
     void RemoveAllFood() { removeAllFood_ = true; }
-    void SelectEntity(const Point& location);
+    const std::shared_ptr<Entity>& SelectEntity(const Point& location);
     void SelectFittestSwimmer();
     void AddDefaultSwimmer(double x, double y);
     void AddRandomSwimmer(double x, double y);

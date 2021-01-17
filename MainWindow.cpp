@@ -7,6 +7,8 @@
 #include "MeatChunk.h"
 #include "GraphContainerWidget.h"
 
+#include "UniverseWidget.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -15,6 +17,13 @@ MainWindow::MainWindow(QWidget *parent)
     universe_ = std::make_shared<Universe>(*(ui->universe));
     ui->universe->SetUniverse(universe_);
     ui->graphCreationTab->setLayout(new QVBoxLayout());
+
+    connect(ui->universe, &UniverseWidget::EntitySelected, [&](const std::shared_ptr<Entity>& selected)
+    {
+        if (auto selectedSwimmer = std::dynamic_pointer_cast<Swimmer>(selected)) {
+            ui->inspector->SetSwimmer(selectedSwimmer);
+        }
+    });
 
     // Make sure graphs don't start too squashed
     ui->verticalSplitter->setSizes({ 700, 150 });

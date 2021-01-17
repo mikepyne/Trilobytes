@@ -19,7 +19,6 @@ Universe::Universe(UniverseObserver& focusInterface)
 {
     Reset();
 
-    observerInterface_.SuggestFocus({0,0});
     /*
      * QT hack to get this running in the QT event loop (necessary for
      * drawing anything, not ideal for running the Sim quickly...)
@@ -47,15 +46,14 @@ void Universe::SetEntityTargetPerQuad(uint64_t target, uint64_t leeway)
     rootNode_.SetEntityTargetPerQuad(target, leeway);
 }
 
-void Universe::SelectEntity(const Point& location)
+const std::shared_ptr<Entity>& Universe::SelectEntity(const Point& location)
 {
     selectedEntity_.reset();
     rootNode_.ForEachCollidingWith(location, [&](const std::shared_ptr<Entity>& e)
     {
-        if (Swimmer* swimmer = dynamic_cast<Swimmer*>(e.get()); swimmer != nullptr) {
-            selectedEntity_ = e;
-        }
+        selectedEntity_ = e;
     });
+    return selectedEntity_;
 }
 
 void Universe::SelectFittestSwimmer() {
@@ -103,7 +101,7 @@ void Universe::Render(QPainter& p) const
     p.setBackground(QColor(200, 255, 255));
     p.setBackgroundMode(Qt::BGMode::OpaqueMode);
     int line = 0;
-    if (selectedEntity_) {
+    if (selectedEntity_ && dynamic_cast<Swimmer*>(selectedEntity_.get())) {
         auto f = dynamic_cast<Swimmer*>(selectedEntity_.get());
         p.drawText(0, line += 15, QString("   - %1 Ticks Old").arg(f->GetAge()));
         p.drawText(0, line += 15, QString("   - Laid %1 Eggs").arg(f->GetEggsLayedCount()));
@@ -145,7 +143,6 @@ void Universe::Thread()
         feedDispensers_.push_back(std::make_shared<FeedDispenser>(rootNode_, -1000, 0, 950, 0.001));
 
         for (auto& feeder : feedDispensers_) {
-            observerInterface_.SuggestFocus({ feeder->GetX(), feeder->GetY() });
             feeder->AddPelletsImmediately(feeder->GetMaxPellets() / 8);
         }
 
@@ -173,7 +170,7 @@ void Universe::Thread()
 
     if (respawn_) {
         respawn_ = false;
-        for (auto feeder : feedDispensers_) {
+        for (const auto& feeder : feedDispensers_) {
             for (unsigned i = 0; i < std::max(1u, 25 / feedDispensers_.size()); i++) {
                 double rotation = Random::Number(0.0, EoBE::Tau);
                 double distance = std::sqrt(Random::Number(0.0, 1.0)) * feeder->GetRadius();
@@ -199,10 +196,6 @@ void Universe::Tick()
 
     if (autoSelectFittest_) {
         SelectFittestSwimmer();
-    }
-
-    if (trackSelectedEntity_ && selectedEntity_ && selectedEntity_->Alive()) {
-        observerInterface_.SuggestFocus( { selectedEntity_->GetLocation().x, selectedEntity_->GetLocation().y });
     }
 
     if (spawnFood_) {

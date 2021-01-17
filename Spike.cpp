@@ -17,7 +17,14 @@ void Spike::TickImpl(EntityContainerInterface& container, const UniverseParamete
     container.ForEachCollidingWith(Circle{ GetLocation().x, GetLocation().y, GetRadius() }, [](const std::shared_ptr<Entity>& entity)
     {
         if (Swimmer* swimmer = dynamic_cast<Swimmer*>(entity.get())) {
-            swimmer->ApplyDamage(5 * std::pow(swimmer->GetVelocity(), 2.0));
+            // FIXME entity rotation and direction of movement may not actually be the same! (they were when writing, but perhaps that should change!)
+            Vec2 victimVec = GetMovementVector(entity->GetTransform().rotation, entity->GetVelocity());
+
+            auto [ contactBearing, contactVelocity ] = DeconstructMovementVector({ -victimVec.x, -victimVec.y });
+
+            double collisionBearing = std::fmod(std::abs(contactBearing), EoBE::Tau);
+            double directHitProportion = std::max(0.0, ((std::abs(collisionBearing - EoBE::Pi) / EoBE::Pi) - 0.5) * 2);
+            swimmer->ApplyDamage(directHitProportion * (5 * std::pow(contactVelocity, 2.0)));
         }
     });
 }

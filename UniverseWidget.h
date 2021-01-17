@@ -14,11 +14,13 @@ public:
     explicit UniverseWidget(QWidget* parent);
     virtual ~UniverseWidget();
 
-    virtual void SuggestFocus(const Point& focus) override;
     virtual void SuggestUpdate() override { updateToRender_ = true; }
 
     void SetUniverse(std::shared_ptr<Universe> universe);
     void SetFpsTarget(double fps);
+
+signals:
+    void EntitySelected(const std::shared_ptr<Entity>& newSelection);
 
 protected:
     virtual void wheelEvent(QWheelEvent* event) override final;
@@ -29,6 +31,7 @@ protected:
     virtual void resizeEvent(QResizeEvent* event) override;
 
     virtual void paintEvent(QPaintEvent* event) override final;
+
 private:
     QTimer renderThread_;
     bool updateToRender_ = false;
