@@ -50,12 +50,9 @@ void FeedDispenser::AddPelletsImmediately(unsigned pelletCount)
 
 void FeedDispenser::SpawnPellet()
 {
-    double rotation = Random::Number(0.0, EoBE::Tau);
-    double distance = std::sqrt(Random::Number(0.0, 1.0)) * radius_;
-    double foodX = x_ + distance * std::cos(rotation);
-    double foodY = y_ + distance * std::sin(rotation);
-    if (entityContainer_.CountEntities(Circle{ foodX, foodY, FoodPellet::GetPelletRadius(pelletEnergyContent_) }) == 0) {
-        entityContainer_.AddEntity(std::make_shared<FoodPellet>(shared_from_this(), pelletEnergyContent_, Transform{ foodX, foodY, 0 }));
+    Point foodLocation = Random::PointInCircle({ x_, y_, radius_ });
+    if (entityContainer_.CountEntities(Circle{ foodLocation.x, foodLocation.y, FoodPellet::GetPelletRadius(pelletEnergyContent_) }) == 0) {
+        entityContainer_.AddEntity(std::make_shared<FoodPellet>(shared_from_this(), pelletEnergyContent_, Transform{ foodLocation.x, foodLocation.y, 0 }));
         ++currentPelletCount_;
         auto proportion = double(currentPelletCount_) / double(maxPellets_);
         ticksTillNext_ += 10.0 * ((-0.8 * (std::pow(proportion, 2.0) * -std::pow(proportion - 2, 2.0))) + 0.1);

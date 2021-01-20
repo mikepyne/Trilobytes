@@ -2,6 +2,8 @@ QT       += core gui widgets
 
 CONFIG += c++17
 
+# QMAKE_CXXFLAGS += -ffast-math
+
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -17,6 +19,7 @@ SOURCES += \
     Effectors/Effector.cpp \
     Effectors/EffectorFilterMouth.cpp \
     Effectors/EffectorSpike.cpp \
+    Effectors/EffectorSpringTail.cpp \
     Effectors/EffectorTail.cpp \
     Egg.cpp \
     Entity.cpp \
@@ -28,6 +31,7 @@ SOURCES += \
     Genome/GeneEffectorBase.cpp \
     Genome/GeneEffectorFilterMouth.cpp \
     Genome/GeneEffectorSpike.cpp \
+    Genome/GeneEffectorSpringTail.cpp \
     Genome/GeneEffectorTail.cpp \
     Genome/GeneFactory.cpp \
     Genome/GenePigment.cpp \
@@ -72,6 +76,7 @@ HEADERS += \
     Effectors/Effector.h \
     Effectors/EffectorFilterMouth.h \
     Effectors/EffectorSpike.h \
+    Effectors/EffectorSpringTail.h \
     Effectors/EffectorTail.h \
     Egg.h \
     Energy.h \
@@ -85,6 +90,7 @@ HEADERS += \
     Genome/GeneEffectorBase.h \
     Genome/GeneEffectorFilterMouth.h \
     Genome/GeneEffectorSpike.h \
+    Genome/GeneEffectorSpringTail.h \
     Genome/GeneEffectorTail.h \
     Genome/GeneFactory.h \
     Genome/GenePigment.h \

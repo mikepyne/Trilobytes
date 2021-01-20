@@ -6,6 +6,7 @@
 #include "GeneSenseRandom.h"
 #include "GeneSenseSine.h"
 #include "GeneEffectorTail.h"
+#include "GeneEffectorSpringTail.h"
 #include "GeneEffectorFilterMouth.h"
 #include "GeneEffectorSpike.h"
 #include "GeneSenseMagneticField.h"
@@ -136,6 +137,14 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
     {
         unsigned hiddenLayers = Random::Number(0u, 2u);
         return std::make_shared<GeneEffectorTail>(hiddenLayers, brainWidth);
+    },
+    [=]()
+    {
+        unsigned hiddenLayers = Random::Number(0u, 2u);
+        auto rangeConverter = EoBE::RangeConverter{ {-1.0, 0.1}, {-10_uj, 10_uj} };
+        Energy storedEnergyCap = Random::Number(100_uj, 500_uj);
+        double triggerThreshold = Random::Number(0.0, 1.0);
+        return std::make_shared<GeneEffectorSpringTail>(hiddenLayers, NeuralNetwork::BRAIN_WIDTH, rangeConverter, storedEnergyCap, triggerThreshold);
     },
     [=]()
     {

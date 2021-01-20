@@ -72,7 +72,7 @@ bool Entity::Move()
         Point newLocation = ApplyOffset({ transform_.x, transform_.y }, transform_.rotation, speed_);
         transform_.x = newLocation.x;
         transform_.y = newLocation.y;
-        speed_ -= speed_ / 4.0;
+        speed_ *= 0.9;
         return true;
     }
     return false;

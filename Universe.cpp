@@ -146,12 +146,9 @@ void Universe::Thread()
             feeder->AddPelletsImmediately(feeder->GetMaxPellets() / 8);
         }
 
-        for (unsigned i = 0; i < 25u; ++i) {
-            double rotation = Random::Bearing();
-            double distance = std::sqrt(Random::Number(0.0, 1.0)) * 500.0;
-            double spikeX = distance * std::cos(rotation);
-            double spikeY = distance * std::sin(rotation);
-            rootNode_.AddEntity(std::make_shared<Spike>(Transform{ spikeX, spikeY, Random::Bearing() }));
+        for (unsigned i = 0; i < 75u; ++i) {
+            Point spikeLocation = Random::PointInCircle({ feedDispensers_.front()->GetX(), feedDispensers_.front()->GetY(), feedDispensers_.front()->GetRadius() });
+            rootNode_.AddEntity(std::make_shared<Spike>(Transform{ spikeLocation.x, spikeLocation.y, Random::Bearing() }));
         }
 
         rootNode_.SetEntityTargetPerQuad(25, 5);

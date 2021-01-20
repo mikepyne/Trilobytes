@@ -2,6 +2,7 @@
 #define RANDOM_H
 
 #include "Utils.h"
+#include "Shape.h"
 
 #include <random>
 #include <limits>
@@ -48,6 +49,21 @@ public:
     }
 
     template<typename NumericType>
+    static NumericType Sign(const NumericType& value)
+    {
+        return Boolean() ? value : -value;
+    }
+
+    static Point PointInCircle(const Circle& circle)
+    {
+        const double rotation = Random::Number(0.0, EoBE::Tau);
+        const double distance = std::sqrt(Random::Number(0.0, 1.0)) * circle.radius;
+        const double x = circle.x + distance * std::cos(rotation);
+        const double y = circle.y + distance * std::sin(rotation);
+        return { x, y };
+    }
+
+    template<typename NumericType>
     static NumericType Number(NumericType min = std::numeric_limits<NumericType>::lowest(), NumericType max = std::numeric_limits<NumericType>::max())
     {
         if constexpr (std::is_integral<NumericType>::value) {
@@ -89,7 +105,7 @@ public:
     static NumericType Gaussian(NumericType mean = std::numeric_limits<NumericType>::min(), NumericType standardDeviation = static_cast<NumericType>(1.0))
     {
         static std::normal_distribution<NumericType> distribution;
-        distribution.param(typename std::normal_distribution<NumericType>::param_type(mean, standardDeviation));
+        distribution.param(typename std::normal_distribution<NumericType>::param_type(mean, std::abs(standardDeviation)));
         return Generate(distribution);
     }
 
@@ -141,8 +157,8 @@ public:
     {
         static std::normal_distribution<NumericType> distributionOne;
         static std::normal_distribution<NumericType> distributionTwo;
-        distributionOne.param(typename std::normal_distribution<NumericType>::param_type(meanPeakOne, standardDeviationPeakOne));
-        distributionTwo.param(typename std::normal_distribution<NumericType>::param_type(meanPeakTwo, standardDeviationPeakTwo));
+        distributionOne.param(typename std::normal_distribution<NumericType>::param_type(meanPeakOne, std::abs(standardDeviationPeakOne)));
+        distributionTwo.param(typename std::normal_distribution<NumericType>::param_type(meanPeakTwo, std::abs(standardDeviationPeakTwo)));
 
         std::vector<NumericType> rands;
         rands.reserve(count);
