@@ -88,6 +88,7 @@ public:
     T Max() const { return IsValid() ? max_ : static_cast<T>(0); }
     T Range() const { return IsValid() ? max_ - min_ : static_cast<T>(0); }
     bool Contains(const T& value) const { return value >= min_ && value <= max_; }
+    operator EoBE::Range<T>() const { return EoBE::Range(Min(), Max()); }
 
     void ExpandToContain(const T& newValue)
     {

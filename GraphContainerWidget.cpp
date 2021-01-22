@@ -3,14 +3,21 @@
 #include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QLabel>
+#include <QScrollArea>
 
 GraphContainerWidget::GraphContainerWidget(QWidget* parent, EoBE::Handle&& graphUpdaterHandle, LineGraph* lineGraph)
     : QWidget(parent)
     , lineGraph_(lineGraph)
     , graphUpdaterHandle_(std::move(graphUpdaterHandle))
 {
+    QScrollArea* settingsScrollArea = new QScrollArea;
+    settingsScrollArea->setFrameShape(QFrame::NoFrame);
+    settingsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    settingsScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    settingsScrollArea->setWidgetResizable(true);
 
     QWidget* settings = new QWidget();
+    settingsScrollArea->setWidget(settings);
 
     QCheckBox* xAxisMinEnable = new QCheckBox("x-axis Min");
     QCheckBox* xAxisMaxEnable = new QCheckBox("x-axis Max");
@@ -47,18 +54,24 @@ GraphContainerWidget::GraphContainerWidget(QWidget* parent, EoBE::Handle&& graph
     plotDataCountSpin->setValue(lineGraph_->GetPlotDataPointCount());
     connect(plotDataCountSpin, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), lineGraph_, &LineGraph::SetPlotDataPointCount);
 
+    QCheckBox* graticuleHidden = new QCheckBox("Hide Graticule");
+    graticuleHidden->setChecked(true);
+    connect(graticuleHidden, &QCheckBox::toggled, lineGraph_, &LineGraph::SetGraticuleHidden);
+
     QGridLayout* settingsGrid = new QGridLayout();
-    settingsGrid->addWidget(xAxisMinEnable, 0, 0, 1, 1);
-    settingsGrid->addWidget(xAxisMaxEnable, 1, 0, 1, 1);
-    settingsGrid->addWidget(yAxisMinEnable, 2, 0, 1, 1);
-    settingsGrid->addWidget(yAxisMaxEnable, 3, 0, 1, 1);
-    settingsGrid->addWidget(new QLabel("# Data Points"), 4, 0, 1, 1);
-    settingsGrid->addWidget(xAxisMinSpin, 0, 1, 1, 1);
-    settingsGrid->addWidget(xAxisMaxSpin, 1, 1, 1, 1);
-    settingsGrid->addWidget(yAxisMinSpin, 2, 1, 1, 1);
-    settingsGrid->addWidget(yAxisMaxSpin, 3, 1, 1, 1);
-    settingsGrid->addWidget(plotDataCountSpin, 4, 1, 1, 1);
-    lineGraph_->ForEachPlot([=, row = 5](const LineGraph::Plot& plot, size_t plotIndex) mutable
+    int row = 0;
+    settingsGrid->addWidget(xAxisMinEnable, row, 0, 1, 1);
+    settingsGrid->addWidget(xAxisMinSpin, row++, 1, 1, 1);
+    settingsGrid->addWidget(xAxisMaxEnable, row, 0, 1, 1);
+    settingsGrid->addWidget(xAxisMaxSpin, row++, 1, 1, 1);
+    settingsGrid->addWidget(yAxisMinEnable, row, 0, 1, 1);
+    settingsGrid->addWidget(yAxisMinSpin, row++, 1, 1, 1);
+    settingsGrid->addWidget(yAxisMaxEnable, row, 0, 1, 1);
+    settingsGrid->addWidget(yAxisMaxSpin, row++, 1, 1, 1);
+    settingsGrid->addWidget(graticuleHidden, row++, 0, 1, 2);
+    settingsGrid->addWidget(new QLabel("# Data Points"), row, 0, 1, 1);
+    settingsGrid->addWidget(plotDataCountSpin, row++, 1, 1, 1);
+    lineGraph_->ForEachPlot([=](const LineGraph::Plot& plot, size_t plotIndex) mutable
     {
         QCheckBox* plotHider = new QCheckBox(QString("Show %1").arg(plot.name_));
         plotHider->setChecked(!plot.hidden_);
@@ -70,7 +83,7 @@ GraphContainerWidget::GraphContainerWidget(QWidget* parent, EoBE::Handle&& graph
     QHBoxLayout* baseLayout = new QHBoxLayout(this);
     baseLayout->setMargin(0);
     baseLayout->setSpacing(0);
-    baseLayout->addWidget(settings);
+    baseLayout->addWidget(settingsScrollArea);
     baseLayout->addWidget(lineGraph_);
     baseLayout->setStretch(0, 0);
     baseLayout->setStretch(1, 1);

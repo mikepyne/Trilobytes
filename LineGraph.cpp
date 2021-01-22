@@ -56,6 +56,14 @@ void LineGraph::SetPlotHidden(size_t plotIndex, bool hidden)
     update();
 }
 
+void LineGraph::SetGraticuleHidden(bool hidden)
+{
+    graticuleHidden_ = hidden;
+    setMouseTracking(!hidden);
+    setCursor(hidden ? Qt::CursorShape::ArrowCursor : Qt::CursorShape::CrossCursor);
+    update();
+}
+
 void LineGraph::Reset()
 {
     xRange_.Reset();
@@ -95,6 +103,12 @@ void LineGraph::SetPlotDataPointCount(size_t count)
     }
 }
 
+void LineGraph::mouseMoveEvent(QMouseEvent* event)
+{
+    graticuleLocation_ = event->pos();
+    update();
+}
+
 void LineGraph::paintEvent(QPaintEvent* event)
 {
     QPainter paint(this);
@@ -126,6 +140,10 @@ void LineGraph::paintEvent(QPaintEvent* event)
                 lastPoint = nextPoint;
             });
         }
+    }
+
+    if (!graticuleHidden_) {
+        PaintGraticule(paint, graticuleLocation_, QRectF(origin.x(), 0, xAxisLength, yAxisLength));
     }
 }
 
@@ -218,6 +236,46 @@ void LineGraph::PaintKey(QPainter& p) const
 
             left += labelRect.width() + colourRect.width() + 6;
         }
+    }
+}
+
+void LineGraph::PaintGraticule(QPainter& painter, const QPointF& target, const QRectF& area) const
+{
+    if (area.contains(target)) {
+        // Draw lines inverse so they show up over plots
+        painter.save();
+        painter.setClipRect(area);
+        painter.setCompositionMode(QPainter::CompositionMode_Exclusion);
+        painter.setPen(Qt::white);
+        painter.drawLines({ QLineF(QPointF(0, target.y()), QPointF(width(), target.y())), QLineF(QPointF(target.x(), 0), QPointF(target.x(), height())) });
+        painter.restore();
+
+        // Calculate axis values for point
+        EoBE::RangeConverter xConverter(EoBE::Range(area.left(), area.right()), xRange_);
+        EoBE::RangeConverter yConverter(EoBE::Range(area.bottom(), area.top()), yRange_);
+
+        qreal xValueAtCrosshair = xConverter.Convert(target.x());
+        qreal yValueAtCrosshair = yConverter.Convert(target.y());
+
+        // Display axis values
+        QString coordsText = QString("(%1, %2)").arg(xValueAtCrosshair).arg(yValueAtCrosshair);
+
+        QFontMetricsF metrics = painter.fontMetrics();
+        // Weird bug where half the text doesn't render without expanding the rect!
+        QRectF coordsRect = metrics.boundingRect(coordsText).adjusted(0, 0, 1, 0);
+
+        // Move the text away from the graticule slightly
+        qreal adjustment = 5.0;
+
+        // Make sure we don't draw them off screen
+        bool left = target.x() - (coordsRect.width() + adjustment) > area.left();
+        bool bottom = target.y() - (coordsRect.height() + adjustment) < area.top();
+
+        coordsRect.translate(target + QPointF(left ? -(coordsRect.width() + adjustment) : adjustment, bottom ? coordsRect.height() + adjustment : -adjustment));
+
+        painter.setPen(Qt::black);
+        painter.fillRect(coordsRect.adjusted(-3, -3, 3, 3), Qt::white);
+        painter.drawText(coordsRect, coordsText);
     }
 }
 

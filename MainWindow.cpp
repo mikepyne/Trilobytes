@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     universe_ = std::make_shared<Universe>(*(ui->universe));
     ui->universe->SetUniverse(universe_);
-    ui->graphCreationTab->setLayout(new QVBoxLayout());
+    ui->newGraphButtonsContainer->setLayout(new QVBoxLayout());
 
     connect(ui->universe, &UniverseWidget::EntitySelected, [&](const std::shared_ptr<Entity>& selected)
     {
@@ -319,7 +319,7 @@ MainWindow::~MainWindow()
 void MainWindow::AddGraph(QString graphTitle, std::vector<std::pair<QRgb, QString> >&& plots, QString xAxisTitle, QString yAxisTitle, std::function<void (uint64_t tick, LineGraph& graph)>&& task)
 {
     QPushButton* button = new QPushButton(QString("Create \"%1\" graph").arg(graphTitle));
-    ui->graphCreationTab->layout()->addWidget(button);
+    ui->newGraphButtonsContainer->layout()->addWidget(button);
 
     connect(button, &QPushButton::pressed, [=]()
     {

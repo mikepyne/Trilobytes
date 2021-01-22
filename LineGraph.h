@@ -5,6 +5,7 @@
 
 #include <QWidget>
 #include <QString>
+#include <QRectF>
 
 class LineGraph : public QWidget {
     Q_OBJECT
@@ -32,6 +33,7 @@ public:
     void AddPlot(QRgb colour, QString name);
     void AddPoint(size_t index, qreal x, qreal y);
     void SetPlotHidden(size_t plotIndex, bool hidden);
+    void SetGraticuleHidden(bool hidden);
     void Reset();
     void RecalculateAxisBounds();
 
@@ -47,6 +49,7 @@ public slots:
     void SetPlotDataPointCount(size_t count);
 
 protected:
+    virtual void mouseMoveEvent(QMouseEvent* event) override final;
     virtual void paintEvent(QPaintEvent* event) override final;
 
 private:
@@ -65,10 +68,12 @@ private:
     qreal yAxisMinOverrideValue_ = 0.0;
     qreal yAxisMaxOverrideValue_ = 0.0;
 
+    bool graticuleHidden_ = true;
+    QPointF graticuleLocation_;
+
     QPointF PaintAxes(QPainter& painter) const;
     void PaintKey(QPainter& painter) const;
+    void PaintGraticule(QPainter& painter, const QPointF& target, const QRectF& area) const;
 };
-
-
 
 #endif // BARGRAPH_H

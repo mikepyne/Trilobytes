@@ -2,6 +2,7 @@ QT       += core gui widgets
 
 CONFIG += c++17
 
+# Test the bolow to see if it is appreciably more efficient (leads to different sim outcome so like for like cannot be directly compared!)
 # QMAKE_CXXFLAGS += -ffast-math
 
 # The following define makes your compiler emit warnings if you use
