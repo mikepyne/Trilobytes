@@ -6,23 +6,27 @@
 #include "Swimmer.h"
 #include "MeatChunk.h"
 #include "GraphContainerWidget.h"
-
 #include "UniverseWidget.h"
+#include "Genome/GeneFactory.h"
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    universe_ = std::make_shared<Universe>(*(ui->universe));
+    universe_ = std::make_shared<Universe>(Rect{ -500, -500, 500, 500 });
     ui->universe->SetUniverse(universe_);
     ui->newGraphButtonsContainer->setLayout(new QVBoxLayout());
 
     connect(ui->universe, &UniverseWidget::EntitySelected, [&](const std::shared_ptr<Entity>& selected)
     {
-        if (auto selectedSwimmer = std::dynamic_pointer_cast<Swimmer>(selected)) {
-            ui->inspector->SetSwimmer(selectedSwimmer);
-        }
+        ui->inspector->SetSwimmer(std::dynamic_pointer_cast<Swimmer>(selected));
+        ui->inspector->UpdateConnectionStrengths(universe_->GetEntityContainer(), universe_->GetParameters());
+    });
+    connect(ui->universe, &UniverseWidget::Ticked, [&]()
+    {
+        ui->inspector->UpdateConnectionStrengths(universe_->GetEntityContainer(), universe_->GetParameters());
     });
 
     // Make sure graphs don't start too squashed
@@ -33,40 +37,37 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->resetInspectorView, &QPushButton::pressed, ui->inspector, &NeuralNetworkInspector::ResetViewTransform);
 
     /// Universe TPS & FPS controlls
-    connect(ui->pauseButton, &QPushButton::toggled, [&](bool state) { universe_->SetPaused(state); });
-    connect(ui->limitButton, &QPushButton::toggled, [&](bool state) { universe_->SetLimitTickRate(state); });
-    connect(ui->tpsSelector, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](int value) { universe_->SetTpsTarget(value); });
+    connect(ui->pauseButton, &QPushButton::toggled, ui->universe, &UniverseWidget::SetTicksPaused);
+    connect(ui->limitButton, &QPushButton::toggled, ui->universe, &UniverseWidget::SetLimitTickRate);
+    connect(ui->tpsSelector, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->universe, &UniverseWidget::SetTpsTarget);
     connect(ui->fpsSelector, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->universe, &UniverseWidget::SetFpsTarget);
 
     /// Global controlls
     connect(ui->resetAllButton, &QPushButton::pressed, [&]()
     {
-        universe_->Reset();
+        universe_ = std::make_shared<Universe>(Rect{ -500, -500, 500, 500 });
+        ui->universe->SetUniverse(universe_);
         ui->inspector->SetSwimmer(nullptr);
         ui->inspector->ResetViewTransform();
-        for (int tabIndex = 0; tabIndex < ui->graphs->count(); ++tabIndex) {
-            if (GraphContainerWidget* graphContainer = dynamic_cast<GraphContainerWidget*>(ui->graphs->widget(tabIndex))) {
-                graphContainer->ResetGraph();
-            }
-        }
+        ResetGraphs();
     });
     connect(ui->removeAllSwimmersButton, &QPushButton::pressed, [&]()
     {
-        universe_->RemoveAllSwimmers();
+        universe_->ClearAllEntitiesOfType<Swimmer, Egg>();
     });
     connect(ui->removeAllFoodButton, &QPushButton::pressed, [&]()
     {
-        universe_->RemoveAllFood();
+        universe_->ClearAllEntitiesOfType<FoodPellet, MeatChunk>();
     });
     connect(ui->addDefaultSwimmerButton, &QPushButton::pressed, [&]()
     {
         auto point = ApplyOffset({0, 0}, Random::Bearing(), Random::Number(0.0, 1000.0));
-        universe_->AddDefaultSwimmer(point.x, point.y);
+        universe_->AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ point.x, point.y, Random::Bearing() }, GeneFactory::DefaultGenome()));
     });
     connect(ui->addRandomSwimmerButton, &QPushButton::pressed, [&]()
     {
         auto point = ApplyOffset({0, 0}, Random::Bearing(), Random::Number(0.0, 1000.0));
-        universe_->AddRandomSwimmer(point.x, point.y);
+        universe_->AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ point.x, point.y, Random::Bearing() }, GeneFactory::RandomGenome()));
     });
     connect(ui->quadCapacitySpinner, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](int capacity)
     {
@@ -77,17 +78,17 @@ MainWindow::MainWindow(QWidget *parent)
         universe_->SetEntityTargetPerQuad(ui->quadCapacitySpinner->value(), leeway);
     });
 
-    connect(ui->meanGeneMutationSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&](double mean) { universe_->SetMeanGeneMutationCount(mean); });
-    connect(ui->geneMutationStdDevSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&](double stdDev) { universe_->SetGeneMutationStdDev(stdDev); });
-    connect(ui->meanChromosomeMutationSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&](double mean) { universe_->SetMeanChromosomeMutationCount(mean); });
-    connect(ui->chromosomeMutationStdDevSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&](double stdDev) { universe_->SetChromosomeMutationStdDev(stdDev); });
+    connect(ui->meanGeneMutationSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&](double mean) { universe_->GetParameters().meanGeneMutationCount_ = mean; });
+    connect(ui->geneMutationStdDevSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&](double stdDev) { universe_->GetParameters().geneMutationCountStdDev_ = stdDev; });
+    connect(ui->meanChromosomeMutationSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&](double mean) { universe_->GetParameters().meanStructuralMutationCount_ = mean; });
+    connect(ui->chromosomeMutationStdDevSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&](double stdDev) { universe_->GetParameters().structuralMutationCountStdDev_ = stdDev; });
 
     /// Food Controlls
-    connect(ui->spawnFoodToggle, &QPushButton::toggled, [&](bool state) { universe_->SetSpawnFood(state); });
+    connect(ui->spawnFoodToggle, &QPushButton::toggled, [&](bool state) { universe_->GetParameters().foodSpawnRateModifier = state ? 1.0 : 0.0; });
 
     /// Selected Swimmer Controlls
-    connect(ui->selectFittestButton, &QPushButton::pressed, [&]() { universe_->SelectFittestSwimmer(); });
-    connect(ui->followSelectedToggle, &QPushButton::toggled, [&](bool state) { universe_->SetTrackSelected(state); });
+    connect(ui->selectFittestButton, &QPushButton::pressed, ui->universe, &UniverseWidget::SelectFittestSwimmer, Qt::QueuedConnection);
+    connect(ui->followSelectedToggle, &QPushButton::toggled, ui->universe, &UniverseWidget::SetTrackSelectedEntity);
 
     /// Graph Controlls
     connect(ui->graphs, &QTabWidget::tabCloseRequested, [&](int index)
@@ -97,9 +98,27 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
+    ResetGraphs();
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::ResetGraphs()
+{
+    QString oldTitle = ui->graphs->tabText(ui->graphs->currentIndex());
+
+    // Can't remove the current tab, so set to 1
+    ui->graphs->setCurrentIndex(0);
+    while (ui->graphs->count() > 1) {
+        ui->graphs->removeTab(1);
+    }
+
     AddGraph("Lunar Cycle", { {0x010101, "Moon Phase"} }, "Time (tick)", "Full (%)", [=](uint64_t tick, LineGraph& graph)
     {
-        graph.AddPoint(0, tick, 50 * (universe_->GetUniverseParameters().lunarCycle_ + 1));
+        graph.AddPoint(0, tick, 50 * (universe_->GetParameters().lunarCycle_ + 1));
     });
     AddGraph("Population", { {0x00F100, "Food Pellet"}, {0xFF0000, "Meat Chunk"}, {0x3333FF, "Swimmer"}, {0xFF44FF, "Egg"} }, "Time (tick)", "Number of Entities", [=](uint64_t tick, LineGraph& graph)
     {
@@ -303,17 +322,12 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
-    // FIXME temp hack to get inspector pane working again (priority is to get a distributable version)
-    static auto hackTaskHandle = universe_->AddTask([&](uint64_t /*tick*/)
-    {
-        ui->inspector->SetSwimmer(std::dynamic_pointer_cast<Swimmer>(universe_->GetSelectedEntity()));
-        ui->inspector->UpdateConnectionStrengths(universe_->GetEntityContainer(), universe_->GetUniverseParameters());
-    });
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
+    for (int i = 0; i < ui->graphs->count(); ++i) {
+        if (ui->graphs->tabText(i) == oldTitle) {
+            ui->graphs->setCurrentIndex(i);
+            break;
+        }
+    }
 }
 
 void MainWindow::AddGraph(QString graphTitle, std::vector<std::pair<QRgb, QString> >&& plots, QString xAxisTitle, QString yAxisTitle, std::function<void (uint64_t tick, LineGraph& graph)>&& task)

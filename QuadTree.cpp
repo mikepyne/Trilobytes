@@ -8,12 +8,12 @@
 #include <assert.h>
 
 QuadTree::QuadTree(const Rect& startingArea)
-    : root_(std::make_shared<Quad>(startingArea, *this, nullptr))
-    , targetCount_(1)
+    : targetCount_(1)
     , leewayCount_(0)
     , requiresRebalance_(true)
     , rootExpandedCount_(0)
 {
+    Reset(startingArea);
 }
 
 void QuadTree::Tick(const UniverseParameters& universeParameters)
@@ -26,19 +26,9 @@ void QuadTree::Tick(const UniverseParameters& universeParameters)
     root_->ResolveRecursive();
 }
 
-void QuadTree::Draw(QPainter& paint) const
+void QuadTree::Draw(QPainter& paint, const Rect& renderArea) const
 {
-    root_->DrawRecursive(paint);
-}
-
-void QuadTree::AddEntity(const std::shared_ptr<Entity>& entity)
-{
-    root_->RehomeRecursive(entity, false);
-}
-
-uint64_t QuadTree::EntityCount()
-{
-    return root_->RecursiveEntityCount();
+    root_->DrawRecursive(paint, renderArea);
 }
 
 void QuadTree::SetEntityTargetPerQuad(uint64_t target, uint64_t leeway)
@@ -51,17 +41,21 @@ void QuadTree::SetEntityTargetPerQuad(uint64_t target, uint64_t leeway)
     requiresRebalance_ = false;
 }
 
-void QuadTree::Clear()
-{
-    root_->ClearRecursive();
-    root_->Rebalance(targetCount_, leewayCount_);
-}
-
 void QuadTree::ForEach(const std::function<void (const std::shared_ptr<Entity>&)>& action) const
 {
     if (root_) {
         root_->ForEachRecursive(action);
     }
+}
+
+void QuadTree::Reset(const Rect& area)
+{
+    root_ = std::make_shared<Quad>(area, *this, nullptr);
+}
+
+void QuadTree::Clear()
+{
+    Reset(root_->GetRect());
 }
 
 void QuadTree::ExpandRoot()
@@ -183,17 +177,19 @@ void QuadTree::Quad::ResolveRecursive()
     }
 }
 
-void QuadTree::Quad::DrawRecursive(QPainter& paint) const
+void QuadTree::Quad::DrawRecursive(QPainter& paint, const Rect& renderArea) const
 {
-    paint.setBrush(QColor(200, 225, 255, 0));
-    paint.drawRect(QRectF(QPointF(rect_.left, rect_.top), QPointF(rect_.right, rect_.bottom)));
-    if (!children_.empty()) {
-        for (auto& child : children_) {
-            child->DrawRecursive(paint);
-        }
-    } else {
-        for (auto e : entities_) {
-            e->Draw(paint);
+    if (Collides(rect_, renderArea)) {
+        paint.setBrush(QColor(200, 225, 255, 0));
+        paint.drawRect(QRectF(QPointF(rect_.left, rect_.top), QPointF(rect_.right, rect_.bottom)));
+        if (!children_.empty()) {
+            for (auto& child : children_) {
+                child->DrawRecursive(paint, renderArea);
+            }
+        } else {
+            for (auto e : entities_) {
+                e->Draw(paint);
+            }
         }
     }
 }
@@ -225,12 +221,40 @@ void QuadTree::Quad::RehomeRecursive(const std::shared_ptr<Entity>& entity, bool
     }
 }
 
-void QuadTree::Quad::ClearRecursive()
+std::shared_ptr<Entity> QuadTree::Quad::PickRecursive(const Point& location, bool remove)
 {
-    children_.clear();
-    entities_.clear();
-    enteringEntities_.clear();
-    exitingEntities_.clear();
+    if (Contains(rect_, location)) {
+        if (children_.empty()) {
+            std::shared_ptr<Entity> picked;
+            auto iter = std::find_if(std::begin(entities_), std::end(entities_), [&](const std::shared_ptr<Entity>& entity)
+            {
+                return Contains(entity->GetCollide(), location);
+            });
+
+            if (iter != std::end(entities_)) {
+                picked = *iter;
+                if (remove) {
+                    // TODO ensure this doesn't occur mid tick, risking the entity remaining in an "entering" queue elsewhere
+                    entities_.erase(iter);
+                    if (entities_.size() <= baseTree_.targetCount_ + baseTree_.leewayCount_) {
+                        baseTree_.requiresRebalance_ = true;
+                    }
+                }
+            }
+            return picked;
+        } else {
+            std::shared_ptr<Entity> picked;
+            for (auto& child : children_) {
+                if (!picked && Contains(child->rect_, location)) {
+                    picked = child->PickRecursive(location, remove);
+                }
+            }
+            return picked;
+        }
+    } else if (parent_) {
+        return parent_->PickRecursive(location, remove);
+    }
+    return nullptr;
 }
 
 void QuadTree::Quad::ForEachRecursive(const std::function<void(const std::shared_ptr<Entity>&)>& action) const

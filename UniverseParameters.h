@@ -7,7 +7,7 @@
  * expanding the function signature repeatedly.
  *
  * These settings are things that interact with swimmers, i.e. can be sensed or
- * have a direct effect on behaviour (physics etc)
+ * have a direct effect on behaviour (physics, food spawning etc)
  *
  * TODO going forward use this to save/load user settings
  */
@@ -30,6 +30,8 @@ public:
     /// count is taken from.
     double meanStructuralMutationCount_ = 0.8;
     double structuralMutationCountStdDev_ = 0.2;
+    /// This adjusts the spawn rate for all food spawners
+    double foodSpawnRateModifier = 1.0;
 };
 
 #endif // UNIVERSEPARAMETERS_H

@@ -88,7 +88,7 @@ void NeuralNetworkInspector::SetSwimmer(std::shared_ptr<Swimmer> toInspect)
     }
 }
 
-void NeuralNetworkInspector::UpdateConnectionStrengths(EntityContainerInterface& container, const UniverseParameters& universeParameters)
+void NeuralNetworkInspector::UpdateConnectionStrengths(const EntityContainerInterface& container, const UniverseParameters& universeParameters)
 {
     if (inspectedSwimmer_ && liveUpdate_) {
         // zeroise every input value everywhere

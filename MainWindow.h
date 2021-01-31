@@ -24,6 +24,7 @@ private:
     Ui::MainWindow *ui;
     std::shared_ptr<Universe> universe_;
 
+    void ResetGraphs();
     void AddGraph(QString graphTitle, std::vector<std::pair<QRgb, QString>>&& plots, QString xAxisTitle, QString yAxisTitle, std::function<void(uint64_t tick, LineGraph& graph)>&& task);
 };
 #endif // MAINWINDOW_H

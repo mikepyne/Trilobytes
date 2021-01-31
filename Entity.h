@@ -32,8 +32,10 @@ public:
     double GetEnergy() const { return energy_; }
     const QColor& GetColour() const { return colour_; }
     const double& GetVelocity() const { return speed_; }
-
     bool Alive() const;
+    Circle GetCollide() const { return Circle{ transform_.x, transform_.y, radius_ }; };
+
+    void SetLocation(const Point& location) { transform_.x = location.x; transform_.y = location.y; }
     void FeedOn(Entity& other, Energy quantity);
 
     // returns true if the entity has moved

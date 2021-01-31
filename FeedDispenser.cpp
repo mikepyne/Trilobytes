@@ -3,6 +3,7 @@
 #include "Random.h"
 #include "FoodPellet.h"
 #include "QuadTree.h"
+#include "UniverseParameters.h"
 
 #include <QPainter>
 
@@ -27,12 +28,12 @@ void FeedDispenser::Draw(QPainter& paint)
     paint.restore();
 }
 
-void FeedDispenser::Tick()
+void FeedDispenser::Tick(const UniverseParameters& params)
 {
     while (ticksTillNext_ <= 0 && currentPelletCount_ < maxPellets_) {
         SpawnPellet();
     }
-    ticksTillNext_ -= 1.0;
+    ticksTillNext_ -= (params.foodSpawnRateModifier * 1.0);
 }
 
 void FeedDispenser::PelletEaten()

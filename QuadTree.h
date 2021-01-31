@@ -13,20 +13,26 @@
 
 class QPainter;
 
+// TODO remove need to ever specify starting area, or track which direction was last expanded into
 class QuadTree {
 public:
     QuadTree(const Rect& startingArea);
 
+    // Ticks all containing entities and resolves any entities moving from one quad to another
     void Tick(const UniverseParameters& universeParameters);
-    void Draw(QPainter& paint) const;
+    void Draw(QPainter& paint, const Rect& renderArea) const;
 
-    EntityContainerInterface& GetContainer() { return *root_; }
-    void AddEntity(const std::shared_ptr<Entity>& entity);
-    uint64_t EntityCount();
+    const EntityContainerInterface& GetContainerInterface() const { return *root_; }
+
     void SetEntityTargetPerQuad(uint64_t target, uint64_t leeway);
-    void Clear();
-    void ForEach(const std::function<void(const std::shared_ptr<Entity>&)>& action) const;
 
+    void AddEntity(const std::shared_ptr<Entity>& entity) { root_->RehomeRecursive(entity, false); }
+    std::shared_ptr<Entity> PickEntity(const Point& location, bool remove) { return root_->PickRecursive(location, remove); }
+    void ForEach(const std::function<void(const std::shared_ptr<Entity>&)>& action) const;
+    uint64_t EntityCount() { return root_->RecursiveEntityCount(); }
+
+    void Reset(const Rect& area);
+    void Clear();
     template<typename... T>
     void Clear() const
     {
@@ -77,9 +83,9 @@ private:
 
         void TickRecursive(const UniverseParameters& universeParameters);
         void ResolveRecursive();
-        void DrawRecursive(QPainter& paint) const;
+        void DrawRecursive(QPainter& paint, const Rect& renderArea) const;
         void RehomeRecursive(const std::shared_ptr<Entity>& entity, bool delayed);
-        void ClearRecursive();
+        std::shared_ptr<Entity> PickRecursive(const Point& location, bool remove);
         template <typename T>
         void ClearRecursive()
         {

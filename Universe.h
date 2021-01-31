@@ -13,48 +13,26 @@
 #include <functional>
 #include <math.h>
 
-/*
- * Allows the Universe, which has no other notion of being observed, let an
- * observer know where to look.
- *
- * TODO deprecate this interface, remove the thread from this class and drive it
- * externally, this will remove the need for SuggestUpdate()
- */
-class UniverseObserver {
-public:
-    virtual void SuggestUpdate() = 0;
-};
-
 class Universe {
 public:
-    /**
-     * Intentionally empty, used to identify tasks for removal from
-     * Universe::perTickTasks_
-     */
-    enum class TaskHandle : size_t {
-    };
+    Universe(Rect startingQuad);
 
-    Universe(UniverseObserver& focusInterface);
-
-    void SetPaused(bool paused) { pauseSim_ = paused; }
-    void SetLimitTickRate(bool limited);
-    void SetTpsTarget(int tps);
-    void SetMeanGeneMutationCount(double mean) { universeParameters_.meanGeneMutationCount_ = mean; }
-    void SetGeneMutationStdDev(double stdDev) { universeParameters_.geneMutationCountStdDev_ = stdDev; }
-    void SetMeanChromosomeMutationCount(double mean) { universeParameters_.meanStructuralMutationCount_ = mean; }
-    void SetChromosomeMutationStdDev(double stdDev) { universeParameters_.structuralMutationCountStdDev_ = stdDev; }
-    void SetSpawnFood(bool spawn) { spawnFood_ = spawn; }
-    void SetAutoSelectFittest(bool autoSelect) { autoSelectFittest_ = autoSelect; }
-    void SetTrackSelected(bool track) { trackSelectedEntity_ = track; }
     void SetEntityTargetPerQuad(uint64_t target, uint64_t leeway);
-    void Respawn() { respawn_ = true; }
-    void Reset() {  reset_ = true; }
-    void RemoveAllSwimmers() { removeAllSwimmers_ = true; }
-    void RemoveAllFood() { removeAllFood_ = true; }
-    const std::shared_ptr<Entity>& SelectEntity(const Point& location);
-    void SelectFittestSwimmer();
-    void AddDefaultSwimmer(double x, double y);
-    void AddRandomSwimmer(double x, double y);
+
+    void AddEntity(const std::shared_ptr<Entity>& entity) { rootNode_.AddEntity(entity); }
+    std::shared_ptr<Entity> PickEntity(const Point& location, bool remove) { return rootNode_.PickEntity(location, remove); }
+    void ClearAllEntities() { rootNode_.Clear(); }
+    template <typename... T>
+    void ClearAllEntitiesOfType() { rootNode_.Clear<T...>(); }
+    void ForEach(const std::function<void (const std::shared_ptr<Entity>& e)>& action) const { rootNode_.ForEach(action); }
+
+    void AddFeedDispenser(const std::shared_ptr<FeedDispenser>& feeder) { feedDispensers_.push_back(feeder); }
+    std::shared_ptr<FeedDispenser> PickFeedDispenser(const Point& location, bool remove);
+    void ClearAllFeedDispensers() { feedDispensers_.clear(); }
+
+    UniverseParameters& GetParameters() { return params_; }
+    const EntityContainerInterface& GetEntityContainer() const { return rootNode_.GetContainerInterface(); }
+
     /**
      * @brief The Task system allows clients to have code run each tick, without
      * the Universe needing to know implementation specifics. For example,
@@ -67,46 +45,20 @@ public:
      */
     [[nodiscard]] EoBE::Handle AddTask(std::function<void(uint64_t tick)>&& task);
 
-    const UniverseParameters& GetUniverseParameters() const { return universeParameters_; }
-    bool GetPaused() const { return pauseSim_; }
-    bool GetSpawnFood() const { return spawnFood_; }
-    bool GetAutoSelectFittest() const { return autoSelectFittest_; }
-    bool GetTrackSelected() const { return trackSelectedEntity_; }
-    std::shared_ptr<Entity> GetSelectedEntity() { return selectedEntity_; }
-    EntityContainerInterface& GetEntityContainer() { return rootNode_.GetContainer(); }
-    void Render(QPainter& painter) const;
-    void ForEach(const std::function<void (const std::shared_ptr<Entity>& e)>& action) const;
+
+    void Tick();
+    void Render(QPainter& painter, const Rect& renderArea) const;
 
 private:
-    UniverseObserver& observerInterface_;
-
-    bool spawnFood_ = true;
-    bool pauseSim_ = false;
-    bool limitSim_ = true;
-    unsigned targetTps_ = 1000 / 60;
-    bool respawn_ = true;
-    bool reset_ = false;
-    bool removeAllSwimmers_ = false;
-    bool removeAllFood_ = false;
-    bool autoSelectFittest_ = false;
-    bool trackSelectedEntity_ = false;
-    std::shared_ptr<Entity> selectedEntity_;
-
-    UniverseParameters universeParameters_;
     QuadTree rootNode_;
     std::vector<std::shared_ptr<FeedDispenser>> feedDispensers_;
+    UniverseParameters params_;
 
-    QTimer mainThread_;
-
-    uint64_t tickIndex_;
+    uint64_t tickIndex_ = 0;
 
     EoBE::AutoClearingContainer<std::function<void(uint64_t tick)>> perTickTasks_;
 
     double GetLunarCycle() const;
-
-    void Thread();
-    void Tick();
-    void UpdateTps();
 };
 
 #endif // UNIVERSE_H

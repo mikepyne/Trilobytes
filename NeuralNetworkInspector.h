@@ -19,7 +19,7 @@ public:
     explicit NeuralNetworkInspector(QWidget *parent);
 
     void SetSwimmer(std::shared_ptr<Swimmer> toInspect);
-    void UpdateConnectionStrengths(EntityContainerInterface& container, const UniverseParameters& universeParameters);
+    void UpdateConnectionStrengths(const EntityContainerInterface& container, const UniverseParameters& universeParameters);
 
     void SetUpdateLive(bool update);
     void ResetViewTransform();
