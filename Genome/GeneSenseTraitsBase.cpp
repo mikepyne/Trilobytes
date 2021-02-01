@@ -30,7 +30,7 @@ GeneSenseTraitsBase::GeneSenseTraitsBase(std::vector<SenseTraitsBase::TraitNorma
             auto& item = Random::Item(toDetect_);
             double newMin = Random::GaussianAdjustment<double>(item.range.GetFrom().Min(), 0.1);
             double newMax = Random::GaussianAdjustment<double>(item.range.GetFrom().Max(), 0.1);
-            item.range = { EoBE::Range(newMin, newMax), item.range.GetTo() };
+            item.range = { Tril::Range(newMin, newMax), item.range.GetTo() };
         }
     });
 
@@ -42,7 +42,7 @@ GeneSenseTraitsBase::GeneSenseTraitsBase(std::vector<SenseTraitsBase::TraitNorma
             bool changeMin = Random::Boolean();
             double newMin = changeMin ? Random::Number(-1.0, 1.0) : item.range.GetTo().Min();
             double newMax = changeMin ? item.range.GetTo().Max() : Random::Number(-1.0, 1.0);
-            item.range = { item.range.GetFrom(), EoBE::Range(newMin, newMax) };
+            item.range = { item.range.GetFrom(), Tril::Range(newMin, newMax) };
         }
     });
 

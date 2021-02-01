@@ -37,7 +37,7 @@ public:
      */
     struct TraitNormaliser {
         Trait trait;
-        EoBE::RangeConverter range;
+        Tril::RangeConverter range;
     };
 
     /**

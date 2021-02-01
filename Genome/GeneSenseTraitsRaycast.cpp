@@ -38,6 +38,6 @@ void GeneSenseTraitsRaycast::AddMutations()
     });
     AddMutation(BASE_WEIGHT, [&]()
     {
-        rotation_ += Random::Gaussian(0.0, EoBE::Tau / 50);
+        rotation_ += Random::Gaussian(0.0, Tril::Tau / 50);
     });
 }

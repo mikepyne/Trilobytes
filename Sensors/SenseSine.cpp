@@ -29,7 +29,7 @@ std::string SenseSine::GetDescription() const
 
 void SenseSine::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& /*entities*/, const UniverseParameters& /*universeParameters*/) const
 {
-    EoBE::IterateBoth<double, SineWave>(inputs, sineWaves_, [](double& input, const SineWave& sine)
+    Tril::IterateBoth<double, SineWave>(inputs, sineWaves_, [](double& input, const SineWave& sine)
     {
         input = std::clamp(sine.amplitude_ * std::sin(sine.x_), -1.0, 1.0);
     });

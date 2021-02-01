@@ -20,8 +20,8 @@ std::optional<ChromosomePair> ChromosomePair::Recombine(const ChromosomePair& ma
     bool takeFirstOfMaternal = Random::Boolean();
     bool takeFirstOfPaternal = Random::Boolean();
 
-    EoBE::Range<unsigned> newAChromosomeRange_ = takeFirstOfMaternal ? maternal.aChromosomeRange_ : maternal.bChromosomeRange_;
-    EoBE::Range<unsigned> newBChromosomeRange_ = takeFirstOfPaternal ? paternal.aChromosomeRange_ : paternal.bChromosomeRange_;
+    Tril::Range<unsigned> newAChromosomeRange_ = takeFirstOfMaternal ? maternal.aChromosomeRange_ : maternal.bChromosomeRange_;
+    Tril::Range<unsigned> newBChromosomeRange_ = takeFirstOfPaternal ? paternal.aChromosomeRange_ : paternal.bChromosomeRange_;
 
     // TODO consider how this prevents evolution of sexual dimorphism
     // Incompatible if chromosome ranges are too different
@@ -140,7 +140,7 @@ void ChromosomePair::MutateStructure()
     switch (Random::WeightedIndex({ 1, 1, 1, 1, 1, 1 })) {
     case 0:
         // chromosome range change
-        for (EoBE::Range<unsigned>* range : { &aChromosomeRange_, &bChromosomeRange_ }) {
+        for (Tril::Range<unsigned>* range : { &aChromosomeRange_, &bChromosomeRange_ }) {
             unsigned first = range->First() + std::round(Random::Gaussian<double>(0, 50));
             unsigned last = range->Last() + std::round(Random::Gaussian<double>(0, 50));
             range->SetRange(first, last);
@@ -246,7 +246,7 @@ void ChromosomePair::MutateStructure()
     }
 }
 
-ChromosomePair::ChromosomePair(const EoBE::Range<unsigned>& aRange, const EoBE::Range<unsigned>& bRange, std::map<unsigned, std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene> > >&& chromosomePair)
+ChromosomePair::ChromosomePair(const Tril::Range<unsigned>& aRange, const Tril::Range<unsigned>& bRange, std::map<unsigned, std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene> > >&& chromosomePair)
     : aChromosomeRange_(aRange)
     , bChromosomeRange_(bRange)
     , chromosomePair_(chromosomePair)

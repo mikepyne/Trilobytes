@@ -8,12 +8,12 @@
 
 #include <iomanip>
 
-SenseMagneticField::SenseMagneticField(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, const Point& target, const EoBE::RangeConverter& distanceNormaliser, const EoBE::Range<double>& frontBackNormaliser, const EoBE::Range<double>& leftRightNormaliser)
+SenseMagneticField::SenseMagneticField(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, const Point& target, const Tril::RangeConverter& distanceNormaliser, const Tril::Range<double>& frontBackNormaliser, const Tril::Range<double>& leftRightNormaliser)
     : Sense(network, outputConnections, owner)
     , target_(target)
     , distanceNormaliser_(distanceNormaliser)
-    , frontBackNormaliser_({0, EoBE::Pi}, frontBackNormaliser)
-    , leftRightNormaliser_({0, EoBE::Pi}, leftRightNormaliser)
+    , frontBackNormaliser_({0, Tril::Pi}, frontBackNormaliser)
+    , leftRightNormaliser_({0, Tril::Pi}, leftRightNormaliser)
 {
 }
 
@@ -73,11 +73,11 @@ double SenseMagneticField::BearingToFrontBack(double bearing) const
 
     // Ensure we are still in the range if 0 to Tau
     if (bearing < 0.0) {
-        bearing += EoBE::Tau;
+        bearing += Tril::Tau;
     }
 
     // Convert range from 0-Tau to 0 to Pi
-    bearing = std::abs(bearing - EoBE::Pi);
+    bearing = std::abs(bearing - Tril::Pi);
 
     return frontBackNormaliser_.Convert(bearing);
 }
@@ -85,15 +85,15 @@ double SenseMagneticField::BearingToFrontBack(double bearing) const
 double SenseMagneticField::BearingToLeftRight(double bearing) const
 {
     // Get bearing from right side to target
-    bearing -= owner_.GetTransform().rotation + (EoBE::Tau / 4.0);
+    bearing -= owner_.GetTransform().rotation + (Tril::Tau / 4.0);
 
     // Ensure we are still in the range if 0 to Tau
     while (bearing < 0.0) {
-        bearing += EoBE::Tau;
+        bearing += Tril::Tau;
     }
 
     // Convert range from 0-Tau to 0 to Pi
-    bearing = std::abs(bearing - EoBE::Pi);
+    bearing = std::abs(bearing - Tril::Pi);
 
     return leftRightNormaliser_.Convert(bearing);
 }

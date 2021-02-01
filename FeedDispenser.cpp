@@ -13,7 +13,7 @@ FeedDispenser::FeedDispenser(QuadTree& entityContainer, double x, double y, doub
     , x_(x)
     , y_(y)
     , radius_(radius)
-    , maxPellets_(std::pow(EoBE::Pi * radius_, 2.0) * pelletDensity)
+    , maxPellets_(std::pow(Tril::Pi * radius_, 2.0) * pelletDensity)
     , ticksTillNext_(0)
     , currentPelletCount_(0)
 {

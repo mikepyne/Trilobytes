@@ -30,8 +30,8 @@ std::string EffectorSpike::GetDescription() const
 void EffectorSpike::Draw(QPainter& paint) const
 {
     Point tip = GetTipOfSpike();
-    Point baseRight = ApplyOffset(tip, (bearing_ + owner_.GetTransform().rotation) - (EoBE::Tau * 0.47), length_ + 2.0);
-    Point baseLeft = ApplyOffset(tip, (bearing_ + owner_.GetTransform().rotation) + (EoBE::Tau * 0.47), length_ + 2.0);
+    Point baseRight = ApplyOffset(tip, (bearing_ + owner_.GetTransform().rotation) - (Tril::Tau * 0.47), length_ + 2.0);
+    Point baseLeft = ApplyOffset(tip, (bearing_ + owner_.GetTransform().rotation) + (Tril::Tau * 0.47), length_ + 2.0);
 
     QPainterPath spikeTriangle;
     spikeTriangle.moveTo(tip.x, tip.y);
@@ -53,8 +53,8 @@ Energy EffectorSpike::PerformActions(const std::vector<double>& /*actionValues*/
 
             auto [ contactBearing, contactVelocity ] = DeconstructMovementVector({ spikeVec.x - victimVec.x, spikeVec.y - victimVec.y });
 
-            double collisionBearing = std::fmod(std::abs(bearing_ - contactBearing), EoBE::Tau);
-            double directHitProportion = std::max(0.0, ((std::abs(collisionBearing - EoBE::Pi) / EoBE::Pi) - 0.5) * 2);
+            double collisionBearing = std::fmod(std::abs(bearing_ - contactBearing), Tril::Tau);
+            double directHitProportion = std::max(0.0, ((std::abs(collisionBearing - Tril::Pi) / Tril::Pi) - 0.5) * 2);
             victim->ApplyDamage(directHitProportion * (5 * std::pow(contactVelocity, 2.0)));
         }
     });

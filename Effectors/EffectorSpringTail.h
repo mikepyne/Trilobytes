@@ -5,7 +5,7 @@
 
 class EffectorSpringTail : public Effector {
 public:
-    EffectorSpringTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, Swimmer& owner, const EoBE::RangeConverter& neuronExcitementToChargeRate, const Energy& storedEnergyCap, const double& triggerThreshold);
+    EffectorSpringTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, Swimmer& owner, const Tril::RangeConverter& neuronExcitementToChargeRate, const Energy& storedEnergyCap, const double& triggerThreshold);
     ~EffectorSpringTail() override;
 
     virtual std::string_view GetName() const override { return "SpringTail"; }
@@ -14,7 +14,7 @@ public:
     virtual void Draw(QPainter& paint) const override;
 
 private:
-    const EoBE::RangeConverter neuronExcitementToChargeRate_;
+    const Tril::RangeConverter neuronExcitementToChargeRate_;
     const Energy storedEnergyCap_;
     const double triggerThreshold_;
 

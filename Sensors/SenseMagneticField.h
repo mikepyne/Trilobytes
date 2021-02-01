@@ -18,7 +18,7 @@
  */
 class SenseMagneticField final : public Sense {
 public:
-    SenseMagneticField(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, const Point& target, const EoBE::RangeConverter& distanceNormaliser, const EoBE::Range<double>& frontBackNormaliser, const EoBE::Range<double>& leftRightNormaliser);
+    SenseMagneticField(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, const Point& target, const Tril::RangeConverter& distanceNormaliser, const Tril::Range<double>& frontBackNormaliser, const Tril::Range<double>& leftRightNormaliser);
     virtual ~SenseMagneticField() override {}
 
     virtual std::string_view GetName() const override { return "MagneticField"; }
@@ -29,9 +29,9 @@ public:
 
 private:
     Point target_;
-    EoBE::RangeConverter distanceNormaliser_;
-    EoBE::RangeConverter frontBackNormaliser_;
-    EoBE::RangeConverter leftRightNormaliser_;
+    Tril::RangeConverter distanceNormaliser_;
+    Tril::RangeConverter frontBackNormaliser_;
+    Tril::RangeConverter leftRightNormaliser_;
 
     double BearingToFrontBack(double bearing) const;
     double BearingToLeftRight(double bearing) const;

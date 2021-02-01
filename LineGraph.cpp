@@ -114,8 +114,8 @@ void LineGraph::paintEvent(QPaintEvent* event)
     QPainter paint(this);
     paint.setClipRegion(event->region());
 
-    const EoBE::MinMax<qreal> xRange = { xAxisMinOverride_ ? xAxisMinOverrideValue_ : xRange_.Min(), xAxisMaxOverride_ ? xAxisMaxOverrideValue_ : xRange_.Max() };
-    const EoBE::MinMax<qreal> yRange = { yAxisMinOverride_ ? yAxisMinOverrideValue_ : yRange_.Min(), yAxisMaxOverride_ ? yAxisMaxOverrideValue_ : yRange_.Max() };
+    const Tril::MinMax<qreal> xRange = { xAxisMinOverride_ ? xAxisMinOverrideValue_ : xRange_.Min(), xAxisMaxOverride_ ? xAxisMaxOverrideValue_ : xRange_.Max() };
+    const Tril::MinMax<qreal> yRange = { yAxisMinOverride_ ? yAxisMinOverrideValue_ : yRange_.Min(), yAxisMaxOverride_ ? yAxisMaxOverrideValue_ : yRange_.Max() };
 
     const QPointF origin = PaintAxes(paint);
     PaintKey(paint);
@@ -151,8 +151,8 @@ QPointF LineGraph::PaintAxes(QPainter& p) const
 {
     QFontMetricsF metrics(p.font());
 
-    EoBE::MinMax<qreal> xRange = { xAxisMinOverride_ ? xAxisMinOverrideValue_ : xRange_.Min(), xAxisMaxOverride_ ? xAxisMaxOverrideValue_ : xRange_.Max() };
-    EoBE::MinMax<qreal> yRange = { yAxisMinOverride_ ? yAxisMinOverrideValue_ : yRange_.Min(), yAxisMaxOverride_ ? yAxisMaxOverrideValue_ : yRange_.Max() };
+    Tril::MinMax<qreal> xRange = { xAxisMinOverride_ ? xAxisMinOverrideValue_ : xRange_.Min(), xAxisMaxOverride_ ? xAxisMaxOverrideValue_ : xRange_.Max() };
+    Tril::MinMax<qreal> yRange = { yAxisMinOverride_ ? yAxisMinOverrideValue_ : yRange_.Min(), yAxisMaxOverride_ ? yAxisMaxOverrideValue_ : yRange_.Max() };
 
     QString yMinLabel = QString("%1").arg(yRange.Min(), 0, 'f', 2);
     QString yMaxLabel = QString("%1").arg(yRange.Max(), 0, 'f', 2);
@@ -251,8 +251,8 @@ void LineGraph::PaintGraticule(QPainter& painter, const QPointF& target, const Q
         painter.restore();
 
         // Calculate axis values for point
-        EoBE::RangeConverter xConverter(EoBE::Range(area.left(), area.right()), xRange_);
-        EoBE::RangeConverter yConverter(EoBE::Range(area.bottom(), area.top()), yRange_);
+        Tril::RangeConverter xConverter(Tril::Range(area.left(), area.right()), xRange_);
+        Tril::RangeConverter yConverter(Tril::Range(area.bottom(), area.top()), yRange_);
 
         qreal xValueAtCrosshair = xConverter.Convert(target.x());
         qreal yValueAtCrosshair = yConverter.Convert(target.y());

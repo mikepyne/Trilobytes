@@ -1,6 +1,6 @@
 #include "Utils.h"
 
-namespace EoBE {
+namespace Tril {
 
 void RollingStatistics::AddValue(const double& value)
 {
@@ -38,4 +38,4 @@ double RangeConverter::ConvertAndClamp(const double& value) const
     return std::clamp(to_.First() + (proportion * to_.ValueDifference()), to_.Min(), to_.Max());
 }
 
-} // namespace EoBE
+} // namespace Tril

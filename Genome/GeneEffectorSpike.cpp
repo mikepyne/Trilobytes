@@ -42,7 +42,7 @@ void GeneEffectorSpike::AddMutations()
     // Adjust bearing
     AddMutation(BASE_WEIGHT, [&]()
     {
-        bearing_ = std::abs(std::fmod(Random::Gaussian(bearing_, EoBE::Tau / 25), EoBE::Tau));
+        bearing_ = std::abs(std::fmod(Random::Gaussian(bearing_, Tril::Tau / 25), Tril::Tau));
     });
     // Adjust length
     AddMutation(BASE_WEIGHT, [&]()

@@ -38,8 +38,8 @@ Energy EffectorTail::PerformActions(const std::vector<double>& actionValues, con
     const double& antiClockwiseTorque = actionValues.at(2);
 
     owner_.AdjustVelocity(acceleration);
-    owner_.AdjustBearing(clockwiseTorque / EoBE::Tau);
-    owner_.AdjustBearing(antiClockwiseTorque / EoBE::Tau);
+    owner_.AdjustBearing(clockwiseTorque / Tril::Tau);
+    owner_.AdjustBearing(antiClockwiseTorque / Tril::Tau);
 
     /*
      * We want to make acceleration costlier as an organism gets faster

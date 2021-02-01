@@ -28,6 +28,6 @@ void MeatChunk::DrawImpl(QPainter& paint)
 double MeatChunk::GetMeatChunkRadius(const Energy& energy)
 {
     // Size range 2.0->6.0 scaling linearly with energy quantity
-    static EoBE::RangeConverter energyToSize({ 1_mj, 20_mj }, { 0.5, 3.5 });
+    static Tril::RangeConverter energyToSize({ 1_mj, 20_mj }, { 0.5, 3.5 });
     return energyToSize.ConvertAndClamp(energy);
 }

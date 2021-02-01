@@ -24,11 +24,11 @@ public:
     void MutateStructure();
 
 private:
-    EoBE::Range<unsigned> aChromosomeRange_;
-    EoBE::Range<unsigned> bChromosomeRange_;
+    Tril::Range<unsigned> aChromosomeRange_;
+    Tril::Range<unsigned> bChromosomeRange_;
     std::map<unsigned, std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene>>> chromosomePair_;
 
-    ChromosomePair(const EoBE::Range<unsigned>& aRange, const EoBE::Range<unsigned>& bRange, std::map<unsigned, std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene>>>&& chromosomePair);
+    ChromosomePair(const Tril::Range<unsigned>& aRange, const Tril::Range<unsigned>& bRange, std::map<unsigned, std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene>>>&& chromosomePair);
 };
 
 #endif // CHROMOSOMEPAIR_H

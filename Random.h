@@ -40,7 +40,7 @@ public:
 
     static double Bearing()
     {
-        return Random::Number(0.0, EoBE::Tau);
+        return Random::Number(0.0, Tril::Tau);
     }
 
     static bool Boolean()
@@ -56,7 +56,7 @@ public:
 
     static Point PointInCircle(const Circle& circle)
     {
-        const double rotation = Random::Number(0.0, EoBE::Tau);
+        const double rotation = Random::Number(0.0, Tril::Tau);
         const double distance = std::sqrt(Random::Number(0.0, 1.0)) * circle.radius;
         const double x = circle.x + distance * std::cos(rotation);
         const double y = circle.y + distance * std::sin(rotation);

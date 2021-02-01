@@ -23,26 +23,26 @@ SenseTraitsBase::TraitNormaliser SenseTraitsBase::DefaultNormalisation(const Sen
 {
     switch (trait) {
     case Trait::Red :
-        return { trait, { EoBE::Range(0.0, 0.9), EoBE::Range(0.0, Random::Sign(1.0)) } };
+        return { trait, { Tril::Range(0.0, 0.9), Tril::Range(0.0, Random::Sign(1.0)) } };
     case Trait::Green :
-        return { trait, { EoBE::Range(0.0, 0.9), EoBE::Range(0.0, Random::Sign(1.0)) } };
+        return { trait, { Tril::Range(0.0, 0.9), Tril::Range(0.0, Random::Sign(1.0)) } };
     case Trait::Blue :
-        return { trait, { EoBE::Range(0.0, 0.9), EoBE::Range(0.0, Random::Sign(1.0)) } };
+        return { trait, { Tril::Range(0.0, 0.9), Tril::Range(0.0, Random::Sign(1.0)) } };
     case Trait::Energy :
-        return { trait, { EoBE::Range(0_j, 500_j), EoBE::Range(0.0, Random::Sign(1.0)) } };
+        return { trait, { Tril::Range(0_j, 500_j), Tril::Range(0.0, Random::Sign(1.0)) } };
     case Trait::Age :
-        return { trait, { EoBE::Range(0.0, 50'000.9), EoBE::Range(0.0, Random::Sign(1.0)) } };
+        return { trait, { Tril::Range(0.0, 50'000.9), Tril::Range(0.0, Random::Sign(1.0)) } };
     case Trait::Size :
-        return { trait, { EoBE::Range(0.0, 30.0), EoBE::Range(0.0, Random::Sign(1.0)) } };
+        return { trait, { Tril::Range(0.0, 30.0), Tril::Range(0.0, Random::Sign(1.0)) } };
     case Trait::Distance :
-        return { trait, { EoBE::Range(0.0, 100.0), EoBE::Range(0.0, Random::Sign(1.0)) } };
+        return { trait, { Tril::Range(0.0, 100.0), Tril::Range(0.0, Random::Sign(1.0)) } };
     case Trait::Health :
-        return { trait, { EoBE::Range(0.0, 100.0), EoBE::Range(0.0, Random::Sign(1.0)) } };
+        return { trait, { Tril::Range(0.0, 100.0), Tril::Range(0.0, Random::Sign(1.0)) } };
     case Trait::Presence :
-        return { trait, { EoBE::Range(0.0, 10.0), EoBE::Range(0.0, Random::Sign(1.0)) } };
+        return { trait, { Tril::Range(0.0, 10.0), Tril::Range(0.0, Random::Sign(1.0)) } };
     }
     assert(false && "Unimplemented Trait");
-    return { static_cast<Trait>(-1), { EoBE::Range(0.0, 0.0), EoBE::Range(0.0, Random::Sign(1.0)) }};
+    return { static_cast<Trait>(-1), { Tril::Range(0.0, 0.0), Tril::Range(0.0, Random::Sign(1.0)) }};
 }
 
 SenseTraitsBase::SenseTraitsBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, const Transform& transform, std::vector<TraitNormaliser>&& toDetect)
@@ -57,13 +57,13 @@ void SenseTraitsBase::PrimeInputs(std::vector<double>& inputs, const EntityConta
     // First adjust inputs for each entity detected
     FilterEntities(entities, [&](const Entity& entity)
     {
-        EoBE::IterateBoth<TraitNormaliser, double>(toDetect_, inputs, [&](const TraitNormaliser& norm, double& input)
+        Tril::IterateBoth<TraitNormaliser, double>(toDetect_, inputs, [&](const TraitNormaliser& norm, double& input)
         {
             input += GetTraitFrom(entity, norm.trait);
         });
     });
     // Then normalise each input according to its normalisation range
-    EoBE::IterateBoth<TraitNormaliser, double>(toDetect_, inputs, [&](const TraitNormaliser& norm, double& input)
+    Tril::IterateBoth<TraitNormaliser, double>(toDetect_, inputs, [&](const TraitNormaliser& norm, double& input)
     {
         input = norm.range.ConvertAndClamp(input);
     });

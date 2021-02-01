@@ -13,7 +13,7 @@
 #include <memory>
 #include <assert.h>
 
-namespace EoBE {
+namespace Tril {
 
 ///
 /// Constants
@@ -88,7 +88,7 @@ public:
     T Max() const { return IsValid() ? max_ : static_cast<T>(0); }
     T Range() const { return IsValid() ? max_ - min_ : static_cast<T>(0); }
     bool Contains(const T& value) const { return value >= min_ && value <= max_; }
-    operator EoBE::Range<T>() const { return EoBE::Range(Min(), Max()); }
+    operator Tril::Range<T>() const { return Tril::Range(Min(), Max()); }
 
     void ExpandToContain(const T& newValue)
     {
@@ -358,15 +358,15 @@ constexpr std::string_view TypeName()
     std::string_view name, prefix, suffix;
 #ifdef __clang__
     name = __PRETTY_FUNCTION__;
-    prefix = "std::string_view EoBE::TypeName() [T = ";
+    prefix = "std::string_view Tril::TypeName() [T = ";
     suffix = "]";
 #elif defined(__GNUC__)
     name = __PRETTY_FUNCTION__;
-    prefix = "constexpr std::string_view EoBE::TypeName() [with T = ";
+    prefix = "constexpr std::string_view Tril::TypeName() [with T = ";
     suffix = "; std::string_view = std::basic_string_view<char>]";
 #elif defined(_MSC_VER)
     name = __FUNCSIG__;
-    prefix = "class std::basic_string_view<char,struct std::char_traits<char> > __cdecl EoBE::TypeName<";
+    prefix = "class std::basic_string_view<char,struct std::char_traits<char> > __cdecl Tril::TypeName<";
     suffix = ">(void)";
 #endif
     name.remove_prefix(prefix.size());
@@ -385,6 +385,6 @@ std::string TypeNames(const std::string& seperator)
     return result.str();
 }
 
-} // namespace EoBE
+} // namespace Tril
 
 #endif // UTILS_H

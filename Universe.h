@@ -43,7 +43,7 @@ public:
      * @return A Handle that defines the lifetime of the task. When no copies of
      * the handle exist, the task is removed from the list
      */
-    [[nodiscard]] EoBE::Handle AddTask(std::function<void(uint64_t tick)>&& task);
+    [[nodiscard]] Tril::Handle AddTask(std::function<void(uint64_t tick)>&& task);
 
 
     void Tick();
@@ -56,7 +56,7 @@ private:
 
     uint64_t tickIndex_ = 0;
 
-    EoBE::AutoClearingContainer<std::function<void(uint64_t tick)>> perTickTasks_;
+    Tril::AutoClearingContainer<std::function<void(uint64_t tick)>> perTickTasks_;
 
     double GetLunarCycle() const;
 };

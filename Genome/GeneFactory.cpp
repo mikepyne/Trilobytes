@@ -79,7 +79,7 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
             traits.push_back(SenseTraitsBase::DefaultNormalisation(trait));
         }
         unsigned hiddenLayers = Random::Number(0u, traits.size());
-        Transform transform = { 0, Random::Number(0.0, 20.0), Random::Gaussian(0.0, EoBE::Pi) };
+        Transform transform = { 0, Random::Number(0.0, 20.0), Random::Gaussian(0.0, Tril::Pi) };
         double radius = Random::Number(5.0, 30.0);
         return std::make_shared<GeneSenseTraitsInArea>(std::move(traits), hiddenLayers, brainWidth, transform, radius);
     },
@@ -107,7 +107,7 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
             traits.push_back(SenseTraitsBase::DefaultNormalisation(trait));
         }
         unsigned hiddenLayers = Random::Number(0u, traits.size());
-        Transform transform = { 0, Random::Number(0.0, 20.0), Random::Gaussian(0.0, EoBE::Pi) };
+        Transform transform = { 0, Random::Number(0.0, 20.0), Random::Gaussian(0.0, Tril::Pi) };
         return std::make_shared<GeneSenseTraitsTouching>(std::move(traits), hiddenLayers, brainWidth, transform);
     },
     [=]()
@@ -119,7 +119,7 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
         }
         unsigned hiddenLayers = Random::Number(0u, traits.size());
         double distance = Random::Number(1.0, 50.0);
-        double rotation = Random::Number(0.0, EoBE::Tau);
+        double rotation = Random::Number(0.0, Tril::Tau);
         // TODO allow the sense to start somewhere other than the centre of the swimmer
         return std::make_shared<GeneSenseTraitsRaycast>(std::move(traits), hiddenLayers, brainWidth, Transform{ 0, 0, 0 }, distance, rotation);
     },
@@ -141,7 +141,7 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
     [=]()
     {
         unsigned hiddenLayers = Random::Number(0u, 2u);
-        auto rangeConverter = EoBE::RangeConverter{ {-1.0, 0.1}, {-10_uj, 10_uj} };
+        auto rangeConverter = Tril::RangeConverter{ {-1.0, 0.1}, {-10_uj, 10_uj} };
         Energy storedEnergyCap = Random::Number(100_uj, 500_uj);
         double triggerThreshold = Random::Number(0.0, 1.0);
         return std::make_shared<GeneEffectorSpringTail>(hiddenLayers, NeuralNetwork::BRAIN_WIDTH, rangeConverter, storedEnergyCap, triggerThreshold);

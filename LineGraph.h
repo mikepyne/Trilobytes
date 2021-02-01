@@ -14,7 +14,7 @@ public:
         QString name_;
         QRgb colour_;
         bool hidden_;
-        EoBE::CircularBuffer<std::pair<qreal, qreal>> points_;
+        Tril::CircularBuffer<std::pair<qreal, qreal>> points_;
     };
 
     LineGraph(QWidget* parent, QString xAxisLabel, QString yAxisLabel, size_t plotDataPointCount = 20'000);
@@ -53,8 +53,8 @@ protected:
     virtual void paintEvent(QPaintEvent* event) override final;
 
 private:
-    EoBE::MinMax<qreal> xRange_;
-    EoBE::MinMax<qreal> yRange_;
+    Tril::MinMax<qreal> xRange_;
+    Tril::MinMax<qreal> yRange_;
     QString xAxisLabel_;
     QString yAxisLabel_;
     std::vector<Plot> plots_;

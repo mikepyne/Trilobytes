@@ -207,7 +207,7 @@ NeuralNetwork::Layer NeuralNetwork::CreatePassThroughLayer(unsigned width)
 std::vector<NeuralNetwork::Layer> NeuralNetwork::CopyLayers() const
 {
     std::vector<Layer> copy(layers_.size(), Layer{});
-    EoBE::IterateBoth<Layer, Layer>(layers_, copy, [](const Layer& origLayer, Layer& copyLayer)
+    Tril::IterateBoth<Layer, Layer>(layers_, copy, [](const Layer& origLayer, Layer& copyLayer)
     {
         copyLayer.reserve(origLayer.size());
         for (const Node& origNode : origLayer ) {

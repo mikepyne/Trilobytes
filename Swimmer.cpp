@@ -75,10 +75,10 @@ void Swimmer::TickImpl(EntityContainerInterface& container, const UniverseParame
         const int chunks = swimmerEnergy / 40_mj;
         // make sure we explode evenly outwards, and not all in one direction
         const double rotationOffset = Random::Bearing();
-        const double rotationStep = EoBE::Tau / chunks;
+        const double rotationStep = Tril::Tau / chunks;
         for (int i = 0; i < chunks; i++) {
             Vec2 swimmerMovement = GetMovementVector(swimmerTransform.rotation, swimmerSpeed);
-            Vec2 relativeMovement = GetMovementVector(rotationOffset + (i * rotationStep) + Random::Gaussian(0.0, EoBE::Tau / 10), + Random::Gaussian(10.0, 2.5));
+            Vec2 relativeMovement = GetMovementVector(rotationOffset + (i * rotationStep) + Random::Gaussian(0.0, Tril::Tau / 10), + Random::Gaussian(10.0, 2.5));
             Vec2 chunkMovement = { swimmerMovement.x + relativeMovement.x, swimmerMovement.y + relativeMovement.y };
             auto [ rotation, speed ] = DeconstructMovementVector(chunkMovement);{}
             Transform chunkTransform = { swimmerTransform.x + (chunkMovement.x / 10.0), swimmerTransform.y + (chunkMovement.y / 10.0), rotation };

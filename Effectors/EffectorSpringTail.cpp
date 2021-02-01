@@ -4,7 +4,7 @@
 
 #include <iomanip>
 
-EffectorSpringTail::EffectorSpringTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, Swimmer& owner, const EoBE::RangeConverter& neuronExcitementToChargeRate, const Energy& storedEnergyCap, const double& triggerThreshold)
+EffectorSpringTail::EffectorSpringTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, Swimmer& owner, const Tril::RangeConverter& neuronExcitementToChargeRate, const Energy& storedEnergyCap, const double& triggerThreshold)
     : Effector(network, inputConnections, owner)
     , neuronExcitementToChargeRate_(neuronExcitementToChargeRate)
     , storedEnergyCap_(storedEnergyCap)

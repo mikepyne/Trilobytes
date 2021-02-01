@@ -15,8 +15,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    setWindowTitle("Trilobytes - Evolution Simulator");
+
     universe_ = std::make_shared<Universe>(Rect{ -500, -500, 500, 500 });
     ui->universe->SetUniverse(universe_);
+
     ui->newGraphButtonsContainer->setLayout(new QVBoxLayout());
 
     connect(ui->universe, &UniverseWidget::EntitySelected, [&](const std::shared_ptr<Entity>& selected)
@@ -173,8 +177,8 @@ void MainWindow::ResetGraphs()
     AddGraph("Average Age", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Age (tick)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
-            EoBE::RollingStatistics foodStats;
-            EoBE::RollingStatistics swimmerStats;
+            Tril::RollingStatistics foodStats;
+            Tril::RollingStatistics swimmerStats;
             universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
                 if (dynamic_cast<const FoodPellet*>(e.get())) {
@@ -190,8 +194,8 @@ void MainWindow::ResetGraphs()
     AddGraph("Max Age", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Age (tick)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
-            EoBE::RollingStatistics foodStats;
-            EoBE::RollingStatistics swimmerStats;
+            Tril::RollingStatistics foodStats;
+            Tril::RollingStatistics swimmerStats;
             universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
                 if (dynamic_cast<const FoodPellet*>(e.get())) {
@@ -207,7 +211,7 @@ void MainWindow::ResetGraphs()
     AddGraph("Health (%)", { { 0xFFDFDF, "Min (%)" }, { 0xFF0000, "Mean (%)" }, { 0xFFDFDF, "Max (%)" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Swimmer Health (%)", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {
-            EoBE::RollingStatistics stats;
+            Tril::RollingStatistics stats;
             universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
                 if (const Swimmer* swimmer = dynamic_cast<const Swimmer*>(e.get()); swimmer != nullptr) {
@@ -228,7 +232,7 @@ void MainWindow::ResetGraphs()
     AddGraph("Generation", { { 0xDFDFDF, "Min" }, { 0x0000FF, "Mean" }, { 0xDFDFDF, "Max" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Swimmer Generation", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {
-            EoBE::RollingStatistics stats;
+            Tril::RollingStatistics stats;
             universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
                 if (const Swimmer* swimmer = dynamic_cast<const Swimmer*>(e.get()); swimmer != nullptr) {
@@ -249,8 +253,8 @@ void MainWindow::ResetGraphs()
     AddGraph("Mutations", { { 0xF0F000, "Mean Gene Mutations" }, { 0xF000FF, "Mean Chromosome Mutations" } }, "Time (tick)", "Mutations per Genome", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {
-            EoBE::RollingStatistics geneStats;
-            EoBE::RollingStatistics chromosomeStats;
+            Tril::RollingStatistics geneStats;
+            Tril::RollingStatistics chromosomeStats;
             universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
                 if (const Swimmer* swimmer = dynamic_cast<const Swimmer*>(e.get()); swimmer != nullptr) {
@@ -270,7 +274,7 @@ void MainWindow::ResetGraphs()
     [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {
-            EoBE::RollingStatistics stats;
+            Tril::RollingStatistics stats;
             universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
                 if (const Swimmer* swimmer = dynamic_cast<const Swimmer*>(e.get()); swimmer != nullptr) {
@@ -292,7 +296,7 @@ void MainWindow::ResetGraphs()
     [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {
-            EoBE::RollingStatistics stats;
+            Tril::RollingStatistics stats;
             universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
             {
                 if (const Swimmer* swimmer = dynamic_cast<const Swimmer*>(e.get()); swimmer != nullptr) {

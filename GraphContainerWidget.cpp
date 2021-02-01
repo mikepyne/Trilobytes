@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QScrollArea>
 
-GraphContainerWidget::GraphContainerWidget(QWidget* parent, EoBE::Handle&& graphUpdaterHandle, LineGraph* lineGraph)
+GraphContainerWidget::GraphContainerWidget(QWidget* parent, Tril::Handle&& graphUpdaterHandle, LineGraph* lineGraph)
     : QWidget(parent)
     , lineGraph_(lineGraph)
     , graphUpdaterHandle_(std::move(graphUpdaterHandle))

@@ -3,7 +3,7 @@
 #include "Swimmer.h"
 #include "Effectors/EffectorSpringTail.h"
 
-GeneEffectorSpringTail::GeneEffectorSpringTail(unsigned hiddenLayers, unsigned inputCount, const EoBE::RangeConverter& neuronExcitementToChargeRate, const Energy& storedEnergyCap, const double& triggerThreshold)
+GeneEffectorSpringTail::GeneEffectorSpringTail(unsigned hiddenLayers, unsigned inputCount, const Tril::RangeConverter& neuronExcitementToChargeRate, const Energy& storedEnergyCap, const double& triggerThreshold)
     : GeneEffectorBase(hiddenLayers, inputCount, 2)
     , neuronExcitementToChargeRate_(neuronExcitementToChargeRate)
     , storedEnergyCap_(storedEnergyCap)
@@ -12,7 +12,7 @@ GeneEffectorSpringTail::GeneEffectorSpringTail(unsigned hiddenLayers, unsigned i
     AddMutations();
 }
 
-GeneEffectorSpringTail::GeneEffectorSpringTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance, const EoBE::RangeConverter& neuronExcitementToChargeRate, const Energy& storedEnergyCap, const double& triggerThreshold)
+GeneEffectorSpringTail::GeneEffectorSpringTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance, const Tril::RangeConverter& neuronExcitementToChargeRate, const Energy& storedEnergyCap, const double& triggerThreshold)
     : GeneEffectorBase(network, inputConnections, dominance)
     , neuronExcitementToChargeRate_(neuronExcitementToChargeRate)
     , storedEnergyCap_(storedEnergyCap)
@@ -43,7 +43,7 @@ void GeneEffectorSpringTail::AddMutations()
     {
         double newMin = Random::GaussianAdjustment<double>(neuronExcitementToChargeRate_.GetFrom().Min(), 0.1);
         double newMax = Random::GaussianAdjustment<double>(neuronExcitementToChargeRate_.GetFrom().Max(), 0.1);
-        neuronExcitementToChargeRate_ = { EoBE::Range(newMin, newMax), neuronExcitementToChargeRate_.GetTo() };
+        neuronExcitementToChargeRate_ = { Tril::Range(newMin, newMax), neuronExcitementToChargeRate_.GetTo() };
     });
 
     // Adjust charge rate output range
@@ -51,7 +51,7 @@ void GeneEffectorSpringTail::AddMutations()
     {
         Energy newMin = Random::GaussianAdjustment<Energy>(neuronExcitementToChargeRate_.GetTo().Min(), 0.3);
         Energy newMax = Random::GaussianAdjustment<Energy>(neuronExcitementToChargeRate_.GetTo().Max(), 0.3);
-        neuronExcitementToChargeRate_ = { neuronExcitementToChargeRate_.GetFrom(), EoBE::Range(newMin, newMax) };
+        neuronExcitementToChargeRate_ = { neuronExcitementToChargeRate_.GetFrom(), Tril::Range(newMin, newMax) };
     });
 
     // Adjust stored Energy Cap

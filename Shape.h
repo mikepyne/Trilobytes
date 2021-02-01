@@ -78,7 +78,7 @@ inline double GetBearing(const Point& from, const Point& to)
     double xDiff = to.x - from.x;
     double yDiff = to.y - from.y;
 
-    return std::fmod(std::atan2(xDiff, yDiff) + EoBE::Tau, EoBE::Tau);
+    return std::fmod(std::atan2(xDiff, yDiff) + Tril::Tau, Tril::Tau);
 }
 
 /**
@@ -105,7 +105,7 @@ inline bool Contains(const Line& l, const Point& p)
 {
     if (p == l.a || p == l.b) {
         return true;
-    } else if (EoBE::Range<double>(l.a.x, l.b.x).Contains(p.x) && EoBE::Range<double>(l.a.y, l.b.y).Contains(p.y)) {
+    } else if (Tril::Range<double>(l.a.x, l.b.x).Contains(p.x) && Tril::Range<double>(l.a.y, l.b.y).Contains(p.y)) {
         // Work out the slope of the line & a line connecting the point to the line
         double ldx = l.b.x - l.a.x;
         double ldy = l.b.y - l.a.y;
@@ -114,7 +114,7 @@ inline bool Contains(const Line& l, const Point& p)
 
         // Work out the slopes of the lines (checking for infinite slopes)
         if (ldy == 0.0 || pdy == 0.0) {
-            return ldy == pdy && l.a.x == p.x && EoBE::Range<double>(l.a.x, l.b.x).Contains(p.x);
+            return ldy == pdy && l.a.x == p.x && Tril::Range<double>(l.a.x, l.b.x).Contains(p.x);
         }
 
 

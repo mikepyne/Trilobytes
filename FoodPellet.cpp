@@ -6,7 +6,7 @@
 
 double FoodPellet::GetPelletRadius(const Energy& energy)
 {
-    static EoBE::RangeConverter energyToSize({ 1_mj, 30_mj }, { 0.5, 2.5 });
+    static Tril::RangeConverter energyToSize({ 1_mj, 30_mj }, { 0.5, 2.5 });
     return energyToSize.Convert(energy);
 }
 

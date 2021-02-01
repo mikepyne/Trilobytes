@@ -59,9 +59,9 @@ Energy Entity::TakeEnergy(Energy quantity)
 void Entity::SetBearing(double bearing)
 {
     if (bearing < 0.0) {
-        bearing += EoBE::Tau;
-    } else if (bearing > EoBE::Tau) {
-        bearing -= EoBE::Tau;
+        bearing += Tril::Tau;
+    } else if (bearing > Tril::Tau) {
+        bearing -= Tril::Tau;
     }
     transform_.rotation = bearing;
 }

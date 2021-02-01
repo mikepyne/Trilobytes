@@ -100,7 +100,7 @@ void NeuralNetworkInspector::UpdateConnectionStrengths(const EntityContainerInte
             }
         });
 
-        EoBE::IterateBoth<std::shared_ptr<Sense>, Group>(inspectedSwimmer_->InspectSenses(), sensorGroups_, [&](const std::shared_ptr<Sense>& sense, NeuralNetworkInspector::Group& senseGroup)
+        Tril::IterateBoth<std::shared_ptr<Sense>, Group>(inspectedSwimmer_->InspectSenses(), sensorGroups_, [&](const std::shared_ptr<Sense>& sense, NeuralNetworkInspector::Group& senseGroup)
         {
             std::vector<double> inputs(senseGroup.horizontalNodes);
             sense->PrimeInputs(inputs, container, universeParameters);

@@ -22,8 +22,8 @@ void Spike::TickImpl(EntityContainerInterface& container, const UniverseParamete
 
             auto [ contactBearing, contactVelocity ] = DeconstructMovementVector({ -victimVec.x, -victimVec.y });
 
-            double collisionBearing = std::fmod(std::abs(contactBearing), EoBE::Tau);
-            double directHitProportion = std::max(0.0, ((std::abs(collisionBearing - EoBE::Pi) / EoBE::Pi) - 0.5) * 2);
+            double collisionBearing = std::fmod(std::abs(contactBearing), Tril::Tau);
+            double directHitProportion = std::max(0.0, ((std::abs(collisionBearing - Tril::Pi) / Tril::Pi) - 0.5) * 2);
             swimmer->ApplyDamage(directHitProportion * (5 * std::pow(contactVelocity, 2.0)));
         }
     });
@@ -31,7 +31,7 @@ void Spike::TickImpl(EntityContainerInterface& container, const UniverseParamete
 
 void Spike::DrawImpl(QPainter& paint)
 {
-    for (double rotation = 0.0; rotation < EoBE::Tau; rotation += EoBE::Tau / 17) {
+    for (double rotation = 0.0; rotation < Tril::Tau; rotation += Tril::Tau / 17) {
         Point tip = ApplyOffset({ GetLocation().x, GetLocation().y }, rotation, GetRadius());
         paint.drawLine(QLineF(GetLocation().x, GetLocation().y, tip.x, tip.y));
     }

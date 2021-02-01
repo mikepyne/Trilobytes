@@ -31,7 +31,7 @@ Universe::Universe(Rect startingQuad)
 
     for (const auto& feeder : feedDispensers_) {
         for (unsigned i = 0; i < std::max(1u, 25 / feedDispensers_.size()); i++) {
-            double rotation = Random::Number(0.0, EoBE::Tau);
+            double rotation = Random::Number(0.0, Tril::Tau);
             double distance = std::sqrt(Random::Number(0.0, 1.0)) * feeder->GetRadius();
             double swimmerX = feeder->GetX() + distance * std::cos(rotation);
             double swimmerY = feeder->GetY() + distance * std::sin(rotation);
@@ -61,7 +61,7 @@ std::shared_ptr<FeedDispenser> Universe::PickFeedDispenser(const Point& location
     return nullptr;
 }
 
-EoBE::Handle Universe::AddTask(std::function<void (uint64_t tick)>&& task)
+Tril::Handle Universe::AddTask(std::function<void (uint64_t tick)>&& task)
 {
     return perTickTasks_.PushBack(std::move(task));
 }

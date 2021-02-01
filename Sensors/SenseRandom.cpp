@@ -38,7 +38,7 @@ std::string SenseRandom::GetDescription() const
 
 void SenseRandom::PrimeInputs(std::vector<double>& inputs, const EntityContainerInterface& /*entities*/, const UniverseParameters& /*universeParameters*/) const
 {
-    EoBE::IterateBoth<double, double>(inputs, last_, [](double& input, const double& last)
+    Tril::IterateBoth<double, double>(inputs, last_, [](double& input, const double& last)
     {
         input = last;
     });
@@ -46,7 +46,7 @@ void SenseRandom::PrimeInputs(std::vector<double>& inputs, const EntityContainer
 
 void SenseRandom::PrepareToPrime()
 {
-    EoBE::IterateBoth<double, FilteredRandom>(last_, filteredRandoms_, [](double& previous, const FilteredRandom& filter) {
+    Tril::IterateBoth<double, FilteredRandom>(last_, filteredRandoms_, [](double& previous, const FilteredRandom& filter) {
         previous = std::clamp(previous + (filter.beta_ * (Random::Number(filter.min_, filter.max_) - previous)), -1.0, 1.0);
     });
 }

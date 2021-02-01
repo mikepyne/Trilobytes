@@ -23,7 +23,7 @@ std::string EffectorFilterMouth::GetDescription() const
 Energy EffectorFilterMouth::PerformActions(const std::vector<double>& /*actionValues*/, const EntityContainerInterface& entities, const UniverseParameters& /*universeParameters*/)
 {
     // This is stupid, no point in having mouth closed ever for any reason
-    //static EoBE::RangeConverter inputToMouthOpen{ { -1.0, 1.0 }, { 0.0, 1.0 } };
+    //static Tril::RangeConverter inputToMouthOpen{ { -1.0, 1.0 }, { 0.0, 1.0 } };
 
     //const double mouthOpenProportion = inputToMouthOpen.ConvertAndClamp(actionValues.at(0));
     Energy foodEaten = 0_j;
