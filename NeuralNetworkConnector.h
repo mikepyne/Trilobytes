@@ -33,10 +33,10 @@ public:
     const std::vector<std::vector<double>>& Inspect() const { return weights_; }
 
     std::shared_ptr<NeuralNetworkConnector> WithMutatedConnections() const;
-    std::shared_ptr<NeuralNetworkConnector> WithInputAdded(unsigned index) const;
-    std::shared_ptr<NeuralNetworkConnector> WithInputRemoved(unsigned index) const;
-    std::shared_ptr<NeuralNetworkConnector> WithOutputAdded(unsigned index) const;
-    std::shared_ptr<NeuralNetworkConnector> WithOutputRemoved(unsigned index) const;
+    std::shared_ptr<NeuralNetworkConnector> WithInputAdded(size_t index) const;
+    std::shared_ptr<NeuralNetworkConnector> WithInputRemoved(size_t index) const;
+    std::shared_ptr<NeuralNetworkConnector> WithOutputAdded(size_t index) const;
+    std::shared_ptr<NeuralNetworkConnector> WithOutputRemoved(size_t index) const;
 
 private:
     std::vector<std::vector<double>> weights_;

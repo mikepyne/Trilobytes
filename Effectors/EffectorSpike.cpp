@@ -4,6 +4,7 @@
 #include "Swimmer.h"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QColor>
 
 EffectorSpike::EffectorSpike(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, Swimmer& owner, double bearing, double length)

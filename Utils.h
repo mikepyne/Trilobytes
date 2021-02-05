@@ -84,9 +84,9 @@ public:
     {}
 
     bool IsValid() const { return min_ <= max_; }
-    T Min() const { return IsValid() ? min_ : static_cast<T>(0); }
-    T Max() const { return IsValid() ? max_ : static_cast<T>(0); }
-    T Range() const { return IsValid() ? max_ - min_ : static_cast<T>(0); }
+    T Min() const { return IsValid() ? min_ : T{ 0 }; }
+    T Max() const { return IsValid() ? max_ : T{ 0 }; }
+    T Range() const { return IsValid() ? max_ - min_ : T{ 0 }; }
     bool Contains(const T& value) const { return value >= min_ && value <= max_; }
     operator Tril::Range<T>() const { return Tril::Range(Min(), Max()); }
 

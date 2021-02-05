@@ -14,7 +14,7 @@ GeneSenseBase::GeneSenseBase(const std::shared_ptr<NeuralNetwork>& network, cons
     // Insert a new row
     AddMutation(0.15 * BASE_WEIGHT, [&]()
     {
-        unsigned newRowIndex = Random::Number(0u, network_->GetLayerCount());
+        unsigned newRowIndex = Random::Number(size_t{ 0 }, network_->GetLayerCount());
         network_ = network_->WithRowAdded(newRowIndex, NeuralNetwork::InitialWeights::PassThrough);
     });
 
@@ -23,7 +23,7 @@ GeneSenseBase::GeneSenseBase(const std::shared_ptr<NeuralNetwork>& network, cons
     {
         // Don't allow mutation to remove final row
         if (network_->GetLayerCount() > 1) {
-            unsigned newRowIndex = Random::Number(0u, network_->GetLayerCount());
+            unsigned newRowIndex = Random::Number(size_t{ 0 }, network_->GetLayerCount());
             network_ = network_->WithRowRemoved(newRowIndex);
         }
     });

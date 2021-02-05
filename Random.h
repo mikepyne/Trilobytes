@@ -45,7 +45,8 @@ public:
 
     static bool Boolean()
     {
-        return static_cast<bool>(Random::Number(0u, 1u));
+        static std::bernoulli_distribution d;
+        return Generate(d);
     }
 
     template<typename NumericType>
@@ -96,13 +97,19 @@ public:
         return Generate(d);
     }
 
+    /**
+     * Instead of rounding n.0 to n.49... down and n.5 to n.9... up, this
+     * function uses the value after the decimal as the propotional chance the
+     * value will be rounded up. e.g. 0.1 has a 10% chance of being rounded up
+     * to 1, whereas 0.9 has a 90% chance of being rounded up.
+     */
     static uint64_t Round(const double& v)
     {
         return static_cast<uint64_t>(v) + (Random::PercentChance(std::fmod(v, 1.0) * 100) ? 1 : 0);
     }
 
     template<typename NumericType>
-    static NumericType Gaussian(NumericType mean = std::numeric_limits<NumericType>::min(), NumericType standardDeviation = static_cast<NumericType>(1.0))
+    static NumericType Gaussian(NumericType mean = std::numeric_limits<NumericType>::min(), NumericType standardDeviation = NumericType{ 1.0 })
     {
         static std::normal_distribution<NumericType> distribution;
         distribution.param(typename std::normal_distribution<NumericType>::param_type(mean, std::abs(standardDeviation)));
@@ -141,7 +148,7 @@ public:
     }
 
     template<typename NumericType>
-    static std::vector<NumericType> Gaussians(typename std::vector<NumericType>::size_type count, NumericType mean = std::numeric_limits<NumericType>::min(), NumericType standardDeviation = static_cast<NumericType>(1.0))
+    static std::vector<NumericType> Gaussians(typename std::vector<NumericType>::size_type count, NumericType mean = std::numeric_limits<NumericType>::min(), NumericType standardDeviation = NumericType{ 1.0 })
     {
         static std::normal_distribution<NumericType> distribution;
         distribution.param(typename std::normal_distribution<NumericType>::param_type(mean, standardDeviation));
@@ -195,7 +202,7 @@ public:
     {
         assert(!container.empty());
         auto iter = std::begin(container);
-        std::advance(iter, Random::Number(0u, container.size() - 1));
+        std::advance(iter, Random::Number(typename Container::size_type{ 0 }, container.size() - 1));
         return *iter;
     }
 
@@ -204,7 +211,7 @@ public:
     {
         assert(!container.empty());
         auto iter = std::cbegin(container);
-        std::advance(iter, Random::Number(0u, container.size() - 1));
+        std::advance(iter, Random::Number(typename Container::size_type{ 0 }, container.size() - 1));
         return *iter;
     }
 

@@ -71,7 +71,7 @@ private:
 
     UniverseParameters universeParameters_;
     std::shared_ptr<Universe> universe_;
-    bool trackSelected_;
+    bool trackSelected_ = false;
     std::shared_ptr<Entity> selectedEntity_;
     std::shared_ptr<Entity> draggedEntity_;
 

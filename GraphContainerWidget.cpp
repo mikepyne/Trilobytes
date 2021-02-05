@@ -81,7 +81,7 @@ GraphContainerWidget::GraphContainerWidget(QWidget* parent, Tril::Handle&& graph
     settings->setLayout(settingsGrid);
 
     QHBoxLayout* baseLayout = new QHBoxLayout(this);
-    baseLayout->setMargin(0);
+    baseLayout->setContentsMargins(0, 0, 0, 0);
     baseLayout->setSpacing(0);
     baseLayout->addWidget(settingsScrollArea);
     baseLayout->addWidget(lineGraph_);

@@ -77,7 +77,7 @@ std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithMutatedConne
     return std::make_shared<NeuralNetworkConnector>(std::move(newWeights));
 }
 
-std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithInputAdded(unsigned index) const
+std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithInputAdded(size_t index) const
 {
     std::vector<std::vector<double>> newWeights = weights_;
 
@@ -89,7 +89,7 @@ std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithInputAdded(u
     return std::make_shared<NeuralNetworkConnector>(std::move(newWeights));
 }
 
-std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithInputRemoved(unsigned index) const
+std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithInputRemoved(size_t index) const
 {
     std::vector<std::vector<double>> newWeights = weights_;
 
@@ -103,7 +103,7 @@ std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithInputRemoved
     return std::make_shared<NeuralNetworkConnector>(std::move(newWeights));
 }
 
-std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithOutputAdded(unsigned index) const
+std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithOutputAdded(size_t index) const
 {
     std::vector<std::vector<double>> newWeights = weights_;
 
@@ -117,7 +117,7 @@ std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithOutputAdded(
     return std::make_shared<NeuralNetworkConnector>(std::move(newWeights));
 }
 
-std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithOutputRemoved(unsigned index) const
+std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::WithOutputRemoved(size_t index) const
 {
     std::vector<std::vector<double>> newWeights = weights_;
 

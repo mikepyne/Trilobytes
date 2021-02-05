@@ -72,7 +72,7 @@ std::shared_ptr<NeuralNetwork> NeuralNetwork::WithMutatedConnections() const
     return std::make_shared<NeuralNetwork>(std::move(copy), width_);
 }
 
-std::shared_ptr<NeuralNetwork> NeuralNetwork::WithColumnAdded(unsigned index, NeuralNetwork::InitialWeights connections) const
+std::shared_ptr<NeuralNetwork> NeuralNetwork::WithColumnAdded(size_t index, NeuralNetwork::InitialWeights connections) const
 {
     std::vector<Layer> copy = CopyLayers();
     size_t newWidth = width_ + 1;
@@ -95,7 +95,7 @@ std::shared_ptr<NeuralNetwork> NeuralNetwork::WithColumnAdded(unsigned index, Ne
     return std::make_shared<NeuralNetwork>(std::move(copy), newWidth);
 }
 
-std::shared_ptr<NeuralNetwork> NeuralNetwork::WithColumnRemoved(unsigned index) const
+std::shared_ptr<NeuralNetwork> NeuralNetwork::WithColumnRemoved(size_t index) const
 {
     std::vector<Layer> copy = CopyLayers();
     size_t newWidth = width_;
@@ -121,7 +121,7 @@ std::shared_ptr<NeuralNetwork> NeuralNetwork::WithColumnRemoved(unsigned index) 
     return std::make_shared<NeuralNetwork>(std::move(copy), newWidth);
 }
 
-std::shared_ptr<NeuralNetwork> NeuralNetwork::WithRowAdded(unsigned index, NeuralNetwork::InitialWeights connections) const
+std::shared_ptr<NeuralNetwork> NeuralNetwork::WithRowAdded(size_t index, NeuralNetwork::InitialWeights connections) const
 {
     std::vector<Layer> copy = CopyLayers();
 
@@ -133,7 +133,7 @@ std::shared_ptr<NeuralNetwork> NeuralNetwork::WithRowAdded(unsigned index, Neura
     return std::make_shared<NeuralNetwork>(std::move(copy), width_);
 }
 
-std::shared_ptr<NeuralNetwork> NeuralNetwork::WithRowRemoved(unsigned index) const
+std::shared_ptr<NeuralNetwork> NeuralNetwork::WithRowRemoved(size_t index) const
 {
     std::vector<Layer> copy = CopyLayers();
 

@@ -78,7 +78,7 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
         for (const SenseTraitsBase::Trait& trait : Random::CopyItems(Random::Number<size_t>(1, 4), SenseTraitsBase::ALL_TRAITS)) {
             traits.push_back(SenseTraitsBase::DefaultNormalisation(trait));
         }
-        unsigned hiddenLayers = Random::Number(0u, traits.size());
+        unsigned hiddenLayers = Random::Number(size_t{ 0 }, traits.size());
         Transform transform = { 0, Random::Number(0.0, 20.0), Random::Gaussian(0.0, Tril::Pi) };
         double radius = Random::Number(5.0, 30.0);
         return std::make_shared<GeneSenseTraitsInArea>(std::move(traits), hiddenLayers, brainWidth, transform, radius);
@@ -106,7 +106,7 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
         for (const SenseTraitsBase::Trait& trait : Random::CopyItems(Random::Number<size_t>(1, 4), SenseTraitsBase::ALL_TRAITS)) {
             traits.push_back(SenseTraitsBase::DefaultNormalisation(trait));
         }
-        unsigned hiddenLayers = Random::Number(0u, traits.size());
+        unsigned hiddenLayers = Random::Number(size_t{ 0 }, traits.size());
         Transform transform = { 0, Random::Number(0.0, 20.0), Random::Gaussian(0.0, Tril::Pi) };
         return std::make_shared<GeneSenseTraitsTouching>(std::move(traits), hiddenLayers, brainWidth, transform);
     },
@@ -117,7 +117,7 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
         for (const SenseTraitsBase::Trait& trait : Random::CopyItems(Random::Number<size_t>(1, 4), SenseTraitsBase::ALL_TRAITS)) {
             traits.push_back(SenseTraitsBase::DefaultNormalisation(trait));
         }
-        unsigned hiddenLayers = Random::Number(0u, traits.size());
+        unsigned hiddenLayers = Random::Number(size_t{ 0 }, traits.size());
         double distance = Random::Number(1.0, 50.0);
         double rotation = Random::Number(0.0, Tril::Tau);
         // TODO allow the sense to start somewhere other than the centre of the swimmer
@@ -130,7 +130,7 @@ std::shared_ptr<Gene> GeneFactory::RandomGene(unsigned brainWidth)
         for (const SenseTraitsBase::Trait& trait : Random::CopyItems(Random::Number<size_t>(1, 4), SenseTraitsBase::ALL_TRAITS)) {
             traits.push_back(SenseTraitsBase::DefaultNormalisation(trait));
         }
-        unsigned hiddenLayers = Random::Number(0u, traits.size());
+        unsigned hiddenLayers = Random::Number(size_t{ 0 }, traits.size());
         return std::make_shared<GeneSenseTraitsSelf>(std::move(traits), hiddenLayers, brainWidth);
     },
     [=]()

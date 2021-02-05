@@ -292,7 +292,7 @@ void MainWindow::ResetGraphs()
             }
         }
     });
-    AddGraph("Swimmer Velocity", { { 0xDFDFDF, "Min" }, { 0x0000FF, "Mean)" }, { 0xDFDFDF, "Max)" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Velocity (pixels per tick)",
+    AddGraph("Swimmer Velocity", { { 0xDFDFDF, "Min" }, { 0x0000FF, "Mean" }, { 0xDFDFDF, "Max" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Velocity (pixels per tick)",
     [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {

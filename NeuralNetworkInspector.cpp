@@ -170,17 +170,17 @@ void NeuralNetworkInspector::mouseReleaseEvent(QMouseEvent*)
 void NeuralNetworkInspector::mousePressEvent(QMouseEvent* event)
 {
     dragging_ = true;
-    dragX_ = event->x();
-    dragY_ = event->y();
+    dragX_ = event->pos().x();
+    dragY_ = event->pos().y();
 }
 
 void NeuralNetworkInspector::mouseMoveEvent(QMouseEvent* event)
 {
     if (dragging_) {
-        transformX_ += ((event->x() - dragX_) / transformScale_);
-        transformY_ += ((event->y() - dragY_) / transformScale_);
-        dragX_ = event->x();
-        dragY_ = event->y();
+        transformX_ += ((event->pos().x() - dragX_) / transformScale_);
+        transformY_ += ((event->pos().y() - dragY_) / transformScale_);
+        dragX_ = event->pos().x();
+        dragY_ = event->pos().y();
         // QT paint call
         update();
     }
@@ -247,10 +247,12 @@ void NeuralNetworkInspector::paintEvent(QPaintEvent* event)
         p.setPen(Qt::white);
         if (type == GroupType::Effector) {
             // Draw effector text below the neurons
-            p.drawText(group.area.bottomLeft() + QPoint(2, -fontMetrics().descent()), QString(group.name.c_str()));
+            QRectF titleRect = p.boundingRect(group.area, Qt::AlignBottom | Qt::AlignHCenter, QString(group.name.c_str()));
+            p.drawText(titleRect, QString(group.name.c_str()));
         } else {
             // Draw Sensor/Brain text above the neurons
-            p.drawText(group.area.topLeft() + QPoint(2, fontMetrics().ascent()), QString(group.name.c_str()));
+            QRectF titleRect = p.boundingRect(group.area, Qt::AlignTop | Qt::AlignHCenter, QString(group.name.c_str()));
+            p.drawText(titleRect, QString(group.name.c_str()));
         }
         p.setCompositionMode(QPainter::CompositionMode_SourceOver);
     });
@@ -365,17 +367,15 @@ void NeuralNetworkInspector::LayoutGroupsInView()
     qreal maxSenseHeight = 0.0;
     qreal maxEffectorHeight = 0.0;
 
-    QFontMetrics metrics = fontMetrics();
+    QFontMetricsF metrics = fontMetrics();
 
     ForEachGroup([&](GroupType type, Group& group)
     {
-        qreal titleWidth = metrics.width(QString(group.name.c_str())) + 10;
+        QRectF titleRect = metrics.boundingRect(QString(group.name.c_str()));
         qreal nodesWidth = (2 * groupPadding_) + (group.horizontalNodes * (nodeWidth_ + nodeHSpacing_)) - (group.horizontalNodes ? nodeHSpacing_ : 0);
-
-        qreal titleHeight = metrics.height();
         qreal nodesHeight = (2 * groupPadding_) + (group.verticalNodes * (nodeHeight_ + nodeVSpacing_)) - (group.verticalNodes ? nodeVSpacing_ : 0);
 
-        group.area.setSize(QSizeF(std::max(titleWidth, nodesWidth), titleHeight + nodesHeight));
+        group.area.setSize(QSizeF(std::max(titleRect.width(), nodesWidth), titleRect.height() + nodesHeight));
 
         if (type == GroupType::Sense) {
             totalSenseWidth += group.area.width();

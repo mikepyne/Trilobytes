@@ -149,8 +149,6 @@ void LineGraph::paintEvent(QPaintEvent* event)
 
 QPointF LineGraph::PaintAxes(QPainter& p) const
 {
-    QFontMetricsF metrics(p.font());
-
     Tril::MinMax<qreal> xRange = { xAxisMinOverride_ ? xAxisMinOverrideValue_ : xRange_.Min(), xAxisMaxOverride_ ? xAxisMaxOverrideValue_ : xRange_.Max() };
     Tril::MinMax<qreal> yRange = { yAxisMinOverride_ ? yAxisMinOverrideValue_ : yRange_.Min(), yAxisMaxOverride_ ? yAxisMaxOverrideValue_ : yRange_.Max() };
 
@@ -159,26 +157,31 @@ QPointF LineGraph::PaintAxes(QPainter& p) const
     QString xMinLabel = QString("%1").arg(xRange.Min(), 0, 'f', 2);
     QString xMaxLabel = QString("%1").arg(xRange.Max(), 0, 'f', 2);
 
-    // The bottem left of the graph, aka (minX, minY)
-    QPointF origin(std::max(metrics.width(yMinLabel) + metrics.height(), metrics.width(yMaxLabel) + metrics.height()), height() - (2 * metrics.height()));
-
     /*
      * Draw the X and Y min/max values
      */
-    QRectF yMinRect(0, 0, metrics.width(yMinLabel), metrics.height());
-    QRectF yMaxRect(0, 0, metrics.width(yMaxLabel), metrics.height());
-    QRectF xMinRect(0, 0, metrics.width(xMinLabel), metrics.height());
-    QRectF xMaxRect(0, 0, metrics.width(xMaxLabel), metrics.height());
 
-    yMinRect.translate(origin.x() - yMinRect.width(), origin.y() - yMinRect.height());
-    yMaxRect.translate(origin.x() - yMaxRect.width(), 0);
-    xMinRect.translate(origin.x(), height() - (xMinRect.height() * 2.0));
-    xMaxRect.translate(width() - xMaxRect.width(), height() - (xMaxRect.height() * 2.0));
+    QRectF yMinRect = p.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, yMinLabel);
+    QRectF yMaxRect = p.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, yMaxLabel);
+    QRectF xMinRect = p.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, xMinLabel);
+    QRectF xMaxRect = p.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, xMaxLabel);
 
-    p.drawText(yMinRect, yMinLabel);
-    p.drawText(yMaxRect, yMaxLabel);
-    p.drawText(xMinRect, xMinLabel);
-    p.drawText(xMaxRect, xMaxLabel);
+    QRectF xLabelRect = p.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, xAxisLabel_);
+    QRectF yLabelRect = p.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, yAxisLabel_);
+
+    // The bottem left of the graph, aka (minX, minY)
+    // TODO (xLabelRect.height() * 2) is lazy, needs to be (xLabelRect.height() + keyHeight)
+    QPointF origin(std::max(yMinRect.width(), yMaxRect.width()) + yLabelRect.width(), height() - (xLabelRect.height() * 2));
+
+    yMinRect.moveBottomRight(QPointF(origin.x() - 1, origin.y()));
+    yMaxRect.moveTopRight(QPointF(origin.x() - 1, 0.0));
+    xMinRect.moveTopLeft(origin);
+    xMaxRect.moveTopRight(QPointF(width() - 1, origin.y()));
+
+    p.drawText(yMinRect, Qt::AlignTop | Qt::AlignLeft, yMinLabel);
+    p.drawText(yMaxRect, Qt::AlignTop | Qt::AlignLeft, yMaxLabel);
+    p.drawText(xMinRect, Qt::AlignTop | Qt::AlignLeft, xMinLabel);
+    p.drawText(xMaxRect, Qt::AlignTop | Qt::AlignLeft, xMaxLabel);
 
     /*
      * Draw the Axis labels & axis lines
@@ -190,17 +193,14 @@ QPointF LineGraph::PaintAxes(QPainter& p) const
     p.drawLine(QLineF(origin, QPointF(origin.x(), 0)));
     p.drawLine(QLineF(origin, QPointF(width(), origin.y())));
 
-    QRectF xLabelRect(0, 0, metrics.width(xAxisLabel_), metrics.height());
-    QRectF yLabelRect(0, 0, metrics.width(yAxisLabel_), metrics.height());
-
     xLabelRect.translate(((xAxisLength - xLabelRect.width()) / 2.0) + origin.x(), height() - (xLabelRect.height() * 2));
     yLabelRect.translate((yLabelRect.height() / 2.0) - (yLabelRect.width() / 2.0), (yAxisLength / 2.0) - (yLabelRect.height() / 2.0));
 
-    p.drawText(xLabelRect, xAxisLabel_);
+    p.drawText(xLabelRect, Qt::AlignLeft, xAxisLabel_);
     p.translate(yLabelRect.center());
     yLabelRect.translate(-yLabelRect.center());
     p.rotate(270.0);
-    p.drawText(yLabelRect, yAxisLabel_);
+    p.drawText(yLabelRect, Qt::AlignLeft, yAxisLabel_);
     p.resetTransform();
 
     return origin;
@@ -208,16 +208,15 @@ QPointF LineGraph::PaintAxes(QPainter& p) const
 
 void LineGraph::PaintKey(QPainter& p) const
 {
-    QFontMetricsF metrics(p.font());
-
     // note names for drawing a key
-    qreal y = height() - metrics.height();
     qreal keyWidth = 0;
     for (auto& [ name, colour, hidden, points ] : plots_) {
         (void) colour; // unused
         (void) points; // unused
         if (!hidden) {
-            keyWidth += metrics.width(name) + metrics.height() + 6;
+            QRectF nameRect = p.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, name);
+            // Adding height because there is a coloured square drawn after the text
+            keyWidth += nameRect.width() + nameRect.height() + 6;
         }
     }
 
@@ -226,13 +225,13 @@ void LineGraph::PaintKey(QPainter& p) const
     for (auto& [ name, colour, hidden, points ] : plots_) {
         (void) points; // unused
         if (!hidden) {
-            QRectF colourRect(0, 0, metrics.height(), metrics.height());
-            QRectF labelRect(0, 0, metrics.width(name), metrics.height());
-            colourRect.translate(left, y);
-            labelRect .translate(left + colourRect.width() + 3, y);
+            QRectF labelRect = p.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, name);
+            QRectF colourRect(0, 0, labelRect.height(), labelRect.height());
+            colourRect.moveBottomLeft(QPointF(left, height()));
+            labelRect .moveBottomLeft(QPointF(left + colourRect.width() + 3, height()));
 
             p.fillRect(colourRect, QColor::fromRgb(colour));
-            p.drawText(labelRect, name);
+            p.drawText(labelRect, Qt::AlignLeft, name);
 
             left += labelRect.width() + colourRect.width() + 6;
         }
@@ -260,22 +259,33 @@ void LineGraph::PaintGraticule(QPainter& painter, const QPointF& target, const Q
         // Display axis values
         QString coordsText = QString("(%1, %2)").arg(xValueAtCrosshair).arg(yValueAtCrosshair);
 
-        QFontMetricsF metrics = painter.fontMetrics();
         // Weird bug where half the text doesn't render without expanding the rect!
-        QRectF coordsRect = metrics.boundingRect(coordsText).adjusted(0, 0, 1, 0);
+        QRectF coordsRect = painter.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, coordsText).adjusted(0, 0, 1, 0);
 
         // Move the text away from the graticule slightly
         qreal adjustment = 5.0;
 
         // Make sure we don't draw them off screen
-        bool left = target.x() - (coordsRect.width() + adjustment) > area.left();
-        bool bottom = target.y() - (coordsRect.height() + adjustment) < area.top();
+        bool left = target.x() > width() / 2;
+        bool bottom = target.y() < height() / 2;
 
-        coordsRect.translate(target + QPointF(left ? -(coordsRect.width() + adjustment) : adjustment, bottom ? coordsRect.height() + adjustment : -adjustment));
+        if (left) {
+            if (bottom) {
+                coordsRect.moveTopRight(target);
+            } else {
+                coordsRect.moveBottomRight(target);
+            }
+        } else {
+            if (bottom) {
+                coordsRect.moveTopLeft(target);
+            } else {
+                coordsRect.moveBottomLeft(target);
+            }
+        }
 
         painter.setPen(Qt::black);
-        painter.fillRect(coordsRect.adjusted(-3, -3, 3, 3), Qt::white);
-        painter.drawText(coordsRect, coordsText);
+        painter.fillRect(coordsRect.adjusted(1, 1, -1, -1), Qt::white);
+        painter.drawText(coordsRect, Qt::AlignLeft, coordsText);
     }
 }
 

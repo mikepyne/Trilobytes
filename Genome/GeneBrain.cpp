@@ -21,7 +21,7 @@ GeneBrain::GeneBrain(const std::shared_ptr<NeuralNetwork>& brain, double dominan
     // Insert a new row
     AddMutation(0.01 * BASE_WEIGHT, [&]()
     {
-        unsigned newRowIndex = Random::Number(0u, brain_->GetLayerCount());
+        unsigned newRowIndex = Random::Number(size_t{ 0 }, brain_->GetLayerCount());
         brain_ = brain_->WithRowAdded(newRowIndex, NeuralNetwork::InitialWeights::PassThrough);
     });
 
@@ -30,7 +30,7 @@ GeneBrain::GeneBrain(const std::shared_ptr<NeuralNetwork>& brain, double dominan
     {
         // Don't allow mutation to remove final row
         if (brain_->GetLayerCount() > 1) {
-            unsigned newRowIndex = Random::Number(0u, brain_->GetLayerCount());
+            unsigned newRowIndex = Random::Number(size_t{ 0 }, brain_->GetLayerCount());
             brain_ = brain_->WithRowRemoved(newRowIndex);
         }
     });

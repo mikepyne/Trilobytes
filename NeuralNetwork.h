@@ -47,10 +47,10 @@ public:
     size_t GetLayerCount() const { return layers_.size(); }
 
     std::shared_ptr<NeuralNetwork> WithMutatedConnections() const;
-    std::shared_ptr<NeuralNetwork> WithColumnAdded(unsigned index, InitialWeights connections) const;
-    std::shared_ptr<NeuralNetwork> WithColumnRemoved(unsigned index) const;
-    std::shared_ptr<NeuralNetwork> WithRowAdded(unsigned index, InitialWeights connections) const;
-    std::shared_ptr<NeuralNetwork> WithRowRemoved(unsigned index) const;
+    std::shared_ptr<NeuralNetwork> WithColumnAdded(size_t index, InitialWeights connections) const;
+    std::shared_ptr<NeuralNetwork> WithColumnRemoved(size_t index) const;
+    std::shared_ptr<NeuralNetwork> WithRowAdded(size_t index, InitialWeights connections) const;
+    std::shared_ptr<NeuralNetwork> WithRowRemoved(size_t index) const;
 
 private:
     std::vector<Layer> layers_;

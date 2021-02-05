@@ -42,7 +42,7 @@ SenseTraitsBase::TraitNormaliser SenseTraitsBase::DefaultNormalisation(const Sen
         return { trait, { Tril::Range(0.0, 10.0), Tril::Range(0.0, Random::Sign(1.0)) } };
     }
     assert(false && "Unimplemented Trait");
-    return { static_cast<Trait>(-1), { Tril::Range(0.0, 0.0), Tril::Range(0.0, Random::Sign(1.0)) }};
+    return { Trait{ -1 }, { Tril::Range(0.0, 0.0), Tril::Range(0.0, Random::Sign(1.0)) }};
 }
 
 SenseTraitsBase::SenseTraitsBase(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, const Transform& transform, std::vector<TraitNormaliser>&& toDetect)

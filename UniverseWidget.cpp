@@ -128,7 +128,7 @@ void UniverseWidget::mouseReleaseEvent(QMouseEvent* event)
 void UniverseWidget::mousePressEvent(QMouseEvent* event)
 {
     if (universe_) {
-        Point simLocation = TransformLocalToSimCoords({ static_cast<double>(event->x()), static_cast<double>(event->y()) });
+        Point simLocation = TransformLocalToSimCoords({ static_cast<double>(event->pos().x()), static_cast<double>(event->pos().y()) });
         if (event->button() == Qt::RightButton) {
             selectedEntity_ = universe_->PickEntity(simLocation, false);
             emit EntitySelected(selectedEntity_);
@@ -136,8 +136,8 @@ void UniverseWidget::mousePressEvent(QMouseEvent* event)
             draggedEntity_ = universe_->PickEntity(simLocation, true);
         } else if (event->button() == Qt::MiddleButton) {
             dragging_ = true;
-            dragX_ = event->x();
-            dragY_ = event->y();
+            dragX_ = event->pos().x();
+            dragY_ = event->pos().y();
         }
     }
 }
@@ -145,14 +145,14 @@ void UniverseWidget::mousePressEvent(QMouseEvent* event)
 void UniverseWidget::mouseMoveEvent(QMouseEvent* event)
 {
     if (dragging_) {
-        transformX_ += ((event->x() - dragX_) / transformScale_);
-        transformY_ += ((event->y() - dragY_) / transformScale_);
-        dragX_ = event->x();
-        dragY_ = event->y();
+        transformX_ += ((event->pos().x() - dragX_) / transformScale_);
+        transformY_ += ((event->pos().y() - dragY_) / transformScale_);
+        dragX_ = event->pos().x();
+        dragY_ = event->pos().y();
         updateToRender_ = true;
         update();
     } else if (draggedEntity_) {
-        Point simLocation = TransformLocalToSimCoords({ static_cast<double>(event->x()), static_cast<double>(event->y()) });
+        Point simLocation = TransformLocalToSimCoords({ static_cast<double>(event->pos().x()), static_cast<double>(event->pos().y()) });
         draggedEntity_->SetLocation(simLocation);
         update();
     }

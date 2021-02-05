@@ -30,7 +30,7 @@ Universe::Universe(Rect startingQuad)
     rootNode_.SetEntityTargetPerQuad(25, 5);
 
     for (const auto& feeder : feedDispensers_) {
-        for (unsigned i = 0; i < std::max(1u, 25 / feedDispensers_.size()); i++) {
+        for (unsigned i = 0; i < std::max(size_t{ 1 }, 25 / feedDispensers_.size()); i++) {
             double rotation = Random::Number(0.0, Tril::Tau);
             double distance = std::sqrt(Random::Number(0.0, 1.0)) * feeder->GetRadius();
             double swimmerX = feeder->GetX() + distance * std::cos(rotation);
