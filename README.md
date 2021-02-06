@@ -11,11 +11,11 @@ Senses and effectors can have their own mini neural network, so that specific be
 
 Requirements
 -----
-Developed with Qt 15.12.6 & MinGW 7.3.0
+Developed with Qt 6.0.0 & MinGW 8.1.0
 
-Should work with older Qt versions but a compiler supporting C++17 is necessary.
+Built with CMake and Ninja in QtCreator
 
-Build using qMake, so easiest way to build is to open project in QtCreator, select a compatible (C++17) toolchain and build through the QtCreator GUI.
+The easiest way to build from sources yourself is to open project in QtCreator, select a compatible (C++17) toolchain and build through the QtCreator GUI.
 
 TODO
 -----
@@ -57,7 +57,7 @@ QuadTree needs to be more intelligent about the area it covers (like downscaling
 
 Need to create a logo / an Icon
 
-Upgrade to Qt 6, with Qt 3D (for realtime 2D graphical aspect)
+Now we have upgraded to Qt 6, look into Qt 3D (for realtime 2D graphical aspect)
 
 Add 3 mouth types,
  - DONE FilterMouth (wide oval touching body somewhere, small entities only, adds drag to swimmer but 100% efficient),
