@@ -72,11 +72,74 @@ set(PROJECT_SOURCES
         Utils.cpp
 )
 
+set(PROJECT_HEADERS
+        MainWindow.h
+        Effectors/Effector.h
+        Effectors/EffectorFilterMouth.h
+        Effectors/EffectorSpike.h
+        Effectors/EffectorSpringTail.h
+        Effectors/EffectorTail.h
+        Egg.h
+        Entity.h
+        FeedDispenser.h
+        FoodPellet.h
+        Genome/ChromosomePair.h
+        Genome/Gene.h
+        Genome/GeneBrain.h
+        Genome/GeneEffectorBase.h
+        Genome/GeneEffectorFilterMouth.h
+        Genome/GeneEffectorSpike.h
+        Genome/GeneEffectorSpringTail.h
+        Genome/GeneEffectorTail.h
+        Genome/GeneFactory.h
+        Genome/GenePigment.h
+        Genome/GeneSenseBase.h
+        Genome/GeneSenseLunarCycle.h
+        Genome/GeneSenseMagneticField.h
+        Genome/GeneSenseRandom.h
+        Genome/GeneSenseSine.h
+        Genome/GeneSenseTraitsBase.h
+        Genome/GeneSenseTraitsInArea.h
+        Genome/GeneSenseTraitsRaycast.h
+        Genome/GeneSenseTraitsSelf.h
+        Genome/GeneSenseTraitsTouching.h
+        Genome/Genome.h
+        GraphContainerWidget.h
+        LineGraph.h
+        MeatChunk.h
+        NeuralNetwork.h
+        NeuralNetworkConnector.h
+        NeuralNetworkInspector.h
+        QuadTree.h
+        Sensors/Sense.h
+        Sensors/SenseLunarCycle.h
+        Sensors/SenseMagneticField.h
+        Sensors/SenseRandom.h
+        Sensors/SenseSine.h
+        Sensors/SenseTraitsBase.h
+        Sensors/SenseTraitsInArea.h
+        Sensors/SenseTraitsRaycast.h
+        Sensors/SenseTraitsSelf.h
+        Sensors/SenseTraitsTouching.h
+        Spike.h
+        Swimmer.h
+        Transform.h
+        Universe.h
+        UniverseWidget.h
+        Utils.h
+)
+
+set(EXTRA_FILES
+        README.md
+        How-to-create-Windows-release.txt
+)
+
 # This line is just to make these files appear in QtCreator
-add_custom_target(Other SOURCES README.md How-to-create-Windows-release.txt)
+add_custom_target(Other SOURCES ${EXTRA_FILES})
 
 qt_add_executable(Trilobytes
     ${PROJECT_SOURCES}
+    ${PROJECT_HEADERS}
 )
 
 target_link_libraries(Trilobytes PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
