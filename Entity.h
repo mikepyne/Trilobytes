@@ -16,6 +16,8 @@ class QPainter;
 
 class Entity {
 public:
+    static constexpr double MAX_RADIUS = 12.0;
+
     /**
      * Places stationary entity at coordinates with random bearing.
      */

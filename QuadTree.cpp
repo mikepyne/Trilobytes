@@ -28,7 +28,16 @@ void QuadTree::Tick(const UniverseParameters& universeParameters)
 
 void QuadTree::Draw(QPainter& paint, const Rect& renderArea) const
 {
-    root_->DrawRecursive(paint, renderArea);
+    double minX = renderArea.left - Entity::MAX_RADIUS;
+    double maxX = renderArea.right + Entity::MAX_RADIUS;
+    double minY = renderArea.top - Entity::MAX_RADIUS;
+    double maxY = renderArea.bottom + Entity::MAX_RADIUS;
+    /*
+     * Expand the area slightly to catch edge cases where entites overlap into
+     * the visible area from quads that do not intersect the visible area.
+     */
+    Rect expandedArea { minX, minY, maxX, maxY };
+    root_->DrawRecursive(paint, expandedArea);
 }
 
 void QuadTree::SetEntityTargetPerQuad(uint64_t target, uint64_t leeway)
@@ -39,6 +48,16 @@ void QuadTree::SetEntityTargetPerQuad(uint64_t target, uint64_t leeway)
     leewayCount_ = std::min(leeway, target);
     root_->Rebalance(targetCount_, leewayCount_);
     requiresRebalance_ = false;
+}
+
+std::shared_ptr<Entity> QuadTree::PickEntity(const Point& location, bool remove)
+{
+    double minX = location.x - Entity::MAX_RADIUS;
+    double maxX = location.x + Entity::MAX_RADIUS;
+    double minY = location.y - Entity::MAX_RADIUS;
+    double maxY = location.y + Entity::MAX_RADIUS;
+    Rect searchArea { minX, minY, maxX, maxY };
+    return root_->PickRecursive(searchArea, location, remove);
 }
 
 void QuadTree::ForEach(const std::function<void (const std::shared_ptr<Entity>&)>& action) const
@@ -221,9 +240,9 @@ void QuadTree::Quad::RehomeRecursive(const std::shared_ptr<Entity>& entity, bool
     }
 }
 
-std::shared_ptr<Entity> QuadTree::Quad::PickRecursive(const Point& location, bool remove)
+std::shared_ptr<Entity> QuadTree::Quad::PickRecursive(const Rect& searchArea, const Point& location, bool remove)
 {
-    if (Contains(rect_, location)) {
+    if (Collides(rect_, searchArea)) {
         if (children_.empty()) {
             std::shared_ptr<Entity> picked;
             auto iter = std::find_if(std::begin(entities_), std::end(entities_), [&](const std::shared_ptr<Entity>& entity)
@@ -245,14 +264,14 @@ std::shared_ptr<Entity> QuadTree::Quad::PickRecursive(const Point& location, boo
         } else {
             std::shared_ptr<Entity> picked;
             for (auto& child : children_) {
-                if (!picked && Contains(child->rect_, location)) {
-                    picked = child->PickRecursive(location, remove);
+                if (!picked && Collides(child->rect_, searchArea)) {
+                    picked = child->PickRecursive(searchArea, location, remove);
                 }
             }
             return picked;
         }
     } else if (parent_) {
-        return parent_->PickRecursive(location, remove);
+        return parent_->PickRecursive(searchArea, location, remove);
     }
     return nullptr;
 }
@@ -283,6 +302,46 @@ uint64_t QuadTree::Quad::RecursiveEntityCount() const
 const Rect& QuadTree::Quad::GetRect()
 {
     return rect_;
+}
+
+void QuadTree::Quad::ForEachCollidingWith(const Point& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const
+{
+    double minX = collide.x - Entity::MAX_RADIUS;
+    double maxX = collide.x + Entity::MAX_RADIUS;
+    double minY = collide.y - Entity::MAX_RADIUS;
+    double maxY = collide.y + Entity::MAX_RADIUS;
+    Rect searchArea { minX, minY, maxX, maxY };
+    ForEachCollidingWith<Point>(searchArea, collide, action);
+}
+
+void QuadTree::Quad::ForEachCollidingWith(const Line& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const
+{
+    double minX = std::min(collide.a.x, collide.b.x) - Entity::MAX_RADIUS;
+    double maxX = std::max(collide.a.x, collide.b.x) + Entity::MAX_RADIUS;
+    double minY = std::min(collide.a.y, collide.b.y) - Entity::MAX_RADIUS;
+    double maxY = std::max(collide.a.y, collide.b.y) + Entity::MAX_RADIUS;
+    Rect searchArea { minX, minY, maxX, maxY };
+    ForEachCollidingWith<Line>(searchArea, collide, action);
+}
+
+void QuadTree::Quad::ForEachCollidingWith(const Rect& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const
+{
+    double minX = collide.left - Entity::MAX_RADIUS;
+    double maxX = collide.right + Entity::MAX_RADIUS;
+    double minY = collide.bottom - Entity::MAX_RADIUS;
+    double maxY = collide.top + Entity::MAX_RADIUS;
+    Rect searchArea { minX, minY, maxX, maxY };
+    ForEachCollidingWith<Rect>(searchArea, collide, action);
+}
+
+void QuadTree::Quad::ForEachCollidingWith(const Circle& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const
+{
+    double minX = (collide.x - collide.radius) - Entity::MAX_RADIUS;
+    double maxX = (collide.x + collide.radius) + Entity::MAX_RADIUS;
+    double minY = (collide.y - collide.radius) - Entity::MAX_RADIUS;
+    double maxY = (collide.y + collide.radius) + Entity::MAX_RADIUS;
+    Rect searchArea { minX, minY, maxX, maxY };
+    ForEachCollidingWith<Circle>(searchArea, collide, action);
 }
 
 void QuadTree::Quad::Rebalance(const uint64_t targetCount, uint64_t historesis)

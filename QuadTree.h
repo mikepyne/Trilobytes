@@ -27,7 +27,7 @@ public:
     void SetEntityTargetPerQuad(uint64_t target, uint64_t leeway);
 
     void AddEntity(const std::shared_ptr<Entity>& entity) { root_->RehomeRecursive(entity, false); }
-    std::shared_ptr<Entity> PickEntity(const Point& location, bool remove) { return root_->PickRecursive(location, remove); }
+    std::shared_ptr<Entity> PickEntity(const Point& location, bool remove);
     void ForEach(const std::function<void(const std::shared_ptr<Entity>&)>& action) const;
     uint64_t EntityCount() { return root_->RecursiveEntityCount(); }
 
@@ -85,7 +85,7 @@ private:
         void ResolveRecursive();
         void DrawRecursive(QPainter& paint, const Rect& renderArea) const;
         void RehomeRecursive(const std::shared_ptr<Entity>& entity, bool delayed);
-        std::shared_ptr<Entity> PickRecursive(const Point& location, bool remove);
+        std::shared_ptr<Entity> PickRecursive(const Rect& searchArea, const Point& location, bool remove);
         template <typename T>
         void ClearRecursive()
         {
@@ -111,10 +111,10 @@ private:
 
         const Rect& GetRect();
 
-        virtual void ForEachCollidingWith(const Point& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override { ForEachCollidingWith<Point>(collide, action); }
-        virtual void ForEachCollidingWith(const Line& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override { ForEachCollidingWith<Line>(collide, action); }
-        virtual void ForEachCollidingWith(const Rect& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override final { ForEachCollidingWith<Rect>(collide, action); }
-        virtual void ForEachCollidingWith(const Circle& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override final { ForEachCollidingWith<Circle>(collide, action); }
+        virtual void ForEachCollidingWith(const Point& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override;
+        virtual void ForEachCollidingWith(const Line& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override;
+        virtual void ForEachCollidingWith(const Rect& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override final;
+        virtual void ForEachCollidingWith(const Circle& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override final;
 
         /**
          * Historesis allows for leeway in count so a single entity repeatedly
@@ -140,35 +140,37 @@ private:
          * shape.
          */
         template <typename Shape>
-        void ForEachInRecursive(const Shape& collide, const std::function<void(const std::shared_ptr<Entity>&)>& action) const
+        void ForEachInRecursive(const Rect& searchArea, const Shape& collide, const std::function<void(const std::shared_ptr<Entity>&)>& action) const
         {
-            if (!Collides(rect_, collide)) {
-                assert(Collides(rect_, collide));
-            }
-            if (children_.empty()) {
-                for (auto& entity : entities_) {
-                    if (Collides(collide, Circle{ entity->GetTransform().x, entity->GetTransform().y, entity->GetRadius() })) {
-                        action(entity);
+            if (Collides(rect_, searchArea)) {
+                if (children_.empty()) {
+                    for (auto& entity : entities_) {
+                        if (Collides(collide, Circle{ entity->GetTransform().x, entity->GetTransform().y, entity->GetRadius() })) {
+                            action(entity);
+                        }
                     }
-                }
-            } else {
-                for (auto& child : children_) {
-                    if (Collides(child->rect_, collide)) {
-                        child->ForEachInRecursive(collide, action);
+                } else {
+                    for (auto& child : children_) {
+                        if (Collides(child->rect_, collide)) {
+                            child->ForEachInRecursive(searchArea, collide, action);
+                        }
                     }
                 }
             }
         }
 
         /**
-         * Applies the action to every entity that is contained within the specified
-         * collision shape.
+         * Applies the action to every entity that collides with the specified
+         * shape. The searchArea should be slightly bigger than the collider to
+         * account for edge cases where entities overlap quad boundaries without
+         * being contained wihin them. Therefore searchArea ought to be the
+         * largest entity radius bigger than collide.
          */
         template <typename Shape>
-        void ForEachCollidingWith(const Shape& collide, const std::function<void(const std::shared_ptr<Entity>&)>& action) const
+        void ForEachCollidingWith(const Rect& searchArea, const Shape& collide, const std::function<void(const std::shared_ptr<Entity>&)>& action) const
         {
-            if (Contains(rect_, collide) || (!parent_ && Collides(rect_, collide))) {
-                ForEachInRecursive(collide, action);
+            if (Contains(rect_, searchArea) || (!parent_ && Collides(rect_, searchArea))) {
+                ForEachInRecursive(searchArea, collide, action);
             } else if (parent_){
                 parent_->ForEachCollidingWith(collide, action);
             }

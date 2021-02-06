@@ -5,6 +5,8 @@
 
 #include <QPainter>
 
+#include <assert.h>
+
 Entity::Entity(Energy energy, const Transform& transform, double radius, QColor colour)
     : Entity(energy, transform, radius, 0.0, colour)
 {
@@ -18,6 +20,7 @@ Entity::Entity(Energy energy, const Transform& transform, double radius, double 
     , age_(0)
     , colour_(colour)
 {
+    assert(radius_ <= MAX_RADIUS);
 }
 
 Entity::~Entity()
