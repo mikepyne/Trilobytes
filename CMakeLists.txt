@@ -80,7 +80,9 @@ set(PROJECT_HEADERS
         Effectors/EffectorSpringTail.h
         Effectors/EffectorTail.h
         Egg.h
+        Energy.h
         Entity.h
+        EntityContainerInterface.h
         FeedDispenser.h
         FoodPellet.h
         Genome/ChromosomePair.h
@@ -104,6 +106,7 @@ set(PROJECT_HEADERS
         Genome/GeneSenseTraitsSelf.h
         Genome/GeneSenseTraitsTouching.h
         Genome/Genome.h
+        Genome/Phenotype.h
         GraphContainerWidget.h
         LineGraph.h
         MeatChunk.h
@@ -111,6 +114,7 @@ set(PROJECT_HEADERS
         NeuralNetworkConnector.h
         NeuralNetworkInspector.h
         QuadTree.h
+        Random.h
         Sensors/Sense.h
         Sensors/SenseLunarCycle.h
         Sensors/SenseMagneticField.h
@@ -121,10 +125,12 @@ set(PROJECT_HEADERS
         Sensors/SenseTraitsRaycast.h
         Sensors/SenseTraitsSelf.h
         Sensors/SenseTraitsTouching.h
+        Shape.h
         Spike.h
         Swimmer.h
         Transform.h
         Universe.h
+        UniverseParameters.h
         UniverseWidget.h
         Utils.h
 )
