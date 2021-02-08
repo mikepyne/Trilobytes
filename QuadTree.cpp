@@ -100,6 +100,14 @@ void QuadTree::ExpandRoot()
     root_ = std::make_shared<Quad>(newRootRect, *this, std::move(children));
 }
 
+void QuadTree::ContractRoot()
+{
+    if (auto newRoot = root_->GetNewRoot()) {
+        root_ = newRoot;
+        --rootExpandedCount_;
+    }
+}
+
 QuadTree::Quad::Quad(const Rect& area, QuadTree& owner, QuadTree::Quad* parent)
     : baseTree_(owner)
     , parent_(parent)
@@ -199,8 +207,12 @@ void QuadTree::Quad::ResolveRecursive()
 void QuadTree::Quad::DrawRecursive(QPainter& paint, const Rect& renderArea) const
 {
     if (Collides(rect_, renderArea)) {
-        paint.setBrush(QColor(200, 225, 255, 0));
+        paint.save();
+        QPen quadPen(Qt::black);
+        quadPen.setCosmetic(true);
+        paint.setPen(quadPen);
         paint.drawRect(QRectF(QPointF(rect_.left, rect_.top), QPointF(rect_.right, rect_.bottom)));
+        paint.restore();
         if (!children_.empty()) {
             for (auto& child : children_) {
                 child->DrawRecursive(paint, renderArea);
@@ -306,52 +318,40 @@ const Rect& QuadTree::Quad::GetRect()
 
 void QuadTree::Quad::ForEachCollidingWith(const Point& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const
 {
-    double minX = collide.x - Entity::MAX_RADIUS;
-    double maxX = collide.x + Entity::MAX_RADIUS;
-    double minY = collide.y - Entity::MAX_RADIUS;
-    double maxY = collide.y + Entity::MAX_RADIUS;
-    Rect searchArea { minX, minY, maxX, maxY };
-    ForEachCollidingWith<Point>(searchArea, collide, action);
+    ForEachCollidingWith<Point>(BoundingRect(collide, Entity::MAX_RADIUS), collide, action);
 }
 
 void QuadTree::Quad::ForEachCollidingWith(const Line& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const
 {
-    double minX = std::min(collide.a.x, collide.b.x) - Entity::MAX_RADIUS;
-    double maxX = std::max(collide.a.x, collide.b.x) + Entity::MAX_RADIUS;
-    double minY = std::min(collide.a.y, collide.b.y) - Entity::MAX_RADIUS;
-    double maxY = std::max(collide.a.y, collide.b.y) + Entity::MAX_RADIUS;
-    Rect searchArea { minX, minY, maxX, maxY };
-    ForEachCollidingWith<Line>(searchArea, collide, action);
+    ForEachCollidingWith<Line>(BoundingRect(collide, Entity::MAX_RADIUS), collide, action);
 }
 
 void QuadTree::Quad::ForEachCollidingWith(const Rect& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const
 {
-    double minX = collide.left - Entity::MAX_RADIUS;
-    double maxX = collide.right + Entity::MAX_RADIUS;
-    double minY = collide.bottom - Entity::MAX_RADIUS;
-    double maxY = collide.top + Entity::MAX_RADIUS;
-    Rect searchArea { minX, minY, maxX, maxY };
-    ForEachCollidingWith<Rect>(searchArea, collide, action);
+    ForEachCollidingWith<Rect>(BoundingRect(collide, Entity::MAX_RADIUS), collide, action);
 }
 
 void QuadTree::Quad::ForEachCollidingWith(const Circle& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const
 {
-    double minX = (collide.x - collide.radius) - Entity::MAX_RADIUS;
-    double maxX = (collide.x + collide.radius) + Entity::MAX_RADIUS;
-    double minY = (collide.y - collide.radius) - Entity::MAX_RADIUS;
-    double maxY = (collide.y + collide.radius) + Entity::MAX_RADIUS;
-    Rect searchArea { minX, minY, maxX, maxY };
-    ForEachCollidingWith<Circle>(searchArea, collide, action);
+    ForEachCollidingWith<Circle>(BoundingRect(collide, Entity::MAX_RADIUS), collide, action);
 }
 
 void QuadTree::Quad::Rebalance(const uint64_t targetCount, uint64_t historesis)
 {
     assert(enteringEntities_.empty());
     assert(exitingEntities_.empty());
+
+    // Recurse from leaf to root
+    for (auto& child : children_) {
+        child->Rebalance(targetCount, historesis);
+    }
+
     if (!children_.empty() && RecursiveEntityCount() < targetCount - historesis) {
+        // Become a leaf node if children contain too few entities
         entities_ = RecursivelyCollectEntities();
         children_.clear();
     } else if (children_.empty() && RecursiveEntityCount() > targetCount + historesis) {
+        // Lose leaf node status if contains too many children
         children_ = CreateChildren(rect_, baseTree_, this);
         for (auto& entity : entities_) {
             for (auto& child : children_) {
@@ -364,9 +364,44 @@ void QuadTree::Quad::Rebalance(const uint64_t targetCount, uint64_t historesis)
         entities_.clear();
     }
 
-    for (auto& child : children_) {
-        child->Rebalance(targetCount, historesis);
+    // Final act of rebalancing
+    if (this == baseTree_.root_.get()) {
+        baseTree_.ContractRoot();
     }
+}
+
+std::shared_ptr<QuadTree::Quad> QuadTree::Quad::GetNewRoot()
+{
+    assert(enteringEntities_.empty());
+    assert(exitingEntities_.empty());
+
+    std::shared_ptr<QuadTree::Quad> newRoot;
+    unsigned emptyChildren = std::count_if(std::cbegin(children_), std::cend(children_), [](auto& child)
+    {
+        assert(child->enteringEntities_.empty());
+        assert(child->exitingEntities_.empty());
+        return child->entities_.empty() && child->children_.empty();
+    });
+
+    // if exactly one child has entities within it, make it the new root
+    if (emptyChildren == 3) {
+        // Find the empty child and see if the new root can go one deeper
+        for (const auto& child : children_) {
+            if (!child->entities_.empty() || !child->children_.empty()) {
+                // If this child is not the new root, it will be deconstructed
+                // But if it is the new root, its parent must be a nullptr!
+                child->parent_ = nullptr;
+                newRoot = child->GetNewRoot();
+                if (newRoot == nullptr) {
+                    // Child does not contain the new root, therefore it is the new root
+                    newRoot = child;
+                }
+                break;
+            }
+        }
+    }
+
+    return newRoot;
 }
 
 bool QuadTree::Quad::AreAllChildrenLeafQuads()

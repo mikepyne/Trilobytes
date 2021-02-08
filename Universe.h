@@ -31,7 +31,7 @@ public:
     void ClearAllFeedDispensers() { feedDispensers_.clear(); }
 
     UniverseParameters& GetParameters() { return params_; }
-    const EntityContainerInterface& GetEntityContainer() const { return rootNode_.GetContainerInterface(); }
+    const EntityContainerInterface& GetEntityContainer() const { return rootNode_; }
 
     /**
      * @brief The Task system allows clients to have code run each tick, without

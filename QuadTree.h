@@ -14,7 +14,7 @@
 class QPainter;
 
 // TODO remove need to ever specify starting area, or track which direction was last expanded into
-class QuadTree {
+class QuadTree : public EntityContainerInterface {
 public:
     QuadTree(const Rect& startingArea);
 
@@ -22,11 +22,14 @@ public:
     void Tick(const UniverseParameters& universeParameters);
     void Draw(QPainter& paint, const Rect& renderArea) const;
 
-    const EntityContainerInterface& GetContainerInterface() const { return *root_; }
-
     void SetEntityTargetPerQuad(uint64_t target, uint64_t leeway);
 
-    void AddEntity(const std::shared_ptr<Entity>& entity) { root_->RehomeRecursive(entity, false); }
+    void AddEntity(const std::shared_ptr<Entity>& entity) override final { root_->RehomeRecursive(entity, false); }
+    void ForEachCollidingWith(const Point& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override final { root_->ForEachCollidingWith(collide, action); }
+    void ForEachCollidingWith(const Line& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override final { root_->ForEachCollidingWith(collide, action); }
+    void ForEachCollidingWith(const Rect& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override final { root_->ForEachCollidingWith(collide, action); }
+    void ForEachCollidingWith(const Circle& collide, const std::function<void (const std::shared_ptr<Entity>&)>& action) const override final { root_->ForEachCollidingWith(collide, action); }
+
     std::shared_ptr<Entity> PickEntity(const Point& location, bool remove);
     void ForEach(const std::function<void(const std::shared_ptr<Entity>&)>& action) const;
     uint64_t EntityCount() { return root_->RecursiveEntityCount(); }
@@ -122,6 +125,14 @@ private:
          */
         void Rebalance(const uint64_t targetCount, uint64_t historesis);
 
+        /**
+         * If the root has expanded multiple times, yet the expansion was caused
+         * by a lone Entity that travelled an unusually long way out of bounds,
+         * it can lead to an unecessarily deep quad tree. This method finds the
+         * best candidate for root.
+         */
+        std::shared_ptr<Quad> GetNewRoot();
+
     private:
         QuadTree& baseTree_;
         Quad* parent_;
@@ -172,7 +183,7 @@ private:
             if (Contains(rect_, searchArea) || (!parent_ && Collides(rect_, searchArea))) {
                 ForEachInRecursive(searchArea, collide, action);
             } else if (parent_){
-                parent_->ForEachCollidingWith(collide, action);
+                parent_->ForEachCollidingWith(searchArea, collide, action);
             }
         }
     };
@@ -185,6 +196,7 @@ private:
     uint64_t rootExpandedCount_;
 
     void ExpandRoot();
+    void ContractRoot();
 };
 
 #endif // QUADTREE_H

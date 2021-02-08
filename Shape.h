@@ -101,6 +101,45 @@ inline std::tuple<double, double> DeconstructMovementVector(const Vec2& movement
     return { bearing, speed };
 }
 
+inline Rect BoundingRect(const Point& point, double margin = 0.0)
+{
+    assert(margin >= 0.0);
+    double minX = point.x - margin;
+    double maxX = point.x + margin;
+    double minY = point.y - margin;
+    double maxY = point.y + margin;
+    return Rect{ minX, minY, maxX, maxY };
+}
+
+inline Rect BoundingRect(const Line& line, double margin = 0.0)
+{
+    assert(margin >= 0.0);
+    double minX = std::min(line.a.x, line.b.x) - margin;
+    double maxX = std::max(line.a.x, line.b.x) + margin;
+    double minY = std::min(line.a.y, line.b.y) - margin;
+    double maxY = std::max(line.a.y, line.b.y) + margin;
+    return Rect{ minX, minY, maxX, maxY };
+}
+
+inline Rect BoundingRect(const Rect& rect, double margin = 0.0)
+{
+    assert(margin >= 0.0);
+    double minX = rect.left   - margin;
+    double maxX = rect.right  + margin;
+    double minY = rect.bottom - margin;
+    double maxY = rect.top    + margin;
+    return Rect{ minX, minY, maxX, maxY };
+}
+
+inline Rect BoundingRect(const Circle& circle, double margin = 0.0)
+{
+    double minX = (circle.x - circle.radius) - margin;
+    double maxX = (circle.x + circle.radius) + margin;
+    double minY = (circle.y - circle.radius) - margin;
+    double maxY = (circle.y + circle.radius) + margin;
+    return Rect{ minX, minY, maxX, maxY };
+}
+
 inline bool Contains(const Line& l, const Point& p)
 {
     if (p == l.a || p == l.b) {
