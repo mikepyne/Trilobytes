@@ -34,8 +34,7 @@ double RangeConverter::Convert(const double& value) const
 
 double RangeConverter::ConvertAndClamp(const double& value) const
 {
-    double proportion = (value - from_.First()) / from_.ValueDifference();
-    return std::clamp(to_.First() + (proportion * to_.ValueDifference()), to_.Min(), to_.Max());
+    return std::clamp(Convert(value), to_.Min(), to_.Max());
 }
 
 } // namespace Tril
