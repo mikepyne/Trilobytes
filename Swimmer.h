@@ -37,7 +37,7 @@ public:
 
     void AdjustVelocity(double adjustment);
     void AdjustBearing(double adjustment);
-    void ApplyDamage(double damage) { health_ -= damage; }
+    void ApplyDamage(double damage) { health_ -= std::min(health_, damage); }
 
 protected:
     std::shared_ptr<Swimmer> closestLivingAncestor_;
