@@ -21,10 +21,8 @@ void Spike::TickImpl(EntityContainerInterface& container, const UniverseParamete
             Vec2 victimVec = GetMovementVector(entity->GetTransform().rotation, entity->GetVelocity());
 
             auto [ contactBearing, contactVelocity ] = DeconstructMovementVector({ -victimVec.x, -victimVec.y });
-
-            double collisionBearing = std::fmod(std::abs(contactBearing), Tril::Tau);
-            double directHitProportion = std::max(0.0, ((std::abs(collisionBearing - Tril::Pi) / Tril::Pi) - 0.5) * 2);
-            swimmer->ApplyDamage(directHitProportion * (5 * std::pow(contactVelocity, 2.0)));
+            (void) contactBearing; // unused
+            swimmer->ApplyDamage(std::pow(contactVelocity, 2.0));
         }
     });
 }
