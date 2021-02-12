@@ -62,7 +62,7 @@ void Swimmer::AdjustBearing(double adjustment)
 
 void Swimmer::TickImpl(EntityContainerInterface& container, const UniverseParameters& universeParameters)
 {
-    if (closestLivingAncestor_ && !closestLivingAncestor_->Alive()) {
+    if (closestLivingAncestor_ && !closestLivingAncestor_->Exists()) {
         closestLivingAncestor_ = FindClosestLivingAncestor();
     }
 
@@ -122,6 +122,8 @@ void Swimmer::TickImpl(EntityContainerInterface& container, const UniverseParame
 
         if (GetEnergy() > 300_mj) {
             container.AddEntity(GiveBirth(otherGenes));
+        } else if (GetEnergy() <= 0) {
+            Terminate();
         }
     }
 }
@@ -150,7 +152,7 @@ void Swimmer::DrawImpl(QPainter& paint)
 }
 
 Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Genome> genome, const Phenotype& phenotype, std::shared_ptr<Swimmer>&& mother)
-    : Entity(energy, transform, 6.0, phenotype.colour)
+    : Entity(transform, 6.0, phenotype.colour, energy)
     , closestLivingAncestor_(std::move(mother))
     , generation_(closestLivingAncestor_ ? closestLivingAncestor_->generation_ + 1 : 0)
     , baseMetabolism_(phenotype.baseMetabolism)
@@ -170,7 +172,7 @@ Swimmer::Swimmer(Energy energy, const Transform& transform, std::shared_ptr<Geno
 std::shared_ptr<Swimmer> Swimmer::FindClosestLivingAncestor() const
 {
     std::shared_ptr<Swimmer> ancestor = closestLivingAncestor_;
-    while (ancestor && !ancestor->Alive()) {
+    while (ancestor && !ancestor->Exists()) {
         ancestor = ancestor->closestLivingAncestor_;
     }
     return ancestor;

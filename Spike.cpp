@@ -4,7 +4,7 @@
 #include <QPainter>
 
 Spike::Spike(const Transform& transform) :
-    Entity(1_uj, transform, 12, QColor::fromRgb(225, 225, 225))
+    Entity(transform, 12, QColor::fromRgb(225, 225, 225))
 {
 }
 

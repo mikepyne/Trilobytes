@@ -3,7 +3,7 @@
 #include <QPainter>
 
 MeatChunk::MeatChunk(const Energy& energy, const Transform& transform, const double& speed)
-    : Entity(energy, transform, GetMeatChunkRadius(energy), speed, QColor::fromRgb(185, 48, 49))
+    : Entity(transform, GetMeatChunkRadius(energy), QColor::fromRgb(185, 48, 49), energy, speed)
 {
 }
 

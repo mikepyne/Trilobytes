@@ -186,15 +186,15 @@ void QuadTree::Quad::ResolveRecursive()
         {
             // remove if has exitied or died
             bool exited = std::find(std::begin(exitingEntities_), std::end(exitingEntities_), e) != std::end(exitingEntities_);
-            bool died = !e->Alive();
+            bool died = !e->Exists();
             return exited || died;
         }), std::end(entities_));
         exitingEntities_.clear();
 
-        // insert if alive
+        // insert if exists
         std::copy_if(std::begin(enteringEntities_), std::end(enteringEntities_), std::back_inserter(entities_), [](auto& e)
         {
-            return e->Alive();
+            return e->Exists();
         });
         enteringEntities_.clear();
 
@@ -294,7 +294,9 @@ void QuadTree::Quad::ForEachRecursive(const std::function<void(const std::shared
         child->ForEachRecursive(action);
     }
     for (const auto& entity : entities_) {
-        action(entity);
+        if (entity->Exists()) {
+            action(entity);
+        }
     }
 }
 

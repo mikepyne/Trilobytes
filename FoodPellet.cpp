@@ -11,7 +11,7 @@ double FoodPellet::GetPelletRadius(const Energy& energy)
 }
 
 FoodPellet::FoodPellet(const std::shared_ptr<FeedDispenser>& spawner, Energy energy, const Transform& transform)
-    : Entity(energy, transform, GetPelletRadius(energy), QColor::fromRgb(15, 235, 15))
+    : Entity(transform, GetPelletRadius(energy), QColor::fromRgb(15, 235, 15), energy)
     , spawner_(spawner)
 {
 }

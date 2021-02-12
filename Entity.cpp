@@ -7,12 +7,7 @@
 
 #include <assert.h>
 
-Entity::Entity(Energy energy, const Transform& transform, double radius, QColor colour)
-    : Entity(energy, transform, radius, 0.0, colour)
-{
-}
-
-Entity::Entity(Energy energy, const Transform& transform, double radius, double speed, QColor colour)
+Entity::Entity(const Transform& transform, double radius, QColor colour, Energy energy, double speed)
     : energy_(energy)
     , transform_(transform)
     , radius_(radius)
@@ -27,14 +22,12 @@ Entity::~Entity()
 {
 }
 
-bool Entity::Alive() const
-{
-    return energy_ > 0;
-}
-
 void Entity::FeedOn(Entity& other, Energy quantity)
 {
     energy_ += other.TakeEnergy(quantity);
+    if (other.GetEnergy() <= 0.0) {
+        other.Terminate();
+    }
 }
 
 bool Entity::Tick(EntityContainerInterface& container, const UniverseParameters& universeParameters)

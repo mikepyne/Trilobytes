@@ -18,11 +18,7 @@ class Entity {
 public:
     static constexpr double MAX_RADIUS = 12.0;
 
-    /**
-     * Places stationary entity at coordinates with random bearing.
-     */
-    Entity(Energy energy, const Transform& transform, double radius, QColor colour);
-    Entity(Energy energy, const Transform& transform, double radius, double speed, QColor colour);
+    Entity(const Transform& transform, double radius, QColor colour, Energy energy = 0_j, double speed = 0.0);
     virtual ~Entity();
 
     virtual std::string_view GetName() const = 0;
@@ -34,7 +30,7 @@ public:
     double GetEnergy() const { return energy_; }
     const QColor& GetColour() const { return colour_; }
     const double& GetVelocity() const { return speed_; }
-    bool Alive() const;
+    bool Exists() const { return !terminated_; }
     Circle GetCollide() const { return Circle{ transform_.x, transform_.y, radius_ }; };
 
     void SetLocation(const Point& location) { transform_.x = location.x; transform_.y = location.y; }
@@ -50,7 +46,7 @@ protected:
 
     void UseEnergy(Energy quantity) { energy_ -= quantity; }
     Energy TakeEnergy(Energy quantity);
-    void Terminate() { energy_ = 0; }
+    void Terminate() { terminated_ = true; }
 
     void SetColour(double red, double green, double blue) { colour_.setRgbF(red, green, blue); }
     void SetBearing(double bearing);
@@ -59,6 +55,7 @@ protected:
 
 private:
     Energy energy_; // TODO consider tracking energy used recenty via some sort of low pass filtered heat variable that decays over time
+    bool terminated_ = false;
     Transform transform_;
     double radius_;
     double speed_;

@@ -156,7 +156,7 @@ private:
             if (Collides(rect_, searchArea)) {
                 if (children_.empty()) {
                     for (auto& entity : entities_) {
-                        if (Collides(collide, Circle{ entity->GetTransform().x, entity->GetTransform().y, entity->GetRadius() })) {
+                        if (entity->Exists() && Collides(collide, Circle{ entity->GetTransform().x, entity->GetTransform().y, entity->GetRadius() })) {
                             action(entity);
                         }
                     }

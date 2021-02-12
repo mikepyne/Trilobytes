@@ -51,11 +51,6 @@ Next Steps
 ----------
 Entity needs a pure virtual GetType() which returns Animal, Vegetable, or Mineral
 Entity needs a pure virtual GetAlive() (Animal, Egg & MeatChunk are all animal, but MeatChunks are not alive)
-Entities should not be removed based on Energy content, but instead a seperate existence flag
-
-QuadTree needs to be more intelligent about the area it covers (like downscaling when root node is too big, and expanding in the direction of the entitiy that triggered expansion)
-
-Need to create a logo / an Icon
 
 Now we have upgraded to Qt 6, look into Qt 3D (for realtime 2D graphical aspect)
 

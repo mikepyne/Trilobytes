@@ -5,7 +5,7 @@
 #include <QPainter>
 
 Egg::Egg(std::shared_ptr<Swimmer>&& mother, Energy energy, const Transform& transform, std::shared_ptr<Genome> genomeOne, std::shared_ptr<Genome> genomeTwo, unsigned hatchingDelay)
-    : Entity(energy, transform, 7, mother->GetVelocity(), QColor::fromRgb(125, 57, 195))
+    : Entity(transform, 7, QColor::fromRgb(125, 57, 195), energy, mother->GetVelocity())
     , mother_(std::move(mother))
     , genomeOne_(genomeOne)
     , genomeTwo_(genomeTwo)
