@@ -19,6 +19,7 @@ set(PROJECT_SOURCES
         MainWindow.cpp
         Effectors/Effector.cpp
         Effectors/EffectorFilterMouth.cpp
+        Effectors/EffectorProboscisMouth.cpp
         Effectors/EffectorSpike.cpp
         Effectors/EffectorSpringTail.cpp
         Effectors/EffectorTail.cpp
@@ -31,6 +32,7 @@ set(PROJECT_SOURCES
         Genome/GeneBrain.cpp
         Genome/GeneEffectorBase.cpp
         Genome/GeneEffectorFilterMouth.cpp
+        Genome/GeneEffectorProboscisMouth.cpp
         Genome/GeneEffectorSpike.cpp
         Genome/GeneEffectorSpringTail.cpp
         Genome/GeneEffectorTail.cpp
@@ -76,6 +78,7 @@ set(PROJECT_HEADERS
         MainWindow.h
         Effectors/Effector.h
         Effectors/EffectorFilterMouth.h
+        Effectors/EffectorProboscisMouth.h
         Effectors/EffectorSpike.h
         Effectors/EffectorSpringTail.h
         Effectors/EffectorTail.h
@@ -90,6 +93,7 @@ set(PROJECT_HEADERS
         Genome/GeneBrain.h
         Genome/GeneEffectorBase.h
         Genome/GeneEffectorFilterMouth.h
+        Genome/GeneEffectorProboscisMouth.h
         Genome/GeneEffectorSpike.h
         Genome/GeneEffectorSpringTail.h
         Genome/GeneEffectorTail.h
