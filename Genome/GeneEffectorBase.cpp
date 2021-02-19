@@ -18,12 +18,12 @@ GeneEffectorBase::GeneEffectorBase(const std::shared_ptr<NeuralNetwork>& network
     });
 
     // Remove a row
-    AddMutation(0.15 * BASE_WEIGHT, [&]()
+    AddMutation(0.30 * BASE_WEIGHT, [&]()
     {
         // Don't allow mutation to remove final row
         if (network_->GetLayerCount() > 1) {
-            unsigned newRowIndex = Random::Number(size_t{ 0 }, network_->GetLayerCount());
-            network_ = network_->WithRowRemoved(newRowIndex);
+            unsigned rowIndex = Random::Number(size_t{ 0 }, network_->GetLayerCount());
+            network_ = network_->WithRowRemoved(rowIndex);
         }
     });
 

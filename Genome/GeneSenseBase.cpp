@@ -19,7 +19,7 @@ GeneSenseBase::GeneSenseBase(const std::shared_ptr<NeuralNetwork>& network, cons
     });
 
     // Remove a row
-    AddMutation(0.15 * BASE_WEIGHT, [&]()
+    AddMutation(0.30 * BASE_WEIGHT, [&]()
     {
         // Don't allow mutation to remove final row
         if (network_->GetLayerCount() > 1) {

@@ -21,7 +21,8 @@ TODO
 -----
  - Tests
  - More GUI controlls
- - More effectors (mouthparts? body armor? spikes? sex organs? pheremone creators? poison creators? decoy creators? food creators? Egg layers?)
+ - More niches
+ - More effectors (body armor? sex organs? pheremone creators? poison creators? decoy creators? food creators? Egg layers?)
  - Genes that encode more than a single effector or sensor (Pair of antenna? pair of eyes? memory/flip-flop (loop output to input)?
  - Improve rendering (image based? decals? OpenGL?)
  - Genes inspector view
@@ -35,7 +36,6 @@ TODO
  -  - adjust feed dispenser pellet energy/frequency
  -  - Add feed dispenser
  -  - resize feed dispenser
- - Allow entities to be movable/draggable
  - add images for each sense and effector and body
  - add gene for image decals
  - add gene for egg size
@@ -49,14 +49,21 @@ TODO
 
 Next Steps
 ----------
-Entity needs a pure virtual GetType() which returns Animal, Vegetable, or Mineral
-Entity needs a pure virtual GetAlive() (Animal, Egg & MeatChunk are all animal, but MeatChunks are not alive)
+Entity needs some generic introspection so that classes don't need to do a bunch of dynamic casts to see if they'll interact or not
+   - Perhaps a pure virtual GetType() which returns Animal, Vegetable, or Mineral
+   - Perhaps a pure virtual GetAlive() (Animal, Egg & MeatChunk are all animal, but MeatChunks are not alive)
+   - There must be a way to do this in a single function, perhaps something akin to a tag system? Would allow entities to mix and match qualities
 
 Now we have upgraded to Qt 6, look into Qt 3D (for realtime 2D graphical aspect)
 
+Need a seperate momentumTransform, which is not just affected by friction and input from tail etc but also factors in the direction faced, with perhaps EffectorDorsalFin or the like improving the efficiency of the conversion of the movement transform to match the facing transform
+ - Add Effectors that increase / decrease friction
+ - Add Effectors that change how quickly the direction faced becomes the direction of movement (also friction dependant)
+ - Add global control for friction
+
 Add 3 mouth types,
- - DONE FilterMouth (wide oval touching body somewhere, small entities only, adds drag to swimmer but 100% efficient),
- - Proboscis (needle point protruding from body, living target only (i.e. swimmers and eggs), reduced feeding rate but 100% efficient)
+ - DONE(needs downside, high level of drag?) FilterMouth (wide oval touching body somewhere, small entities only, adds drag to swimmer but 100% efficient),
+ - DONE(perhaps also deal small ammount of damage?) Proboscis (needle point protruding from body, living target only (i.e. swimmers and eggs), reduced feeding rate but 100% efficient)
  - ToothedMouth (circle touching body somewhere, pellets @ ~50% & eggs/meat chunks at ~75%, can bite swimmers for damage) perhaps it can only eat a fixed ammount per tick, with smaller bites being more energy efficient but doing less damage?
 
 Add another tail type
@@ -70,6 +77,7 @@ Add adjustable friction cooeficient (speed *= friction) so friction is between 0
 
 Ability to add/remove spikes
 
-DefaultGenome could do with some variation in terms of content OR RandomGenome could do with some tighter restrictions on what it contains?
-perhaps split genes into effectors, sensors, cosmetic etc so a random genome can contain a fixed number of each, but still random?
-maybe noew category for swimmer genome that is more varied instead????
+GeneFactory could do with some love
+ - DefaultGenome could do with some variation in terms of content OR RandomGenome could do with some tighter restrictions on what it contains?
+ - Perhaps split genes into effectors, sensors, cosmetic etc so a random genome can contain a fixed number of each, but still random?
+ - maybe new category for swimmer genome that is more varied than default, but less random than random?
