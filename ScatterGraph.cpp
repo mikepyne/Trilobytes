@@ -1,4 +1,4 @@
-#include "LineGraph.h"
+#include "ScatterGraph.h"
 
 #include <QPaintEvent>
 #include <QPainter>
@@ -6,13 +6,13 @@
 #include <cmath>
 #include <limits>
 
-LineGraph::LineGraph(QWidget* parent, QString xAxisLabel, QString yAxisLabel, size_t plotDataPointCount)
+ScatterGraph::ScatterGraph(QWidget* parent, QString title, QString xAxisLabel, QString yAxisLabel)
     : QWidget(parent)
+    , graphTitle_(title)
     , xRange_()
     , yRange_()
     , xAxisLabel_(xAxisLabel)
     , yAxisLabel_(yAxisLabel)
-    , plotDataPointCount_(plotDataPointCount)
 {
     QPalette p = palette();
     p.setColor(QPalette::ColorRole::Window, QColor(Qt::white));
@@ -20,42 +20,13 @@ LineGraph::LineGraph(QWidget* parent, QString xAxisLabel, QString yAxisLabel, si
     setAutoFillBackground(true);
 }
 
-void LineGraph::ForEachPlot(const std::function<void(const Plot& plot, size_t plotIndex)>& action) const
+void ScatterGraph::SetPoints(std::vector<ScatterGraph::DataPoint>&& points)
 {
-    size_t index = 0;
-    for (const auto& plot : plots_) {
-        action(plot, index++);
-    }
-}
-
-void LineGraph::AddPlot(QRgb colour, QString name)
-{
-    plots_.push_back({ name, colour, false, decltype(Plot::points_)(plotDataPointCount_) });
+    points_.swap(points);
     update();
 }
 
-void LineGraph::AddPoint(size_t index, qreal x, qreal y)
-{
-    if (plots_.size() > index) {
-        plots_.at(index).points_.PushBack({ x, y });
-        if (!plots_.at(index).hidden_) {
-            xRange_.ExpandToContain(x);
-            yRange_.ExpandToContain(y);
-            if (plots_.at(index).points_.Full()) {
-                RecalculateAxisBounds();
-            }
-        }
-        update();
-    }
-}
-
-void LineGraph::SetPlotHidden(size_t plotIndex, bool hidden)
-{
-    plots_.at(plotIndex).hidden_ = hidden;
-    RecalculateAxisBounds();
-}
-
-void LineGraph::SetGraticuleHidden(bool hidden)
+void ScatterGraph::SetGraticuleHidden(bool hidden)
 {
     graticuleHidden_ = hidden;
     setMouseTracking(!hidden);
@@ -63,53 +34,32 @@ void LineGraph::SetGraticuleHidden(bool hidden)
     update();
 }
 
-void LineGraph::Reset()
+void ScatterGraph::Reset()
 {
     xRange_.Reset();
     yRange_.Reset();
-    for (auto& [ name, colour, hidden, points ] : plots_) {
-        (void) name; // unused
-        (void) colour; // unused
-        (void) hidden; // unused
-        points.Clear();
+    points_.clear();
+    update();
+}
+
+void ScatterGraph::RecalculateAxisBounds()
+{
+    xRange_.Reset();
+    yRange_.Reset();
+    for (const DataPoint& point : points_) {
+        xRange_.ExpandToContain(point.x_);
+        yRange_.ExpandToContain(point.y_);
     }
     update();
 }
 
-void LineGraph::RecalculateAxisBounds()
-{
-    xRange_.Reset();
-    yRange_.Reset();
-    for (auto& [ name, colour, hidden, points ] : plots_) {
-        (void) name; // unused
-        (void) colour; // unused
-        if (!hidden) {
-            points.ForEach([&](const auto& pair)
-            {
-                const auto& [ dataX, dataY ] = pair;{}
-                xRange_.ExpandToContain(dataX);
-                yRange_.ExpandToContain(dataY);
-            });
-        }
-    }
-    update();
-}
-
-void LineGraph::SetPlotDataPointCount(size_t count)
-{
-    plotDataPointCount_ = count;
-    for (Plot& plot : plots_) {
-        plot.points_.Resize(count);
-    }
-}
-
-void LineGraph::mouseMoveEvent(QMouseEvent* event)
+void ScatterGraph::mouseMoveEvent(QMouseEvent* event)
 {
     graticuleLocation_ = event->pos();
     update();
 }
 
-void LineGraph::paintEvent(QPaintEvent* event)
+void ScatterGraph::paintEvent(QPaintEvent* event)
 {
     QPainter paint(this);
     paint.setClipRegion(event->region());
@@ -118,28 +68,17 @@ void LineGraph::paintEvent(QPaintEvent* event)
     const Tril::MinMax<qreal> yRange = { yAxisMinOverride_ ? yAxisMinOverrideValue_ : yRange_.Min(), yAxisMaxOverride_ ? yAxisMaxOverrideValue_ : yRange_.Max() };
 
     const QPointF origin = PaintAxes(paint);
-    PaintKey(paint);
+    PaintTitle(paint);
 
     const qreal xAxisLength = width() - origin.x();
     const qreal yAxisLength = origin.y();
 
     paint.setClipRegion(event->region().intersected(QRect(QPoint(origin.x(), 0.0), QPoint(width(), yAxisLength))));
 
-    for (auto& [ name, colour, hidden, points ] : plots_) {
-        (void) name; // unused
-        if (!hidden) {
-            paint.setPen(colour);
-            QPointF lastPoint = origin;
-            points.ForEach([&](const auto& pair)
-            {
-                const auto& [ dataX, dataY ] = pair;{}
-                QPointF nextPoint(origin.x() + ( xAxisLength * ((dataX - xRange.Min()) / xRange.Range())), origin.y() - (yAxisLength * ((dataY - yRange.Min()) / yRange.Range())));
-                if (lastPoint != origin) {
-                    paint.drawLine(lastPoint, nextPoint);
-                }
-                lastPoint = nextPoint;
-            });
-        }
+    for (const DataPoint& point : points_) {
+        paint.setPen(point.colour_);
+        paint.setBrush(QColor(point.colour_));
+        paint.drawEllipse(QPointF(point.x_, point.y_), 3.0, 3.0);
     }
 
     if (!graticuleHidden_) {
@@ -147,7 +86,7 @@ void LineGraph::paintEvent(QPaintEvent* event)
     }
 }
 
-QPointF LineGraph::PaintAxes(QPainter& p) const
+QPointF ScatterGraph::PaintAxes(QPainter& p) const
 {
     Tril::MinMax<qreal> xRange = { xAxisMinOverride_ ? xAxisMinOverrideValue_ : xRange_.Min(), xAxisMaxOverride_ ? xAxisMaxOverrideValue_ : xRange_.Max() };
     Tril::MinMax<qreal> yRange = { yAxisMinOverride_ ? yAxisMinOverrideValue_ : yRange_.Min(), yAxisMaxOverride_ ? yAxisMaxOverrideValue_ : yRange_.Max() };
@@ -206,39 +145,16 @@ QPointF LineGraph::PaintAxes(QPainter& p) const
     return origin;
 }
 
-void LineGraph::PaintKey(QPainter& p) const
+void ScatterGraph::PaintTitle(QPainter& p) const
 {
-    // note names for drawing a key
-    qreal keyWidth = 0;
-    for (auto& [ name, colour, hidden, points ] : plots_) {
-        (void) colour; // unused
-        (void) points; // unused
-        if (!hidden) {
-            QRectF nameRect = p.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, name);
-            // Adding height because there is a coloured square drawn after the text
-            keyWidth += nameRect.width() + nameRect.height() + 6;
-        }
-    }
-
-    qreal left = (width() - keyWidth) / 2.0;
     p.setPen(Qt::black);
-    for (auto& [ name, colour, hidden, points ] : plots_) {
-        (void) points; // unused
-        if (!hidden) {
-            QRectF labelRect = p.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, name);
-            QRectF colourRect(0, 0, labelRect.height(), labelRect.height());
-            colourRect.moveBottomLeft(QPointF(left, height()));
-            labelRect .moveBottomLeft(QPointF(left + colourRect.width() + 3, height()));
 
-            p.fillRect(colourRect, QColor::fromRgb(colour));
-            p.drawText(labelRect, Qt::AlignLeft, name);
-
-            left += labelRect.width() + colourRect.width() + 6;
-        }
-    }
+    QRectF titleRect = p.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, graphTitle_);
+    titleRect.moveCenter(QPointF(width() / 2.0, height() - (titleRect.height() / 2.0)));
+    p.drawText(titleRect, Qt::AlignLeft, graphTitle_);
 }
 
-void LineGraph::PaintGraticule(QPainter& painter, const QPointF& target, const QRectF& area) const
+void ScatterGraph::PaintGraticule(QPainter& painter, const QPointF& target, const QRectF& area) const
 {
     if (area.contains(target)) {
         // Draw lines inverse so they show up over plots
@@ -261,9 +177,6 @@ void LineGraph::PaintGraticule(QPainter& painter, const QPointF& target, const Q
 
         // Weird bug where half the text doesn't render without expanding the rect!
         QRectF coordsRect = painter.boundingRect(QRectF(0, 0, 50, 50), Qt::AlignTop | Qt::AlignLeft, coordsText).adjusted(0, 0, 1, 0);
-
-        // Move the text away from the graticule slightly
-        qreal adjustment = 5.0;
 
         // Make sure we don't draw them off screen
         bool left = target.x() > width() / 2;

@@ -49,6 +49,7 @@ set(PROJECT_SOURCES
         Genome/GeneSenseTraitsSelf.cpp
         Genome/GeneSenseTraitsTouching.cpp
         Genome/Genome.cpp
+        Graph.cpp
         GraphContainerWidget.cpp
         LineGraph.cpp
         MeatChunk.cpp
@@ -56,6 +57,7 @@ set(PROJECT_SOURCES
         NeuralNetworkConnector.cpp
         NeuralNetworkInspector.cpp
         QuadTree.cpp
+        ScatterGraph.cpp
         Sensors/Sense.cpp
         Sensors/SenseLunarCycle.cpp
         Sensors/SenseMagneticField.cpp
@@ -111,6 +113,7 @@ set(PROJECT_HEADERS
         Genome/GeneSenseTraitsTouching.h
         Genome/Genome.h
         Genome/Phenotype.h
+        Graph.h
         GraphContainerWidget.h
         LineGraph.h
         MeatChunk.h
@@ -119,6 +122,7 @@ set(PROJECT_HEADERS
         NeuralNetworkInspector.h
         QuadTree.h
         Random.h
+        ScatterGraph.h
         Sensors/Sense.h
         Sensors/SenseLunarCycle.h
         Sensors/SenseMagneticField.h

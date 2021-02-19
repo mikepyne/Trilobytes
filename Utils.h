@@ -13,6 +13,7 @@
 #include <memory>
 #include <assert.h>
 
+// TODO make a Util sub-folder and have these as seperate classes, the single file thing is just laziness!
 namespace Tril {
 
 ///
