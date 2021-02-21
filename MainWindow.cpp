@@ -5,10 +5,9 @@
 #include "Egg.h"
 #include "Swimmer.h"
 #include "MeatChunk.h"
-#include "GraphContainerWidget.h"
+#include "LineGraphContainerWidget.h"
 #include "UniverseWidget.h"
 #include "Genome/GeneFactory.h"
-
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -120,11 +119,37 @@ void MainWindow::ResetGraphs()
         ui->graphs->removeTab(1);
     }
 
-    AddGraph("Lunar Cycle", { {0x010101, "Moon Phase"} }, "Time (tick)", "Full (%)", [=](uint64_t tick, LineGraph& graph)
+    AddScatterGraph("Swimmer speciation", "", "", [=](uint64_t tick, ScatterGraph& graph)
+    {
+        std::vector<std::shared_ptr<Swimmer>> swimmers;
+
+        universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
+        {
+            if (dynamic_cast<const Swimmer*>(e.get())) {
+                swimmers.push_back(std::dynamic_pointer_cast<Swimmer>(e));
+            }
+        });
+
+        std::shared_ptr<Swimmer> swimmerA;
+        std::shared_ptr<Swimmer> swimmerB;
+
+        for (auto& swimmer : swimmers) {
+            for (auto& otherSwimmer : swimmers) {
+                swimmerA->
+            }
+        }
+
+        std::vector<ScatterGraph::DataPoint> points;
+
+
+
+        graph.SetPoints(std::move(points));
+    });
+    AddLineGraph("Lunar Cycle", { {0x010101, "Moon Phase"} }, "Time (tick)", "Full (%)", [=](uint64_t tick, LineGraph& graph)
     {
         graph.AddPoint(0, tick, 50 * (universe_->GetParameters().lunarCycle_ + 1));
     });
-    AddGraph("Population", { {0x00F100, "Food Pellet"}, {0xFF0000, "Meat Chunk"}, {0x3333FF, "Swimmer"}, {0xFF44FF, "Egg"} }, "Time (tick)", "Number of Entities", [=](uint64_t tick, LineGraph& graph)
+    AddLineGraph("Population", { {0x00F100, "Food Pellet"}, {0xFF0000, "Meat Chunk"}, {0x3333FF, "Swimmer"}, {0xFF44FF, "Egg"} }, "Time (tick)", "Number of Entities", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
             uint64_t foodCount = 0;
@@ -149,7 +174,7 @@ void MainWindow::ResetGraphs()
             graph.AddPoint(3, tick, eggCount);
         }
     });
-    AddGraph("Total Energy", { {0x00F100, "Food Pellet"}, {0xFF0000, "Meat Chunk"}, {0x3333FF, "Swimmer"}, {0xFF44FF, "Egg"} }, "Time (tick)", "Combined Energy (mj)", [=](uint64_t tick, LineGraph& graph)
+    AddLineGraph("Total Energy", { {0x00F100, "Food Pellet"}, {0xFF0000, "Meat Chunk"}, {0x3333FF, "Swimmer"}, {0xFF44FF, "Egg"} }, "Time (tick)", "Combined Energy (mj)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
             Energy foodEnergy = 0;
@@ -174,7 +199,7 @@ void MainWindow::ResetGraphs()
             graph.AddPoint(3, tick, eggEnergy / 1_mj);
         }
     });
-    AddGraph("Average Age", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Age (tick)", [=](uint64_t tick, LineGraph& graph)
+    AddLineGraph("Average Age", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Age (tick)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
             Tril::RollingStatistics foodStats;
@@ -191,7 +216,7 @@ void MainWindow::ResetGraphs()
             graph.AddPoint(1, tick, swimmerStats.Mean());
         }
     });
-    AddGraph("Max Age", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Age (tick)", [=](uint64_t tick, LineGraph& graph)
+    AddLineGraph("Max Age", { {0x00FC00, "Food"}, {0x3333FF, "Swimmer"} }, "Time (tick)", "Age (tick)", [=](uint64_t tick, LineGraph& graph)
     {
         if (tick % 100 == 0) {
             Tril::RollingStatistics foodStats;
@@ -208,7 +233,7 @@ void MainWindow::ResetGraphs()
             graph.AddPoint(1, tick, swimmerStats.Max());
         }
     });
-    AddGraph("Health (%)", { { 0xFFDFDF, "Min (%)" }, { 0xFF0000, "Mean (%)" }, { 0xFFDFDF, "Max (%)" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Swimmer Health (%)", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
+    AddLineGraph("Health (%)", { { 0xFFDFDF, "Min (%)" }, { 0xFF0000, "Mean (%)" }, { 0xFFDFDF, "Max (%)" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Swimmer Health (%)", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {
             Tril::RollingStatistics stats;
@@ -229,7 +254,7 @@ void MainWindow::ResetGraphs()
             }
         }
     });
-    AddGraph("Generation", { { 0xDFDFDF, "Min" }, { 0x0000FF, "Mean" }, { 0xDFDFDF, "Max" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Swimmer Generation", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
+    AddLineGraph("Generation", { { 0xDFDFDF, "Min" }, { 0x0000FF, "Mean" }, { 0xDFDFDF, "Max" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Swimmer Generation", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {
             Tril::RollingStatistics stats;
@@ -250,7 +275,7 @@ void MainWindow::ResetGraphs()
             }
         }
     });
-    AddGraph("Mutations", { { 0xF0F000, "Mean Gene Mutations" }, { 0xF000FF, "Mean Chromosome Mutations" } }, "Time (tick)", "Mutations per Genome", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
+    AddLineGraph("Mutations", { { 0xF0F000, "Mean Gene Mutations" }, { 0xF000FF, "Mean Chromosome Mutations" } }, "Time (tick)", "Mutations per Genome", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {
             Tril::RollingStatistics geneStats;
@@ -270,7 +295,7 @@ void MainWindow::ResetGraphs()
             }
         }
     });
-    AddGraph("Base Metabolism", { { 0xDFDFDF, "Min (uj)" }, { 0x0000FF, "Mean (uj)" }, { 0xDFDFDF, "Max (uj)" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Energy (uj)",
+    AddLineGraph("Base Metabolism", { { 0xDFDFDF, "Min (uj)" }, { 0x0000FF, "Mean (uj)" }, { 0xDFDFDF, "Max (uj)" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Energy (uj)",
     [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {
@@ -292,7 +317,7 @@ void MainWindow::ResetGraphs()
             }
         }
     });
-    AddGraph("Swimmer Velocity", { { 0xDFDFDF, "Min" }, { 0x0000FF, "Mean" }, { 0xDFDFDF, "Max" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Velocity (pixels per tick)",
+    AddLineGraph("Swimmer Velocity", { { 0xDFDFDF, "Min" }, { 0x0000FF, "Mean" }, { 0xDFDFDF, "Max" }, { 0x00CF00, "StdDev lowerBound" }, { 0xCF3000, "StdDev upper bound" } }, "Time (tick)", "Velocity (pixels per tick)",
     [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         if (tick % 100 == 0) {
@@ -314,7 +339,7 @@ void MainWindow::ResetGraphs()
             }
         }
     });
-    AddGraph("Performance", { { 0xFC02DF, "Ticks per Second (Mean)" } }, "Time (tick)", "TPS", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
+    AddLineGraph("Performance", { { 0xFC02DF, "Ticks per Second (Mean)" } }, "Time (tick)", "TPS", [=, previous = std::chrono::steady_clock::now()](uint64_t tick, LineGraph& graph) mutable
     {
         // TODO check every tick and examine interesting periodic perofrmance behaviour
         if (tick % 100 == 0) {
@@ -334,7 +359,7 @@ void MainWindow::ResetGraphs()
     }
 }
 
-void MainWindow::AddGraph(QString graphTitle, std::vector<std::pair<QRgb, QString> >&& plots, QString xAxisTitle, QString yAxisTitle, std::function<void (uint64_t tick, LineGraph& graph)>&& task)
+void MainWindow::AddLineGraph(QString graphTitle, std::vector<std::pair<QRgb, QString> >&& plots, QString xAxisTitle, QString yAxisTitle, std::function<void (uint64_t tick, LineGraph& graph)>&& task)
 {
     QPushButton* button = new QPushButton(QString("Create \"%1\" graph").arg(graphTitle));
     ui->newGraphButtonsContainer->layout()->addWidget(button);
@@ -346,7 +371,21 @@ void MainWindow::AddGraph(QString graphTitle, std::vector<std::pair<QRgb, QStrin
             lineGraph->AddPlot(colour, name);
         }
         auto handle = universe_->AddTask([=, task = std::move(task)](uint64_t tick) { task(tick, *lineGraph); });
-        ui->graphs->addTab(new GraphContainerWidget(nullptr, std::move(handle), lineGraph), graphTitle);
+        ui->graphs->addTab(new LineGraphContainerWidget(nullptr, std::move(handle), lineGraph), graphTitle);
+    });
+    emit button->pressed();
+}
+
+void MainWindow::AddScatterGraph(QString graphTitle, QString xAxisTitle, QString yAxisTitle, std::function<void (uint64_t, ScatterGraph&)>&& task)
+{
+    QPushButton* button = new QPushButton(QString("Create \"%1\" graph").arg(graphTitle));
+    ui->newGraphButtonsContainer->layout()->addWidget(button);
+
+    connect(button, &QPushButton::pressed, [=]()
+    {
+        ScatterGraph* scatterGraph = new ScatterGraph(nullptr, graphTitle, xAxisTitle, yAxisTitle);
+        auto handle = universe_->AddTask([=, task = std::move(task)](uint64_t tick) { task(tick, *scatterGraph); });
+        ui->graphs->addTab(scatterGraph, graphTitle);
     });
     emit button->pressed();
 }

@@ -1,11 +1,11 @@
-#include "GraphContainerWidget.h"
+#include "LineGraphContainerWidget.h"
 
 #include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QLabel>
 #include <QScrollArea>
 
-GraphContainerWidget::GraphContainerWidget(QWidget* parent, Tril::Handle&& graphUpdaterHandle, LineGraph* lineGraph)
+LineGraphContainerWidget::LineGraphContainerWidget(QWidget* parent, Tril::Handle&& graphUpdaterHandle, LineGraph* lineGraph)
     : QWidget(parent)
     , lineGraph_(lineGraph)
     , graphUpdaterHandle_(std::move(graphUpdaterHandle))
@@ -90,7 +90,7 @@ GraphContainerWidget::GraphContainerWidget(QWidget* parent, Tril::Handle&& graph
     setLayout(baseLayout);
 }
 
-void GraphContainerWidget::ResetGraph()
+void LineGraphContainerWidget::ResetGraph()
 {
     lineGraph_->Reset();
 }

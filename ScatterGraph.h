@@ -24,7 +24,7 @@ public:
     qreal GetYAxisMinOverride() const { return yAxisMinOverride_; }
     qreal GetYAxisMaxOverride() const { return yAxisMaxOverride_; }
 
-    void SetTitle(QString newTitle) { title_ = newTitle; }
+    void SetTitle(QString newTitle) { graphTitle_ = newTitle; }
     void SetPoints(std::vector<DataPoint>&& points);
     void SetGraticuleHidden(bool hidden);
     void Reset();
@@ -64,7 +64,7 @@ private:
     QPointF graticuleLocation_;
 
     QPointF PaintAxes(QPainter& painter) const;
-    void PaintKey(QPainter& painter) const;
+    void PaintTitle(QPainter& painter) const;
     void PaintGraticule(QPainter& painter, const QPointF& target, const QRectF& area) const;
 };
 

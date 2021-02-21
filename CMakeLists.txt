@@ -50,7 +50,7 @@ set(PROJECT_SOURCES
         Genome/GeneSenseTraitsTouching.cpp
         Genome/Genome.cpp
         Graph.cpp
-        GraphContainerWidget.cpp
+        LineGraphContainerWidget.cpp
         LineGraph.cpp
         MeatChunk.cpp
         NeuralNetwork.cpp
@@ -114,7 +114,7 @@ set(PROJECT_HEADERS
         Genome/Genome.h
         Genome/Phenotype.h
         Graph.h
-        GraphContainerWidget.h
+        LineGraphContainerWidget.h
         LineGraph.h
         MeatChunk.h
         NeuralNetwork.h

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "Universe.h"
+#include "ScatterGraph.h"
 
 #include <QMainWindow>
 #include <QImage>
@@ -25,6 +26,7 @@ private:
     std::shared_ptr<Universe> universe_;
 
     void ResetGraphs();
-    void AddGraph(QString graphTitle, std::vector<std::pair<QRgb, QString>>&& plots, QString xAxisTitle, QString yAxisTitle, std::function<void(uint64_t tick, LineGraph& graph)>&& task);
+    void AddLineGraph(QString graphTitle, std::vector<std::pair<QRgb, QString>>&& plots, QString xAxisTitle, QString yAxisTitle, std::function<void(uint64_t tick, LineGraph& graph)>&& task);
+    void AddScatterGraph(QString graphTitle, QString xAxisTitle, QString yAxisTitle, std::function<void(uint64_t tick, ScatterGraph& graph)>&& task);
 };
 #endif // MAINWINDOW_H
