@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "Utility/Range.h"
+
 #include <string>
 #include <sstream>
 #include <string_view>
@@ -25,52 +27,6 @@ constexpr double Tau = Pi * 2;
 ///
 /// Types
 ///
-template <typename T>
-class Range {
-public:
-    Range(const T& first, const T& last)
-        : first_(first)
-        , last_(last)
-    {}
-
-    const T& Min() const { return std::min(first_, last_); }
-    const T& Max() const { return std::max(first_, last_); }
-    T ValueRange() const { return Max() - Min(); }
-    T ValueDifference() const { return first_ - last_; }
-    const T& First() const { return first_; }
-    const T& Last() const { return last_; }
-
-    bool Contains(const T& value) const { return value >= Min() && value <= Max(); }
-
-    double Similarity(const Range<T>& other) const
-    {
-        double overlap = static_cast<double>(std::min(Max(), other.Max()) - std::max(Min(), other.Min()));
-        if (overlap > 0.0) {
-            double combinedRange = static_cast<double>(std::max(Max(), other.Max()) - std::min(Min(), other.Min()));
-            return overlap / combinedRange;
-        } else {
-            return 1.0;
-        }
-    }
-
-    void SetFirst(const T& newFirst) { first_ = newFirst; }
-    void SetLast(const T& newLast) { last_ = newLast; }
-    void SetRange(const T& first, const T& last)
-    {
-        first_ = first;
-        last_ = last;
-    }
-
-    bool operator>(const Range<T>& other) const { return Min() > other.Min() || (Min() == other.Min() && Max() > other.Max()); }
-    bool operator<(const Range<T>& other) const { return Min() < other.Min() || (Min() == other.Min() && Max() < other.Max()); }
-    bool operator==(const Range<T>& other) const { return first_ == other.first_ && last_ == other.last_; }
-    bool operator>=(const Range<T>& other) const { return *this > other || *this == other; }
-    bool operator<=(const Range<T>& other) const { return *this < other || *this == other; }
-
-private:
-    T first_;
-    T last_;
-};
 
 template <typename T>
 class MinMax {
@@ -129,20 +85,6 @@ public:
 private:
     T min_;
     T max_;
-};
-
-class RangeConverter {
-public:
-    RangeConverter(Range<double> from, Range<double> to);
-
-    double Convert(const double& value) const;
-    double ConvertAndClamp(const double& value) const;
-    const Range<double>& GetFrom() const { return from_; }
-    const Range<double>& GetTo() const { return to_; }
-
-private:
-    Range<double> from_;
-    Range<double> to_;
 };
 
 class RollingStatistics {

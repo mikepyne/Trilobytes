@@ -1,6 +1,8 @@
 #ifndef EFFECTORSPRINGTAIL_H
 #define EFFECTORSPRINGTAIL_H
 
+#include "Utility/RangeConverter.h"
+
 #include "Effector.h"
 
 class EffectorSpringTail : public Effector {

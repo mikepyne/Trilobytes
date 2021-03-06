@@ -119,32 +119,32 @@ void MainWindow::ResetGraphs()
         ui->graphs->removeTab(1);
     }
 
-    AddScatterGraph("Swimmer speciation", "", "", [=](uint64_t tick, ScatterGraph& graph)
-    {
-        std::vector<std::shared_ptr<Swimmer>> swimmers;
-
-        universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
-        {
-            if (dynamic_cast<const Swimmer*>(e.get())) {
-                swimmers.push_back(std::dynamic_pointer_cast<Swimmer>(e));
-            }
-        });
-
-        std::shared_ptr<Swimmer> swimmerA;
-        std::shared_ptr<Swimmer> swimmerB;
-
-        for (auto& swimmer : swimmers) {
-            for (auto& otherSwimmer : swimmers) {
-                swimmerA->
-            }
-        }
-
-        std::vector<ScatterGraph::DataPoint> points;
-
-
-
-        graph.SetPoints(std::move(points));
-    });
+    // AddScatterGraph("Swimmer speciation", "", "", [=](uint64_t tick, ScatterGraph& graph)
+    // {
+    //     std::vector<std::shared_ptr<Swimmer>> swimmers;
+    //
+    //     universe_->ForEach([&](const std::shared_ptr<Entity>& e) -> void
+    //     {
+    //         if (dynamic_cast<const Swimmer*>(e.get())) {
+    //             swimmers.push_back(std::dynamic_pointer_cast<Swimmer>(e));
+    //         }
+    //     });
+    //
+    //     std::shared_ptr<Swimmer> swimmerA;
+    //     std::shared_ptr<Swimmer> swimmerB;
+    //
+    //     for (auto& swimmer : swimmers) {
+    //         for (auto& otherSwimmer : swimmers) {
+    //             swimmerA->
+    //         }
+    //     }
+    //
+    //     std::vector<ScatterGraph::DataPoint> points;
+    //
+    //
+    //
+    //     graph.SetPoints(std::move(points));
+    // });
     AddLineGraph("Lunar Cycle", { {0x010101, "Moon Phase"} }, "Time (tick)", "Full (%)", [=](uint64_t tick, LineGraph& graph)
     {
         graph.AddPoint(0, tick, 50 * (universe_->GetParameters().lunarCycle_ + 1));
@@ -384,6 +384,15 @@ void MainWindow::AddScatterGraph(QString graphTitle, QString xAxisTitle, QString
     connect(button, &QPushButton::pressed, [=]()
     {
         ScatterGraph* scatterGraph = new ScatterGraph(nullptr, graphTitle, xAxisTitle, yAxisTitle);
+
+
+
+        // handle is going out of scope here, need to capture it !!!!!!!!
+
+        // NEED to include gene name in json or will never be able to deserialise!!!!!!
+
+
+
         auto handle = universe_->AddTask([=, task = std::move(task)](uint64_t tick) { task(tick, *scatterGraph); });
         ui->graphs->addTab(scatterGraph, graphTitle);
     });

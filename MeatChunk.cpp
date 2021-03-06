@@ -1,5 +1,7 @@
 #include "MeatChunk.h"
 
+#include "Utility/RangeConverter.h"
+
 #include <QPainter>
 
 MeatChunk::MeatChunk(const Energy& energy, const Transform& transform, const double& speed)

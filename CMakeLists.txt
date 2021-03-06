@@ -54,7 +54,6 @@ set(PROJECT_SOURCES
         Genome/GeneSenseTraitsSelf.cpp
         Genome/GeneSenseTraitsTouching.cpp
         Genome/Genome.cpp
-        Graph.cpp
         LineGraphContainerWidget.cpp
         LineGraph.cpp
         MeatChunk.cpp
@@ -78,6 +77,8 @@ set(PROJECT_SOURCES
         Transform.cpp
         Universe.cpp
         UniverseWidget.cpp
+        Utility/JsonHelpers.cpp
+        Utility/RangeConverter.cpp
         Utils.cpp
 )
 
@@ -118,7 +119,6 @@ set(PROJECT_HEADERS
         Genome/GeneSenseTraitsTouching.h
         Genome/Genome.h
         Genome/Phenotype.h
-        Graph.h
         LineGraphContainerWidget.h
         LineGraph.h
         MeatChunk.h
@@ -145,6 +145,9 @@ set(PROJECT_HEADERS
         Universe.h
         UniverseParameters.h
         UniverseWidget.h
+        Utility/JsonHelpers.h
+        Utility/Range.h
+        Utility/RangeConverter.h
         Utils.h
         ${JsonLibDir}/json.hpp
 )

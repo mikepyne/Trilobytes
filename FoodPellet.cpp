@@ -1,6 +1,7 @@
 #include "FoodPellet.h"
 
 #include "FeedDispenser.h"
+#include "Utility/RangeConverter.h"
 
 #include <QPainter>
 
