@@ -3,6 +3,8 @@
 #include "Phenotype.h"
 #include "Sensors/SenseLunarCycle.h"
 
+using namespace nlohmann;
+
 GeneSenseLunarCycle::GeneSenseLunarCycle(unsigned hiddenLayers, unsigned outputCount)
     : GeneSenseBase(hiddenLayers, 1, outputCount)
 {
@@ -15,6 +17,15 @@ GeneSenseLunarCycle::GeneSenseLunarCycle(const std::shared_ptr<NeuralNetwork>& n
 
 GeneSenseLunarCycle::~GeneSenseLunarCycle()
 {
+}
+
+json GeneSenseLunarCycle::Serialise() const
+{
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_NETWORK, NeuralNetwork::Serialise(GetNetwork()) },
+        {KEY_OUTPUT_CONNECTIONS, NeuralNetworkConnector::Serialise(GetOutputConnections()) },
+    };
 }
 
 void GeneSenseLunarCycle::ExpressGene(Swimmer& owner, Phenotype& target) const

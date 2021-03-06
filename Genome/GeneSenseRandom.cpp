@@ -3,6 +3,8 @@
 #include "Phenotype.h"
 #include "Sensors/SenseRandom.h"
 
+using namespace nlohmann;
+
 GeneSenseRandom::GeneSenseRandom(unsigned inputCount, unsigned outputCount)
     : GeneSenseRandom(std::make_shared<NeuralNetwork>(0, inputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(NeuralNetworkConnector(inputCount, outputCount)), CreateRandomFilteredRandoms(inputCount), Random::Number(0.0, 100.0))
 {
@@ -52,6 +54,20 @@ GeneSenseRandom::GeneSenseRandom(const std::shared_ptr<NeuralNetwork>& network, 
         std::advance(iter, index);
         filteredRandoms_.erase(iter);
     });
+}
+
+json GeneSenseRandom::Serialise() const
+{
+    json randoms = json::array();
+    for (const auto& rand : filteredRandoms_) {
+        randoms.push_back(SenseRandom::FilteredRandom::Serialise(rand));
+    }
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_NETWORK, NeuralNetwork::Serialise(GetNetwork()) },
+        {KEY_OUTPUT_CONNECTIONS, NeuralNetworkConnector::Serialise(GetOutputConnections()) },
+        {KEY_RAND_ARRAY, randoms},
+    };
 }
 
 void GeneSenseRandom::ExpressGene(Swimmer& owner, Phenotype& target) const

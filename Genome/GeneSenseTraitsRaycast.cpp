@@ -3,6 +3,8 @@
 #include "Phenotype.h"
 #include "Sensors/SenseTraitsRaycast.h"
 
+using namespace nlohmann;
+
 GeneSenseTraitsRaycast::GeneSenseTraitsRaycast(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, unsigned hiddenLayers, unsigned outputCount, const Transform& transform, const double& distance, const double& rotation)
     : GeneSenseTraitsBase(std::move(toDetect), hiddenLayers, outputCount, transform)
     , distance_(distance)
@@ -17,6 +19,19 @@ GeneSenseTraitsRaycast::GeneSenseTraitsRaycast(std::vector<SenseTraitsBase::Trai
     , rotation_(rotation)
 {
     AddMutations();
+}
+
+json GeneSenseTraitsRaycast::Serialise() const
+{
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_NETWORK, NeuralNetwork::Serialise(GetNetwork()) },
+        {KEY_OUTPUT_CONNECTIONS, NeuralNetworkConnector::Serialise(GetOutputConnections()) },
+        {KEY_TRANSFORM, Transform::Serialise(transform_)},
+        {KEY_TRAIT_NORMALISERS, GetSerialisedTraitNormalisers()},
+        {KEY_DISTANCE, distance_},
+        {KEY_ROTATION, rotation_},
+    };
 }
 
 void GeneSenseTraitsRaycast::ExpressGene(Swimmer& owner, Phenotype& target) const

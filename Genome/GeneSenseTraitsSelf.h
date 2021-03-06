@@ -9,6 +9,8 @@ public:
     GeneSenseTraitsSelf(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, double dominance);
     virtual ~GeneSenseTraitsSelf() {}
 
+    virtual std::string Name() const override { return "GeneSenseTraitsSelf"; }
+    virtual nlohmann::json Serialise() const override;
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 
 protected:

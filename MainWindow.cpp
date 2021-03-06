@@ -9,6 +9,13 @@
 #include "UniverseWidget.h"
 #include "Genome/GeneFactory.h"
 
+#include "Libs/nlohmann/json.hpp"
+
+#include "QFileDialog"
+
+#include <fstream>
+//#include <filesystem>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -34,6 +41,20 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Make sure graphs don't start too squashed
     ui->verticalSplitter->setSizes({ 700, 150 });
+
+    /// File Menu Options
+    connect(ui->actionSave_Selected_Swimmer, &QAction::triggered, [&]()
+    {
+        if (auto inspected = ui->inspector->GetSwimmer(); inspected != nullptr) {
+            if (auto genome = inspected->InspectGenome(); genome != nullptr) {
+                std::string saveFileName = QFileDialog::getSaveFileName(this, "Save Genome", "", "Genome (*.genome)").toStdString();
+                nlohmann::json serialised = Genome::Serialise(genome);
+                // std::filesystem::create_directories(saveFileName);
+                std::ofstream fileWriter(saveFileName);
+                fileWriter << serialised.dump(2);
+            }
+        }
+    });
 
     /// NeuralNetowrk Inspector controlls
     connect(ui->liveUpdateSelector, &QCheckBox::toggled, [&](bool checked) { ui->inspector->SetUpdateLive(checked); });

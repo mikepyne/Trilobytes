@@ -4,6 +4,25 @@
 
 #include <iomanip>
 
+using namespace nlohmann;
+
+json SenseRandom::FilteredRandom::Serialise(const SenseRandom::FilteredRandom& wave)
+{
+    return {
+        {KEY_MIN, wave.min_},
+        {KEY_MAX, wave.max_},
+        {KEY_BETA, wave.beta_},
+    };
+}
+
+std::optional<SenseRandom::FilteredRandom> SenseRandom::FilteredRandom::Deserialise(const json& wave)
+{
+    if (JsonHelpers::ValidateJsonObject(wave, { {KEY_MIN, json::value_t::number_float}, {KEY_MAX, json::value_t::number_float}, {KEY_BETA, json::value_t::number_float} })) {
+        return { {wave.at(KEY_MIN).get<double>(), wave.at(KEY_MAX).get<double>(), wave.at(KEY_BETA).get<double>()} };
+    }
+    return std::nullopt;
+}
+
 SenseRandom::SenseRandom(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, std::vector<FilteredRandom>&& filteredRandoms)
     : Sense(network, outputConnections, owner)
     , filteredRandoms_(std::move(filteredRandoms))

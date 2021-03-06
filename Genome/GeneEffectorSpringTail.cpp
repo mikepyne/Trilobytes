@@ -3,6 +3,8 @@
 #include "Swimmer.h"
 #include "Effectors/EffectorSpringTail.h"
 
+using namespace nlohmann;
+
 GeneEffectorSpringTail::GeneEffectorSpringTail(unsigned hiddenLayers, unsigned inputCount, const Tril::RangeConverter& neuronExcitementToChargeRate, const Energy& storedEnergyCap, const double& triggerThreshold)
     : GeneEffectorBase(hiddenLayers, inputCount, 2)
     , neuronExcitementToChargeRate_(neuronExcitementToChargeRate)
@@ -23,6 +25,18 @@ GeneEffectorSpringTail::GeneEffectorSpringTail(const std::shared_ptr<NeuralNetwo
 
 GeneEffectorSpringTail::~GeneEffectorSpringTail()
 {
+}
+
+json GeneEffectorSpringTail::Serialise() const
+{
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_NETWORK, NeuralNetwork::Serialise(GetNetwork())},
+        {KEY_INPUT_CONNECTIONS, NeuralNetworkConnector::Serialise(GetInputConnections())},
+        {KEY_CHARGE_RATE, Tril::RangeConverter::Serialise(neuronExcitementToChargeRate_)},
+        {KEY_ENERGY_CAP, storedEnergyCap_},
+        {KEY_TRIGGER, triggerThreshold_},
+    };
 }
 
 void GeneEffectorSpringTail::ExpressGene(Swimmer& owner, Phenotype& target) const

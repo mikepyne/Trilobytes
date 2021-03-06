@@ -15,6 +15,9 @@ public:
     virtual ~GeneEffectorBase() {}
 
 protected:
+    static const inline std::string KEY_NETWORK = "Network";
+    static const inline std::string KEY_INPUT_CONNECTIONS = "Inputs";
+
     Energy GetMetabolicCost() const;
 
     void AddColumnInsertedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnAdded);

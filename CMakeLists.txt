@@ -152,6 +152,10 @@ set(PROJECT_HEADERS
         ${JsonLibDir}/json.hpp
 )
 
+set(PROJECT_DESIGNER_FILES
+        MainWindow.ui
+)
+
 set(EXTRA_FILES
         README.md
         How-to-create-Windows-release.txt
@@ -163,6 +167,7 @@ add_custom_target(Other SOURCES ${EXTRA_FILES})
 qt_add_executable(Trilobytes
     ${PROJECT_SOURCES}
     ${PROJECT_HEADERS}
+    ${PROJECT_DESIGNER_FILES}
 )
 
 target_link_libraries(Trilobytes PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)

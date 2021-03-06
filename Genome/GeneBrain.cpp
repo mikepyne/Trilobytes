@@ -3,6 +3,8 @@
 #include "Energy.h"
 #include "Phenotype.h"
 
+using namespace nlohmann;
+
 GeneBrain::GeneBrain(unsigned layerCount, unsigned width)
     : GeneBrain(std::make_shared<NeuralNetwork>(layerCount, width, NeuralNetwork::InitialWeights::Random), Random::Number(0.0, 100.0))
 {
@@ -36,6 +38,14 @@ GeneBrain::GeneBrain(const std::shared_ptr<NeuralNetwork>& brain, double dominan
     });
 
     // MAYBE add mutations for adding/removing columns (would require modifications to all senses and effectors connections, and knowledge of which index was effected by the mutation)
+}
+
+json GeneBrain::Serialise() const
+{
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_BRAIN, NeuralNetwork::Serialise(brain_)},
+    };
 }
 
 void GeneBrain::ExpressGene(Swimmer& /*owner*/, Phenotype& target) const

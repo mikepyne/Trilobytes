@@ -1,5 +1,24 @@
 #include "SenseSine.h"
 
+using namespace nlohmann;
+
+json SenseSine::SineWave::Serialise(const SenseSine::SineWave& wave)
+{
+    return {
+        {KEY_AMPLITUDE, wave.amplitude_},
+        {KEY_FREQUENCY, wave.frequency_},
+        {KEY_X, wave.x_},
+    };
+}
+
+std::optional<SenseSine::SineWave> SenseSine::SineWave::Deserialise(const json& wave)
+{
+    if (JsonHelpers::ValidateJsonObject(wave, { {KEY_AMPLITUDE, json::value_t::number_float}, {KEY_FREQUENCY, json::value_t::number_float}, {KEY_X, json::value_t::number_float} })) {
+        return { {wave.at(KEY_AMPLITUDE).get<double>(), wave.at(KEY_FREQUENCY).get<double>(), wave.at(KEY_X).get<double>()} };
+    }
+    return std::nullopt;
+}
+
 SenseSine::SenseSine(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, std::vector<SenseSine::SineWave>&& sineWaves)
     : Sense(network, outputConnections, owner)
     , sineWaves_(sineWaves)

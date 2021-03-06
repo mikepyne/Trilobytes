@@ -3,6 +3,8 @@
 
 #include "Random.h"
 
+#include "Libs/nlohmann/json.hpp"
+
 #include <memory>
 #include <functional>
 
@@ -15,10 +17,17 @@ public:
     Gene(const Gene& other) = delete;
     virtual ~Gene();
 
+    // TODO move these static heleprs away, they shouldn't live in this class
     static std::shared_ptr<Gene>& GetMostDominant(std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene>>& alleles);
     static const std::shared_ptr<Gene>& GetMostDominant(const std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene> >& alleles);
     static std::shared_ptr<Gene>& GetRandom(std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene>>& alleles);
     static bool Empty(const std::pair<std::shared_ptr<Gene>, std::shared_ptr<Gene>>& alleles) { return !(alleles.first || alleles.second); };
+
+    /**
+     * Name used with serialise/deserialise to uniquely identify the class.
+     */
+    virtual std::string Name() const = 0;
+    virtual nlohmann::json Serialise() const = 0;
 
     std::shared_ptr<Gene> Copy(unsigned mutationCount) const;
 
@@ -28,11 +37,11 @@ public:
     // MAYBE Splice (implement a function that will create a new Gene by splicing two parent genes together)
     double GetDominance() const { return dominance_; }
 
-    Gene& operator=(Gene&& other) = delete;
     Gene& operator=(const Gene& other) = delete;
 
 protected:
     constexpr static double BASE_WEIGHT = 100.0;
+    const static inline std::string KEY_DOMINANCE = "dominance";
 
     virtual std::shared_ptr<Gene> Copy() const = 0;
 

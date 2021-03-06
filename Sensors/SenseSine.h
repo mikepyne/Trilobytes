@@ -2,13 +2,26 @@
 #define SENSESINE_H
 
 #include "Sense.h"
+#include "Libs/nlohmann/json.hpp"
+#include "Utility/JsonHelpers.h"
+
+#include <optional>
 
 class SenseSine : public Sense {
 public:
     struct SineWave {
+    public:
         double amplitude_;
         double frequency_;
         double x_ = 0.0;
+
+        static nlohmann::json Serialise(const SineWave& wave);
+        std::optional<SineWave> Deserialise(const nlohmann::json& wave);
+
+    private:
+        static const inline std::string KEY_AMPLITUDE = "Amplitude";
+        static const inline std::string KEY_FREQUENCY = "Frequency";
+        static const inline std::string KEY_X = "X";
     };
 
     SenseSine(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, std::vector<SineWave>&& sineWaves);

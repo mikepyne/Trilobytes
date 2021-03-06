@@ -5,6 +5,8 @@
 
 #include <assert.h>
 
+using namespace nlohmann;
+
 NeuralNetworkConnector::NeuralNetworkConnector(unsigned inputs, unsigned outputs)
     : weights_(inputs, std::vector<double>(outputs, 0.0))
 {
@@ -29,6 +31,31 @@ NeuralNetworkConnector::NeuralNetworkConnector(unsigned inputs, unsigned outputs
 NeuralNetworkConnector::NeuralNetworkConnector(std::vector<std::vector<double>>&& weights)
     : weights_(std::move(weights))
 {
+}
+
+json NeuralNetworkConnector::Serialise(const std::shared_ptr<NeuralNetworkConnector>& connector)
+{
+    if (!connector) {
+        return json::array();
+    }
+
+    json serialisedNodes = json::array();
+    for (const auto& node : connector->weights_) {
+        json serialisedWeights = json::array();
+        for (const auto& weight : node) {
+            serialisedWeights.push_back(weight);
+        }
+        serialisedNodes.push_back(serialisedWeights);
+    }
+    return serialisedNodes;
+}
+
+std::shared_ptr<NeuralNetworkConnector> NeuralNetworkConnector::Deserialise(const json& network)
+{
+    if (JsonHelpers::ValidateJsonArray(network, json::value_t::number_float, 2)) {
+        return std::make_shared<NeuralNetworkConnector>(JsonHelpers::ParseJsonArray<double, 2>(network));
+    }
+    return nullptr;
 }
 
 void NeuralNetworkConnector::PassForward(const std::vector<double>& inputValues, std::vector<double>& outputValues)

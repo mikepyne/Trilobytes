@@ -2,6 +2,8 @@
 #define NEURALNETWORK_H
 
 #include "Random.h"
+#include "Libs/nlohmann/json.hpp"
+#include "Utility/JsonHelpers.h"
 
 #include <vector>
 #include <memory>
@@ -32,6 +34,9 @@ public:
     NeuralNetwork(unsigned layerCount, unsigned width, InitialWeights initialWeights);
     NeuralNetwork(std::vector<Layer>&& layers, unsigned width);
 
+    static nlohmann::json Serialise(const std::shared_ptr<NeuralNetwork>& network);
+    std::shared_ptr<NeuralNetwork> Deserialise(const nlohmann::json& network);
+
     unsigned GetInputCount() const { return layers_.empty() ? 0 : layers_.front().size(); }
     unsigned GetOutputCount() const { return layers_.empty() ? 0 : layers_.back().empty() ? 0 : layers_.back().size(); }
     unsigned GetConnectionCount() const;
@@ -53,6 +58,8 @@ public:
     std::shared_ptr<NeuralNetwork> WithRowRemoved(size_t index) const;
 
 private:
+    static const inline std::string KEY_LAYERS = "Layers";
+
     std::vector<Layer> layers_;
     size_t width_;
 

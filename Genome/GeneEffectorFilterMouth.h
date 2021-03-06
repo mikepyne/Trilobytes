@@ -9,6 +9,8 @@ public:
     GeneEffectorFilterMouth(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance);
     virtual ~GeneEffectorFilterMouth();
 
+    virtual std::string Name() const override { return "GeneEffectorFilterMouth"; }
+    virtual nlohmann::json Serialise() const override;
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 
 protected:

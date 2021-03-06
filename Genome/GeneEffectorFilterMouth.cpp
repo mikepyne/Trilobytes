@@ -4,6 +4,8 @@
 #include "Phenotype.h"
 #include "Effectors/EffectorFilterMouth.h"
 
+using namespace nlohmann;
+
 GeneEffectorFilterMouth::GeneEffectorFilterMouth(unsigned /*hiddenLayers*/, unsigned inputCount)
     : GeneEffectorBase(0, inputCount, 0)
     // : GeneEffectorBase(hiddenLayers, inputCount, 1)
@@ -17,6 +19,15 @@ GeneEffectorFilterMouth::GeneEffectorFilterMouth(const std::shared_ptr<NeuralNet
 
 GeneEffectorFilterMouth::~GeneEffectorFilterMouth()
 {
+}
+
+json GeneEffectorFilterMouth::Serialise() const
+{
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_NETWORK, NeuralNetwork::Serialise(GetNetwork())},
+        {KEY_INPUT_CONNECTIONS, NeuralNetworkConnector::Serialise(GetInputConnections())},
+    };
 }
 
 void GeneEffectorFilterMouth::ExpressGene(Swimmer& owner, Phenotype& target) const

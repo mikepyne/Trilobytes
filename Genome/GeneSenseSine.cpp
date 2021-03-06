@@ -3,6 +3,8 @@
 #include "Swimmer.h"
 #include "Phenotype.h"
 
+using namespace nlohmann;
+
 GeneSenseSine::GeneSenseSine(unsigned inputCount, unsigned outputCount)
     : GeneSenseSine(std::make_shared<NeuralNetwork>(0, inputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(NeuralNetworkConnector(inputCount, outputCount)), CreateRandomWaves(inputCount), Random::Number(0.0, 100.0))
 {
@@ -52,6 +54,20 @@ GeneSenseSine::GeneSenseSine(const std::shared_ptr<NeuralNetwork>& network, cons
         std::advance(iter, index);
         sineWaves_.erase(iter);
     });
+}
+
+json GeneSenseSine::Serialise() const
+{
+    json waves = json::array();
+    for (const auto& sineWave : sineWaves_) {
+        waves.push_back(SenseSine::SineWave::Serialise(sineWave));
+    }
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_NETWORK, NeuralNetwork::Serialise(GetNetwork()) },
+        {KEY_OUTPUT_CONNECTIONS, NeuralNetworkConnector::Serialise(GetOutputConnections()) },
+        {KEY_SINE_WAVES, waves},
+    };
 }
 
 void GeneSenseSine::ExpressGene(Swimmer& owner, Phenotype& target) const

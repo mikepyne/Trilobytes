@@ -6,6 +6,8 @@
 #include <QPixmap>
 #include <QPainter>
 
+using namespace nlohmann;
+
 GenePigment::GenePigment()
     : GenePigment(Random::Number(0.0, 1.0), Random::Number(0.0, 1.0), Random::Number(0.0, 1.0), Random::Number(0.0, 1.0), Random::Number(0.0, 100.0))
 {
@@ -61,6 +63,17 @@ GenePigment::GenePigment(double a, double r, double g, double b, double dominanc
 
 GenePigment::~GenePigment()
 {
+}
+
+json GenePigment::Serialise() const
+{
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_A, a_},
+        {KEY_R, r_},
+        {KEY_G, g_},
+        {KEY_B, b_},
+    };
 }
 
 std::shared_ptr<Gene> GenePigment::Copy() const

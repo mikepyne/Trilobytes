@@ -3,6 +3,8 @@
 #include "Phenotype.h"
 #include "Sensors/SenseTraitsInArea.h"
 
+using namespace nlohmann;
+
 GeneSenseTraitsInArea::GeneSenseTraitsInArea(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, unsigned hiddenLayers, unsigned outputCount, const Transform& transform, double radius)
     : GeneSenseTraitsBase(std::move(toDetect), hiddenLayers, outputCount, transform)
     , radius_(radius)
@@ -15,6 +17,18 @@ GeneSenseTraitsInArea::GeneSenseTraitsInArea(std::vector<SenseTraitsBase::TraitN
     , radius_(radius)
 {
     AddMutations();
+}
+
+json GeneSenseTraitsInArea::Serialise() const
+{
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_NETWORK, NeuralNetwork::Serialise(GetNetwork()) },
+        {KEY_OUTPUT_CONNECTIONS, NeuralNetworkConnector::Serialise(GetOutputConnections()) },
+        {KEY_TRANSFORM, Transform::Serialise(transform_)},
+        {KEY_TRAIT_NORMALISERS, GetSerialisedTraitNormalisers()},
+        {KEY_RADIUS, radius_},
+    };
 }
 
 void GeneSenseTraitsInArea::ExpressGene(Swimmer& owner, Phenotype& target) const

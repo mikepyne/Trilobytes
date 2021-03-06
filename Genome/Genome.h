@@ -9,6 +9,7 @@
 #include <vector>
 #include <memory>
 #include <functional>
+#include <string>
 
 class Genome {
 public:
@@ -17,6 +18,8 @@ public:
     Genome(std::vector<ChromosomePair>&& chromosomes, uint64_t geneMutationCount, uint64_t chromosomeMutationCount);
 
     static std::shared_ptr<Genome> CreateOffspring(const Genome& aGenome, const Genome& bGenome, const UniverseParameters& universeParameters);
+    static nlohmann::json Serialise(const std::shared_ptr<Genome>& genome);
+    // static std::shared_ptr<Genome> Deserialise(const nlohmann::json& serialisedGenome);
 
     Phenotype GetPhenoType(Swimmer& owner) const;
 
@@ -26,6 +29,10 @@ public:
     void Mutate(const UniverseParameters& universeParameters);
 
 private:
+    static const inline std::string KEY_GENE_MUTATION_COUNT = "GeneMutations";
+    static const inline std::string KEY_CHROMOSOME_MUTATION_COUNT = "ChromosomeMutations";
+    static const inline std::string KEY_CHROMOSOMES = "Chromosomes";
+
     // accumulate thise each generation
     uint64_t geneMutationCount_;
     uint64_t chromosomeMutationCount_;

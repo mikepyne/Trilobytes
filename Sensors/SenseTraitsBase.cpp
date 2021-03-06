@@ -2,6 +2,8 @@
 
 #include "Swimmer.h"
 
+using namespace nlohmann;
+
 std::string SenseTraitsBase::ToString(SenseTraitsBase::Trait trait)
 {
     switch (trait) {
@@ -17,6 +19,26 @@ std::string SenseTraitsBase::ToString(SenseTraitsBase::Trait trait)
     }
     assert(false && "SenseTraitsBase::ToString(Trait), invalid trait.");
     return "";
+}
+
+json SenseTraitsBase::TraitNormaliser::SerialiseTraitNormaliser(const SenseTraitsBase::TraitNormaliser& normaliser)
+{
+    return {
+        {KEY_TRAIT, normaliser.trait},
+        {KEY_CONVERTER, Tril::RangeConverter::Serialise(normaliser.range)},
+    };
+}
+
+std::optional<SenseTraitsBase::TraitNormaliser> SenseTraitsBase::TraitNormaliser::DeserialiseTraitNormaliser(const json& normaliser)
+{
+    if (JsonHelpers::ValidateJsonObject(normaliser, { {KEY_TRAIT, json::value_t::number_unsigned}, {KEY_CONVERTER, json::value_t::object} })) {
+        Trait trait = normaliser.at(KEY_TRAIT).get<Trait>();
+        std::optional<Tril::RangeConverter> converter = Tril::RangeConverter::Deserialise(normaliser.at(KEY_CONVERTER));
+        if (converter.has_value()) {
+            return { {trait, converter.value()} };
+        }
+    }
+    return std::nullopt;
 }
 
 SenseTraitsBase::TraitNormaliser SenseTraitsBase::DefaultNormalisation(const SenseTraitsBase::Trait& trait)

@@ -82,7 +82,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>292</width>
-                 <height>551</height>
+                 <height>553</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -435,7 +435,7 @@
               <x>0</x>
               <y>0</y>
               <width>976</width>
-              <height>141</height>
+              <height>139</height>
              </rect>
             </property>
            </widget>
@@ -457,7 +457,19 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSave_Selected_Swimmer"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
+  <action name="actionSave_Selected_Swimmer">
+   <property name="text">
+    <string>Save Selected Swimmer</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

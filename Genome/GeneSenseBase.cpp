@@ -1,6 +1,5 @@
 #include "GeneSenseBase.h"
 
-
 GeneSenseBase::GeneSenseBase(unsigned hiddenLayers, unsigned inputCount, unsigned outputCount)
     : GeneSenseBase(std::make_shared<NeuralNetwork>(hiddenLayers, inputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(inputCount, outputCount), Random::Number(0.0, 100.0))
 {

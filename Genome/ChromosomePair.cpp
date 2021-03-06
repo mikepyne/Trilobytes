@@ -5,6 +5,8 @@
 #include "NeuralNetwork.h"
 #include "Utils.h"
 
+using namespace nlohmann;
+
 ChromosomePair::ChromosomePair(std::vector<std::shared_ptr<Gene> >&& genes)
     : aChromosomeRange_(Random::Number<unsigned>(), Random::Number<unsigned>())
     , bChromosomeRange_(aChromosomeRange_)
@@ -12,6 +14,27 @@ ChromosomePair::ChromosomePair(std::vector<std::shared_ptr<Gene> >&& genes)
     for (auto& gene : genes) {
         chromosomePair_.insert({ Random::Number(aChromosomeRange_.Min(), aChromosomeRange_.Max()), std::make_pair(gene, gene) });
     }
+}
+
+json ChromosomePair::Serialise(const ChromosomePair& genome)
+{
+    json alleles = json::array();
+    for (const auto& [ locus, genePair ] : genome.chromosomePair_) {
+        const auto& [ geneA, geneB ] = genePair;{}
+        alleles.push_back({
+                              {KEY_ALLELE_LOCUS, locus},
+                              {KEY_ALLELE_GENE_A_NAME, geneA ? geneA->Name() : ""},
+                              {KEY_ALLELE_GENE_B_NAME, geneB ? geneB->Name() : ""},
+                              {KEY_ALLELE_GENE_A, geneA ? geneA->Serialise() : json::object()},
+                              {KEY_ALLELE_GENE_B, geneB ? geneB->Serialise() : json::object()},
+                          });
+    }
+
+    return {
+        {KEY_A_CHROMOSOME_RANGE, Tril::Range<unsigned>::Serialise(genome.aChromosomeRange_)},
+        {KEY_B_CHROMOSOME_RANGE, Tril::Range<unsigned>::Serialise(genome.bChromosomeRange_)},
+        {KEY_ALLELES, alleles},
+    };
 }
 
 std::optional<ChromosomePair> ChromosomePair::Recombine(const ChromosomePair& maternal, const ChromosomePair& paternal)

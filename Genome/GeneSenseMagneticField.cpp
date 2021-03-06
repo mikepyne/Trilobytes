@@ -3,6 +3,8 @@
 #include "Phenotype.h"
 #include "Sensors/SenseMagneticField.h"
 
+using namespace nlohmann;
+
 GeneSenseMagneticField::GeneSenseMagneticField(unsigned hiddenLayers, unsigned outputCount, const Point& point)
     : GeneSenseMagneticField(std::make_shared<NeuralNetwork>(hiddenLayers, 3, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(3, outputCount), point, Tril::RangeConverter({0, 1000}, {0, 0.3}), {-0.1, 0.1}, {-0.1, 0.1}, Random::Number(0.0, 100.0))
 {
@@ -66,6 +68,19 @@ GeneSenseMagneticField::GeneSenseMagneticField(const std::shared_ptr<NeuralNetwo
         to = { std::clamp(Random::Gaussian(to.First(), 0.05), -1.0, 1.0), std::clamp(Random::Gaussian(to.Last(), 0.05), -1.0, 1.0) };
         leftRightNormaliser_ = to;
     });
+}
+
+json GeneSenseMagneticField::Serialise() const
+{
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_NETWORK, NeuralNetwork::Serialise(GetNetwork()) },
+        {KEY_OUTPUT_CONNECTIONS, NeuralNetworkConnector::Serialise(GetOutputConnections()) },
+        {KEY_TARGET, ::Serialise(target_)},
+        {KEY_DISTANCE, Tril::RangeConverter::Serialise(distanceNormaliser_)},
+        {KEY_FRONT_BACK, Tril::Range<double>::Serialise(frontBackNormaliser_)},
+        {KEY_LEFT_RIGHT, Tril::Range<double>::Serialise(leftRightNormaliser_)},
+    };
 }
 
 void GeneSenseMagneticField::ExpressGene(Swimmer& owner, Phenotype& target) const

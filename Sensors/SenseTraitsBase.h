@@ -5,6 +5,9 @@
 #include "Utils.h"
 #include "Energy.h"
 #include "Transform.h"
+#include "Utility/JsonHelpers.h"
+#include "Utility/RangeConverter.h"
+#include "Libs/nlohmann/json.hpp"
 
 #include <functional>
 
@@ -36,8 +39,15 @@ public:
      * TODO consider allowing non-linear normalisation options
      */
     struct TraitNormaliser {
+    public:
         Trait trait;
         Tril::RangeConverter range;
+
+        static nlohmann::json SerialiseTraitNormaliser(const TraitNormaliser& normaliser);
+        static std::optional<TraitNormaliser> DeserialiseTraitNormaliser(const nlohmann::json& normaliser);
+    private:
+        static const inline std::string KEY_TRAIT = "Trait";
+        static const inline std::string KEY_CONVERTER = "Converter";
     };
 
     /**

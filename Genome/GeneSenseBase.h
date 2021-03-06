@@ -15,6 +15,9 @@ public:
     virtual ~GeneSenseBase() override {}
 
 protected:
+    static const inline std::string KEY_NETWORK = "Network";
+    static const inline std::string KEY_OUTPUT_CONNECTIONS = "Outputs";
+
     Energy GetMetabolicCost() const;
 
     void AddColumnInsertedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnAdded);

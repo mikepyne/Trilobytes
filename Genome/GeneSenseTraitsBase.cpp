@@ -4,6 +4,8 @@
 
 #include <functional>
 
+using namespace nlohmann;
+
 GeneSenseTraitsBase::GeneSenseTraitsBase(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, unsigned hiddenLayers, unsigned outputCount, const Transform& transform)
     : GeneSenseTraitsBase(std::move(toDetect), std::make_shared<NeuralNetwork>(hiddenLayers, toDetect.size(), NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(toDetect.size(), outputCount), transform, Random::Number(0.0, 100.0))
 {
@@ -70,4 +72,13 @@ GeneSenseTraitsBase::GeneSenseTraitsBase(std::vector<SenseTraitsBase::TraitNorma
         std::advance(iter, index);
         toDetect_.erase(iter);
     });
+}
+
+json GeneSenseTraitsBase::GetSerialisedTraitNormalisers() const
+{
+    json serialised = json::array();
+    for (const auto& traitNormaliser : toDetect_) {
+        serialised.push_back(SenseTraitsBase::TraitNormaliser::SerialiseTraitNormaliser(traitNormaliser));
+    }
+    return serialised;
 }

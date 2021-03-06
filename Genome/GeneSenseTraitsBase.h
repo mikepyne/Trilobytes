@@ -14,8 +14,13 @@ public:
     virtual ~GeneSenseTraitsBase() override {}
 
 protected:
+    static const inline std::string KEY_TRAIT_NORMALISERS;
+    static const inline std::string KEY_TRANSFORM;
+
     std::vector<SenseTraitsBase::TraitNormaliser> toDetect_;
     Transform transform_;
+
+    nlohmann::json GetSerialisedTraitNormalisers() const;
 };
 
 #endif // GENESENSETRAITSBASE_H

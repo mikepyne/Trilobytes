@@ -9,6 +9,8 @@ public:
     GeneSenseLunarCycle(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, double dominance);
     virtual ~GeneSenseLunarCycle() override;
 
+    virtual std::string Name() const override { return "GeneSenseLunarCycle"; }
+    virtual nlohmann::json Serialise() const override;
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 
 protected:

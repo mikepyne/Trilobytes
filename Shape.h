@@ -2,6 +2,8 @@
 #define SHAPEH
 
 #include "Utils.h"
+#include "Libs/nlohmann/json.hpp"
+#include "Utility/JsonHelpers.h"
 
 #include <limits>
 #include <math.h>
@@ -320,6 +322,49 @@ auto Collides(Shape1 a, Shape2 b) -> decltype(::Collides(b, a))
 {
     // Uses SFINAE to prevent recursive calling
     return Collides(b, a);
+}
+
+inline nlohmann::json Serialise(const Vec2& v)
+{
+    return {
+        {"x", v.x},
+        {"y", v.y},
+    };
+}
+
+inline nlohmann::json Serialise(const Point& p)
+{
+    return {
+        {"x", p.x},
+        {"y", p.y},
+    };
+}
+
+inline nlohmann::json Serialise(const Line& l)
+{
+    return {
+        {"a", Serialise(l.a)},
+        {"b", Serialise(l.b)},
+    };
+}
+
+inline nlohmann::json Serialise(const Circle& c)
+{
+    return {
+        {"x", c.x},
+        {"y", c.y},
+        {"Radius", c.radius},
+    };
+}
+
+inline nlohmann::json Serialise(const Rect& r)
+{
+    return {
+        {"Left", r.left},
+        {"Top", r.top},
+        {"Right", r.right},
+        {"Bottom", r.bottom},
+    };
 }
 
 #endif // SHAPEH

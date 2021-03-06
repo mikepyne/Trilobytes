@@ -3,6 +3,8 @@
 #include "Phenotype.h"
 #include "Sensors/SenseTraitsTouching.h"
 
+using namespace nlohmann;
+
 GeneSenseTraitsTouching::GeneSenseTraitsTouching(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, unsigned hiddenLayers, unsigned outputCount, const Transform& transform)
     : GeneSenseTraitsBase(std::move(toDetect), hiddenLayers, outputCount, transform)
 {
@@ -13,6 +15,17 @@ GeneSenseTraitsTouching::GeneSenseTraitsTouching(std::vector<SenseTraitsBase::Tr
     : GeneSenseTraitsBase(std::move(toDetect), network, outputConnections, transform, dominance)
 {
     AddMutations();
+}
+
+json GeneSenseTraitsTouching::Serialise() const
+{
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_NETWORK, NeuralNetwork::Serialise(GetNetwork()) },
+        {KEY_OUTPUT_CONNECTIONS, NeuralNetworkConnector::Serialise(GetOutputConnections()) },
+        {KEY_TRANSFORM, Transform::Serialise(transform_)},
+        {KEY_TRAIT_NORMALISERS, GetSerialisedTraitNormalisers()},
+    };
 }
 
 void GeneSenseTraitsTouching::ExpressGene(Swimmer& owner, Phenotype& target) const
@@ -29,7 +42,7 @@ std::shared_ptr<Gene> GeneSenseTraitsTouching::Copy() const
 void GeneSenseTraitsTouching::AddMutations()
 {
     /*
-     * FIXME currently the mutations for this class are all handles by the
+     * FIXME currently the mutations for this class are all handled by the
      * mutate transform mutation in the SenseTraitsBase class, however this
      * gene ought to have some notion of a Point that it mutates seperately to
      * the transform.

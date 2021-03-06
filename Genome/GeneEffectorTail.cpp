@@ -3,6 +3,8 @@
 #include "Swimmer.h"
 #include "Effectors/EffectorTail.h"
 
+using namespace nlohmann;
+
 GeneEffectorTail::GeneEffectorTail(unsigned hiddenLayers, unsigned inputCount)
     : GeneEffectorBase(hiddenLayers, inputCount, 3)
 {
@@ -13,6 +15,15 @@ GeneEffectorTail::GeneEffectorTail(const std::shared_ptr<NeuralNetwork>& network
     : GeneEffectorBase(network, inputConnections, dominance)
 {
     // No additional mutations
+}
+
+json GeneEffectorTail::Serialise() const
+{
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_NETWORK, NeuralNetwork::Serialise(GetNetwork())},
+        {KEY_INPUT_CONNECTIONS, NeuralNetworkConnector::Serialise(GetInputConnections())},
+    };
 }
 
 void GeneEffectorTail::ExpressGene(Swimmer& owner, Phenotype& target) const

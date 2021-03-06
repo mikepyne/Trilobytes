@@ -3,7 +3,7 @@
 #include "Swimmer.h"
 #include "Effectors/EffectorSpike.h"
 
-
+using namespace nlohmann;
 
 GeneEffectorSpike::GeneEffectorSpike(unsigned inputCount, double bearing, double length)
     : GeneEffectorBase(0, inputCount, 0)
@@ -23,6 +23,17 @@ GeneEffectorSpike::GeneEffectorSpike(const std::shared_ptr<NeuralNetwork>& netwo
 
 GeneEffectorSpike::~GeneEffectorSpike()
 {
+}
+
+json GeneEffectorSpike::Serialise() const
+{
+    return {
+        {KEY_DOMINANCE, GetDominance()},
+        {KEY_NETWORK, NeuralNetwork::Serialise(GetNetwork())},
+        {KEY_INPUT_CONNECTIONS, NeuralNetworkConnector::Serialise(GetInputConnections())},
+        {KEY_BEARING, bearing_},
+        {KEY_LENGTH, length_},
+    };
 }
 
 void GeneEffectorSpike::ExpressGene(Swimmer& owner, Phenotype& target) const

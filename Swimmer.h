@@ -22,6 +22,7 @@ public:
     const std::shared_ptr<NeuralNetwork>& InspectBrain() { return brain_; };
     const std::vector<std::shared_ptr<Sense>>& InspectSenses() { return senses_; };
     const std::vector<std::shared_ptr<Effector>>& InspectEffectors() { return effectors_; };
+    const std::shared_ptr<Genome>& InspectGenome() { return genome_; };
 
     uint64_t GetGeneration() const { return generation_; }
     const Energy& GetBaseMetabolism() const { return baseMetabolism_; }

@@ -9,11 +9,19 @@ public:
     GenePigment(double a, double r, double g, double b, double dominance);
     virtual ~GenePigment() override;
 
+    virtual std::string Name() const override { return "GenePigment"; }
+    virtual nlohmann::json Serialise() const override;
+
 protected:
     virtual std::shared_ptr<Gene> Copy() const override;
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 
 private:
+    static const inline std::string KEY_A = "a";
+    static const inline std::string KEY_R = "r";
+    static const inline std::string KEY_G = "g";
+    static const inline std::string KEY_B = "b";
+
     double a_;
     double r_;
     double g_;

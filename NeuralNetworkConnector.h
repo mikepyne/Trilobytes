@@ -1,6 +1,9 @@
 #ifndef NEURALNETWORKCONNECTOR_H
 #define NEURALNETWORKCONNECTOR_H
 
+#include "Libs/nlohmann/json.hpp"
+#include "Utility/JsonHelpers.h"
+
 #include <vector>
 #include <memory>
 
@@ -25,6 +28,9 @@ public:
      */
     NeuralNetworkConnector(unsigned inputs, unsigned outputs);
     NeuralNetworkConnector(std::vector<std::vector<double> >&& weights);
+
+    static nlohmann::json Serialise(const std::shared_ptr<NeuralNetworkConnector>& connector);
+    std::shared_ptr<NeuralNetworkConnector> Deserialise(const nlohmann::json& network);
 
     void PassForward(const std::vector<double>& inputValues, std::vector<double>& outputValues);
 

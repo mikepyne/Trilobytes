@@ -2,13 +2,26 @@
 #define SENSERANDOM_H
 
 #include "Sense.h"
+#include "Libs/nlohmann/json.hpp"
+#include "Utility/JsonHelpers.h"
+
+#include <optional>
 
 class SenseRandom : public Sense {
 public:
     struct FilteredRandom {
+    public:
         double min_;
         double max_;
         double beta_; // i.e. Low pass filter
+
+        static nlohmann::json Serialise(const FilteredRandom& wave);
+        std::optional<FilteredRandom> Deserialise(const nlohmann::json& wave);
+
+    private:
+        static const inline std::string KEY_MIN = "Min";
+        static const inline std::string KEY_MAX = "Max";
+        static const inline std::string KEY_BETA = "Beta";
     };
 
     SenseRandom(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Swimmer& owner, std::vector<FilteredRandom>&& filteredRandoms);

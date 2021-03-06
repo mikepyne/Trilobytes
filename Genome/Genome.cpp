@@ -2,6 +2,8 @@
 
 #include "Random.h"
 
+using namespace nlohmann;
+
 Genome::Genome(std::vector<std::shared_ptr<Gene> >&& genes)
     : geneMutationCount_(0)
     , chromosomeMutationCount_(0)
@@ -38,6 +40,25 @@ std::shared_ptr<Genome> Genome::CreateOffspring(const Genome& aGenome, const Gen
         }
     }
     return {};
+}
+
+json Genome::Serialise(const std::shared_ptr<Genome>& genome)
+{
+    if (!genome) {
+        return json::object();
+    }
+
+    json chromosomes = json::array();
+
+    for (const auto& chromosome : genome->chromosomes_) {
+        chromosomes.push_back(ChromosomePair::Serialise(chromosome));
+    }
+
+    return {
+        {KEY_GENE_MUTATION_COUNT, genome->geneMutationCount_},
+        {KEY_CHROMOSOME_MUTATION_COUNT, genome->chromosomeMutationCount_},
+        {KEY_CHROMOSOMES, chromosomes},
+    };
 }
 
 Phenotype Genome::GetPhenoType(Swimmer& owner) const
@@ -78,8 +99,8 @@ void Genome::Mutate(const UniverseParameters& universeParameters)
         case 1:
             // duplicate a chromosome
             if (!chromosomes_.empty()) {
-                size_t randomChromosome = Random::Number<size_t>(0, chromosomes_.size() - 1);
-                chromosomes_.push_back(chromosomes_.at(randomChromosome));
+                ChromosomePair copy = Random::Item(chromosomes_);
+                chromosomes_.emplace_back(std::move(copy));
             }
             break;
         case 2:

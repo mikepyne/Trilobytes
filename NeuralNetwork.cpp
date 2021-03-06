@@ -1,5 +1,7 @@
 #include "NeuralNetwork.h"
 
+using namespace nlohmann;
+
 NeuralNetwork::NeuralNetwork(unsigned layerCount, unsigned width, NeuralNetwork::InitialWeights initialWeights)
     : NeuralNetwork(initialWeights == InitialWeights::Random ? CreateRandomLayers(layerCount, width) : CreatePassThroughLayers(layerCount, width), width)
 {
@@ -14,6 +16,36 @@ NeuralNetwork::NeuralNetwork(std::vector<NeuralNetwork::Layer>&& layers, unsigne
             assert(layer.size() == width_);
         }
     }
+}
+
+json NeuralNetwork::Serialise(const std::shared_ptr<NeuralNetwork>& network)
+{
+    if (!network) {
+        return json::array();
+    }
+
+    json layers = json::array();
+    for (const Layer& layer : network->layers_) {
+        json nodes = json::array();
+        for (const Node& node : layer) {
+            json inputWeights = json::array();
+            for (const InputWeight& inputWeight : node) {
+                inputWeights.push_back(inputWeight);
+            }
+            nodes.push_back(inputWeights);
+        }
+        layers.push_back(nodes);
+    }
+    return layers;
+}
+
+std::shared_ptr<NeuralNetwork> NeuralNetwork::Deserialise(const json& network)
+{
+    if (JsonHelpers::ValidateJsonArray(network, json::value_t::number_float, 3)) {
+        unsigned width = network.front().size();
+        return std::make_shared<NeuralNetwork>(JsonHelpers::ParseJsonArray<double, 3>(network), width);
+    }
+    return nullptr;
 }
 
 unsigned NeuralNetwork::GetConnectionCount() const
