@@ -14,6 +14,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
+# Nlhomann JSON library
+set(JsonLibDir "Libs/nlohmann")
+file(MAKE_DIRECTORY ${JsonLibDir})
+file(DOWNLOAD https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp ${CMAKE_SOURCE_DIR}/${JsonLibDir}/json.hpp)
+
 set(PROJECT_SOURCES
         main.cpp
         MainWindow.cpp
@@ -141,6 +146,7 @@ set(PROJECT_HEADERS
         UniverseParameters.h
         UniverseWidget.h
         Utils.h
+        ${JsonLibDir}/json.hpp
 )
 
 set(EXTRA_FILES
