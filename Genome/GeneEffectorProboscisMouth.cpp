@@ -6,6 +6,11 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneEffectorProboscisMouth::Generate(unsigned brainWidth)
+{
+    return std::make_shared<GeneEffectorProboscisMouth>(brainWidth, Random::Gaussian(15.0, 5.0));
+}
+
 GeneEffectorProboscisMouth::GeneEffectorProboscisMouth(unsigned inputCount, double proboscisLength)
     : GeneEffectorBase(0, inputCount, 0)
     , proboscisLength_(proboscisLength)

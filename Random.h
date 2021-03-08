@@ -216,14 +216,12 @@ public:
     }
 
     template<typename Container>
-    static std::vector<typename Container::value_type> CopyItems(size_t count, const Container& container)
+    static void ForNItems(const Container& container, size_t itemCount, const std::function<void(const typename Container::value_type& item)>& action)
     {
         assert(!container.empty());
-        std::vector<typename Container::value_type> copies;
-        for (unsigned i = 0; i < count; ++i) {
-            copies.push_back(Item(container));
+        for (size_t count = 0; count < itemCount; ++count) {
+            std::invoke(action, Item(container));
         }
-        return copies;
     }
 
 private:

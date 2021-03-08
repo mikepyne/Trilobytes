@@ -5,6 +5,21 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneSenseTraitsRaycast::Generate(unsigned brainWidth)
+{
+    std::vector<SenseTraitsBase::TraitNormaliser> traits;
+    // Between 1 - 4 traits
+    Random::ForNItems(SenseTraitsBase::ALL_TRAITS, Random::Number<size_t>(1, 4), [&](const auto& trait)
+    {
+        traits.push_back(SenseTraitsBase::DefaultNormalisation(trait));
+    });
+    unsigned hiddenLayers = Random::Number(size_t{ 0 }, traits.size());
+    double distance = Random::Number(1.0, 50.0);
+    double rotation = Random::Number(0.0, Tril::Tau);
+    // TODO allow the sense to start somewhere other than the centre of the swimmer
+    return std::make_shared<GeneSenseTraitsRaycast>(std::move(traits), hiddenLayers, brainWidth, Transform{ 0, 0, 0 }, distance, rotation);
+}
+
 GeneSenseTraitsRaycast::GeneSenseTraitsRaycast(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, unsigned hiddenLayers, unsigned outputCount, const Transform& transform, const double& distance, const double& rotation)
     : GeneSenseTraitsBase(std::move(toDetect), hiddenLayers, outputCount, transform)
     , distance_(distance)

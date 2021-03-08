@@ -5,6 +5,15 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneEffectorSpringTail::Generate(unsigned brainWidth)
+{
+    unsigned hiddenLayers = Random::Number(0u, 2u);
+    auto rangeConverter = Tril::RangeConverter{ {-1.0, 0.1}, {-10_uj, 10_uj} };
+    Energy storedEnergyCap = Random::Number(100_uj, 500_uj);
+    double triggerThreshold = Random::Number(0.0, 1.0);
+    return std::make_shared<GeneEffectorSpringTail>(hiddenLayers, brainWidth, rangeConverter, storedEnergyCap, triggerThreshold);
+}
+
 GeneEffectorSpringTail::GeneEffectorSpringTail(unsigned hiddenLayers, unsigned inputCount, const Tril::RangeConverter& neuronExcitementToChargeRate, const Energy& storedEnergyCap, const double& triggerThreshold)
     : GeneEffectorBase(hiddenLayers, inputCount, 2)
     , neuronExcitementToChargeRate_(neuronExcitementToChargeRate)

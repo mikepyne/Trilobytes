@@ -8,10 +8,14 @@
 
 class GeneBrain : public Gene {
 public:
+    static inline std::string Name() { return std::string(Tril::TypeName<GeneBrain>()); }
+    static std::shared_ptr<Gene> Generate(unsigned brainWidth);
+    static std::shared_ptr<Gene> Deserialise(const nlohmann::json& serialised);
+
     GeneBrain(unsigned layerCount, unsigned width);
     GeneBrain(const std::shared_ptr<NeuralNetwork>& brain, double dominance);
 
-    virtual std::string Name() const override { return "GeneBrain"; }
+    virtual std::string GetName() const override { return Name(); }
     virtual nlohmann::json Serialise() const override;
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 

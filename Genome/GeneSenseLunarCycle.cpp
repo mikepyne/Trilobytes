@@ -5,6 +5,11 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneSenseLunarCycle::Generate(unsigned brainWidth)
+{
+    return std::make_shared<GeneSenseLunarCycle>(Random::Number(0, 2), brainWidth);
+}
+
 GeneSenseLunarCycle::GeneSenseLunarCycle(unsigned hiddenLayers, unsigned outputCount)
     : GeneSenseBase(hiddenLayers, 1, outputCount)
 {

@@ -8,11 +8,15 @@
 
 class GeneSenseMagneticField : public GeneSenseBase {
 public:
+    static inline std::string Name() { return std::string(Tril::TypeName<GeneSenseMagneticField>()); }
+    static std::shared_ptr<Gene> Generate(unsigned brainWidth);
+    static std::shared_ptr<Gene> Deserialise(const nlohmann::json& serialised);
+
     GeneSenseMagneticField(unsigned hiddenLayers, unsigned outputCount, const Point& point);
     GeneSenseMagneticField(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, const Point& target, const Tril::RangeConverter& distanceNormaliser, const Tril::Range<double>& frontBackNormaliser, const Tril::Range<double>& leftRightNormaliser, double dominance);
     virtual ~GeneSenseMagneticField() override {}
 
-    virtual std::string Name() const override { return "GeneSenseMagneticField"; }
+    virtual std::string GetName() const override { return Name(); }
     virtual nlohmann::json Serialise() const override;
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 

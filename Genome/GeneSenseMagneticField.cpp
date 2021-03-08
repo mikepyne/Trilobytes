@@ -5,6 +5,11 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneSenseMagneticField::Generate(unsigned brainWidth)
+{
+    return std::make_shared<GeneSenseMagneticField>(Random::Number(0, 2), brainWidth, Point{ Random::Number(-1000.0, 1000.0), Random::Number(-1000.0, 1000.0) });
+}
+
 GeneSenseMagneticField::GeneSenseMagneticField(unsigned hiddenLayers, unsigned outputCount, const Point& point)
     : GeneSenseMagneticField(std::make_shared<NeuralNetwork>(hiddenLayers, 3, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(3, outputCount), point, Tril::RangeConverter({0, 1000}, {0, 0.3}), {-0.1, 0.1}, {-0.1, 0.1}, Random::Number(0.0, 100.0))
 {

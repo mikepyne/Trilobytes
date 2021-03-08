@@ -7,11 +7,15 @@
 
 class GeneEffectorTail : public GeneEffectorBase {
 public:
+    static inline std::string Name() { return std::string(Tril::TypeName<GeneEffectorTail>()); }
+    static std::shared_ptr<Gene> Generate(unsigned brainWidth);
+    static std::shared_ptr<Gene> Deserialise(const nlohmann::json& serialised);
+
     GeneEffectorTail(unsigned hiddenLayers, unsigned inputCount);
     GeneEffectorTail(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance);
     virtual ~GeneEffectorTail() {}
 
-    virtual std::string Name() const override { return "GeneEffectorTail"; }
+    virtual std::string GetName() const override { return Name(); }
     virtual nlohmann::json Serialise() const override;
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 

@@ -26,7 +26,7 @@ public:
     /**
      * Name used with serialise/deserialise to uniquely identify the class.
      */
-    virtual std::string Name() const = 0;
+    virtual std::string GetName() const = 0;
     virtual nlohmann::json Serialise() const = 0;
 
     std::shared_ptr<Gene> Copy(unsigned mutationCount) const;

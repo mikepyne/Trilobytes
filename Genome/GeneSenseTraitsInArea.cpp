@@ -5,6 +5,20 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneSenseTraitsInArea::Generate(unsigned brainWidth)
+{
+    std::vector<SenseTraitsBase::TraitNormaliser> traits;
+    // Between 1 - 4 traits
+    Random::ForNItems(SenseTraitsBase::ALL_TRAITS, Random::Number<size_t>(1, 4), [&](const auto& trait)
+    {
+        traits.push_back(SenseTraitsBase::DefaultNormalisation(trait));
+    });
+    unsigned hiddenLayers = Random::Number(size_t{ 0 }, traits.size());
+    double radius = Random::Number(5.0, 30.0);
+    Transform transform = { 0, Random::Number(0.0, radius), Random::Bearing() };
+    return std::make_shared<GeneSenseTraitsInArea>(std::move(traits), hiddenLayers, brainWidth, transform, radius);
+}
+
 GeneSenseTraitsInArea::GeneSenseTraitsInArea(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, unsigned hiddenLayers, unsigned outputCount, const Transform& transform, double radius)
     : GeneSenseTraitsBase(std::move(toDetect), hiddenLayers, outputCount, transform)
     , radius_(radius)

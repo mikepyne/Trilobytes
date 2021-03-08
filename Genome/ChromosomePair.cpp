@@ -23,8 +23,8 @@ json ChromosomePair::Serialise(const ChromosomePair& genome)
         const auto& [ geneA, geneB ] = genePair;{}
         alleles.push_back({
                               {KEY_ALLELE_LOCUS, locus},
-                              {KEY_ALLELE_GENE_A_NAME, geneA ? geneA->Name() : ""},
-                              {KEY_ALLELE_GENE_B_NAME, geneB ? geneB->Name() : ""},
+                              {KEY_ALLELE_GENE_A_NAME, geneA ? geneA->GetName() : ""},
+                              {KEY_ALLELE_GENE_B_NAME, geneB ? geneB->GetName() : ""},
                               {KEY_ALLELE_GENE_A, geneA ? geneA->Serialise() : json::object()},
                               {KEY_ALLELE_GENE_B, geneB ? geneB->Serialise() : json::object()},
                           });
@@ -208,7 +208,7 @@ void ChromosomePair::MutateStructure()
              *
              * Perhaps each gene needs a "BrainWidthMutated(newWidth)" function?
              */
-        std::shared_ptr<Gene> randomGene = GeneFactory::RandomGene(NeuralNetwork::BRAIN_WIDTH);
+        std::shared_ptr<Gene> randomGene = GeneFactory::Get().GenerateRandomGene(NeuralNetwork::BRAIN_WIDTH);
         bool addToA = Random::Boolean();
         const auto& range = addToA ? aChromosomeRange_ : bChromosomeRange_;
         size_t randomLocation = Random::Number<size_t>(range.Min(), range.Max());

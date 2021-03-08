@@ -8,6 +8,11 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GenePigment::Generate()
+{
+    return std::make_shared<GenePigment>();
+}
+
 GenePigment::GenePigment()
     : GenePigment(Random::Number(0.0, 1.0), Random::Number(0.0, 1.0), Random::Number(0.0, 1.0), Random::Number(0.0, 1.0), Random::Number(0.0, 100.0))
 {

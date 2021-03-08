@@ -8,11 +8,15 @@
 
 class GeneSenseSine : public GeneSenseBase {
 public:
+    static inline std::string Name() { return std::string(Tril::TypeName<GeneSenseSine>()); }
+    static std::shared_ptr<Gene> Generate(unsigned brainWidth);
+    static std::shared_ptr<Gene> Deserialise(const nlohmann::json& serialised);
+
     GeneSenseSine(unsigned inputCount, unsigned outputCount);
     GeneSenseSine(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& outputConnections, std::vector<SenseSine::SineWave>&& sineWaves, double dominance);
     virtual ~GeneSenseSine() override {}
 
-    virtual std::string Name() const override { return "GeneSenseSine"; }
+    virtual std::string GetName() const override { return Name(); }
     virtual nlohmann::json Serialise() const override;
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 

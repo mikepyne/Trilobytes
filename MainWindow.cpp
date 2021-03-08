@@ -86,12 +86,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->addDefaultSwimmerButton, &QPushButton::pressed, [&]()
     {
         auto point = ApplyOffset({0, 0}, Random::Bearing(), Random::Number(0.0, 1000.0));
-        universe_->AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ point.x, point.y, Random::Bearing() }, GeneFactory::DefaultGenome()));
+        universe_->AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ point.x, point.y, Random::Bearing() }, GeneFactory::Get().GenerateDefaultGenome(NeuralNetwork::BRAIN_WIDTH)));
     });
     connect(ui->addRandomSwimmerButton, &QPushButton::pressed, [&]()
     {
         auto point = ApplyOffset({0, 0}, Random::Bearing(), Random::Number(0.0, 1000.0));
-        universe_->AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ point.x, point.y, Random::Bearing() }, GeneFactory::RandomGenome()));
+        universe_->AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ point.x, point.y, Random::Bearing() }, GeneFactory::Get().GenerateRandomGenome(NeuralNetwork::BRAIN_WIDTH)));
     });
     connect(ui->quadCapacitySpinner, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](int capacity)
     {

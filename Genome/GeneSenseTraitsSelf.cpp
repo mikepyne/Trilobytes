@@ -5,6 +5,18 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneSenseTraitsSelf::Generate(unsigned brainWidth)
+{
+    std::vector<SenseTraitsBase::TraitNormaliser> traits;
+    // Between 1 - 4 traits
+    Random::ForNItems(SenseTraitsBase::ALL_TRAITS, Random::Number<size_t>(1, 4), [&](const auto& trait)
+    {
+        traits.push_back(SenseTraitsBase::DefaultNormalisation(trait));
+    });
+    unsigned hiddenLayers = Random::Number(size_t{ 0 }, traits.size());
+    return std::make_shared<GeneSenseTraitsSelf>(std::move(traits), hiddenLayers, brainWidth);
+}
+
 GeneSenseTraitsSelf::GeneSenseTraitsSelf(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, unsigned hiddenLayers, unsigned outputCount)
     : GeneSenseTraitsBase(std::move(toDetect), hiddenLayers, outputCount, {})
 {

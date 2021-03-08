@@ -1,9 +1,45 @@
 #include "GeneSenseTraitsTouching.h"
 
+#include "Random.h"
 #include "Phenotype.h"
 #include "Sensors/SenseTraitsTouching.h"
+#include "Utility/JsonHelpers.h"
 
 using namespace nlohmann;
+
+std::shared_ptr<Gene> GeneSenseTraitsTouching::Generate(unsigned brainWidth)
+{
+    std::vector<SenseTraitsBase::TraitNormaliser> traits;
+    // Between 1 - 4 traits
+    Random::ForNItems(SenseTraitsBase::ALL_TRAITS, Random::Number<size_t>(1, 4), [&](const auto& trait)
+    {
+        traits.push_back(SenseTraitsBase::DefaultNormalisation(trait));
+    });
+    unsigned hiddenLayers = Random::Number(size_t{ 0 }, traits.size());
+    Transform transform = { 0, Random::Number(0.0, 20.0), Random::Gaussian(0.0, Tril::Pi) };
+    return std::make_shared<GeneSenseTraitsTouching>(std::move(traits), hiddenLayers, brainWidth, transform);
+}
+
+// TODO also see https://stackoverflow.com/questions/52191576/nlohmann-json-get-with-type-deduction
+//std::shared_ptr<Gene> GeneSenseTraitsTouching::Deserialise(const json& serialised)
+//{
+//    if (JsonHelpers::ValidateJsonObject(serialised, { {KEY_DOMINANCE, json::value_t::number_float},
+//                                                      {KEY_NETWORK, json::value_t::object},
+//                                                      {KEY_OUTPUT_CONNECTIONS, json::value_t::object},
+//                                                      {KEY_TRANSFORM, json::value_t::object},
+//                                                      {KEY_TRAIT_NORMALISERS, json::value_t::array} })) {
+//        std::vector<SenseTraitsBase::TraitNormaliser> toDetect;
+//        if (JsonHelpers::ValidateJsonArray(serialised.at(KEY_TRAIT_NORMALISERS), json::value_t::object)) {
+//            toDetect = JsonHelpers::ParseJsonArray<SenseTraitsBase::TraitNormaliser>(serialised.at(KEY_TRAIT_NORMALISERS));
+//        }
+//        std::shared_ptr<NeuralNetwork> network;
+//        std::shared_ptr<NeuralNetworkConnector> outputConnections;
+//        Transform transform;
+//        double dominance = serialised.at(KEY_DOMINANCE).get<double>();
+//        return std::make_shared<GeneSenseTraitsTouching>(std::move(toDetect), network, outputConnections, transform, dominance);
+//    }
+//    return nullptr;
+//}
 
 GeneSenseTraitsTouching::GeneSenseTraitsTouching(std::vector<SenseTraitsBase::TraitNormaliser>&& toDetect, unsigned hiddenLayers, unsigned outputCount, const Transform& transform)
     : GeneSenseTraitsBase(std::move(toDetect), hiddenLayers, outputCount, transform)

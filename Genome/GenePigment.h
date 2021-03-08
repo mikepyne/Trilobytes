@@ -5,11 +5,15 @@
 
 class GenePigment : public Gene {
 public:
+    static inline std::string Name() { return std::string(Tril::TypeName<GenePigment>()); }
+    static std::shared_ptr<Gene> Generate();
+    static std::shared_ptr<Gene> Deserialise(const nlohmann::json& serialised);
+
     GenePigment();
     GenePigment(double a, double r, double g, double b, double dominance);
     virtual ~GenePigment() override;
 
-    virtual std::string Name() const override { return "GenePigment"; }
+    virtual std::string GetName() const override { return Name(); }
     virtual nlohmann::json Serialise() const override;
 
 protected:

@@ -5,6 +5,12 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneEffectorTail::Generate(unsigned brainWidth)
+{
+    unsigned hiddenLayers = Random::Number(0u, 2u);
+    return std::make_shared<GeneEffectorTail>(hiddenLayers, brainWidth);
+}
+
 GeneEffectorTail::GeneEffectorTail(unsigned hiddenLayers, unsigned inputCount)
     : GeneEffectorBase(hiddenLayers, inputCount, 3)
 {

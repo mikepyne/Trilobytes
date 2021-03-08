@@ -5,6 +5,11 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneBrain::Generate(unsigned brainWidth)
+{
+    return std::make_shared<GeneBrain>(Random::Number(1, 5), brainWidth);
+}
+
 GeneBrain::GeneBrain(unsigned layerCount, unsigned width)
     : GeneBrain(std::make_shared<NeuralNetwork>(layerCount, width, NeuralNetwork::InitialWeights::Random), Random::Number(0.0, 100.0))
 {

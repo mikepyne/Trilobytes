@@ -5,11 +5,15 @@
 
 class GeneEffectorFilterMouth : public GeneEffectorBase {
 public:
+    static inline std::string Name() { return std::string(Tril::TypeName<GeneEffectorFilterMouth>()); }
+    static std::shared_ptr<Gene> Generate(unsigned brainWidth);
+    static std::shared_ptr<Gene> Deserialise(const nlohmann::json& serialised);
+
     GeneEffectorFilterMouth(unsigned hiddenLayers, unsigned inputCount);
     GeneEffectorFilterMouth(const std::shared_ptr<NeuralNetwork>& network, const std::shared_ptr<NeuralNetworkConnector>& inputConnections, double dominance);
     virtual ~GeneEffectorFilterMouth();
 
-    virtual std::string Name() const override { return "GeneEffectorFilterMouth"; }
+    virtual std::string GetName() const override { return Name(); }
     virtual nlohmann::json Serialise() const override;
     virtual void ExpressGene(Swimmer& owner, Phenotype& target) const override;
 

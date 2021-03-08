@@ -5,6 +5,11 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneSenseRandom::Generate(unsigned brainWidth)
+{
+    return std::make_shared<GeneSenseRandom>(Random::Number(1, 3), brainWidth);
+}
+
 GeneSenseRandom::GeneSenseRandom(unsigned inputCount, unsigned outputCount)
     : GeneSenseRandom(std::make_shared<NeuralNetwork>(0, inputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(NeuralNetworkConnector(inputCount, outputCount)), CreateRandomFilteredRandoms(inputCount), Random::Number(0.0, 100.0))
 {

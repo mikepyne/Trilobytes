@@ -5,6 +5,13 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneEffectorSpike::Generate(unsigned brainWidth)
+{
+    double bearing = Random::Bearing();
+    double length = Random::Number(3.5, 15.5);
+    return std::make_shared<GeneEffectorSpike>(brainWidth, bearing, length);
+}
+
 GeneEffectorSpike::GeneEffectorSpike(unsigned inputCount, double bearing, double length)
     : GeneEffectorBase(0, inputCount, 0)
     , bearing_(bearing)

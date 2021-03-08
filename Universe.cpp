@@ -35,7 +35,7 @@ Universe::Universe(Rect startingQuad)
             double distance = std::sqrt(Random::Number(0.0, 1.0)) * feeder->GetRadius();
             double swimmerX = feeder->GetX() + distance * std::cos(rotation);
             double swimmerY = feeder->GetY() + distance * std::sin(rotation);
-            rootNode_.AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ swimmerX, swimmerY, Random::Bearing() }, GeneFactory::DefaultGenome()));
+            rootNode_.AddEntity(std::make_shared<Swimmer>(300_mj, Transform{ swimmerX, swimmerY, Random::Bearing() }, GeneFactory::Get().GenerateDefaultGenome(NeuralNetwork::BRAIN_WIDTH)));
         }
     }
 }

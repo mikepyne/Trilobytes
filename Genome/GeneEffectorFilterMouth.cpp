@@ -6,6 +6,12 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneEffectorFilterMouth::Generate(unsigned brainWidth)
+{
+    unsigned hiddenLayers = Random::Number(0u, 1u);
+    return std::make_shared<GeneEffectorFilterMouth>(hiddenLayers, brainWidth);
+}
+
 GeneEffectorFilterMouth::GeneEffectorFilterMouth(unsigned /*hiddenLayers*/, unsigned inputCount)
     : GeneEffectorBase(0, inputCount, 0)
     // : GeneEffectorBase(hiddenLayers, inputCount, 1)
