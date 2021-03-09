@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
     {
         if (auto inspected = ui->inspector->GetSwimmer(); inspected != nullptr) {
             if (auto genome = inspected->InspectGenome(); genome != nullptr) {
-                std::string saveFileName = QFileDialog::getSaveFileName(this, "Save Genome", "", "Genome (*.genome)").toStdString();
+                std::string saveFileName = QFileDialog::getSaveFileName(this, "Save Genome", "./SavedGenomes/", "Genome (*.genome)").toStdString();
                 nlohmann::json serialised = Genome::Serialise(genome);
                 // std::filesystem::create_directories(saveFileName);
                 std::ofstream fileWriter(saveFileName);

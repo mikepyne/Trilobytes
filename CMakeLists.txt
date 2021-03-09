@@ -170,4 +170,9 @@ qt_add_executable(Trilobytes
     ${PROJECT_DESIGNER_FILES}
 )
 
+# Ensure our release contains our saved genomes
+add_custom_command(TARGET Trilobytes POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/SavedGenomes/ ${CMAKE_BINARY_DIR}/SavedGenomes/)
+
 target_link_libraries(Trilobytes PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
