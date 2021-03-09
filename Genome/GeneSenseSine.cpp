@@ -5,6 +5,11 @@
 
 using namespace nlohmann;
 
+std::shared_ptr<Gene> GeneSenseSine::Generate(unsigned brainWidth)
+{
+    return std::make_shared<GeneSenseSine>(Random::Number(1, 3), brainWidth);
+}
+
 GeneSenseSine::GeneSenseSine(unsigned inputCount, unsigned outputCount)
     : GeneSenseSine(std::make_shared<NeuralNetwork>(0, inputCount, NeuralNetwork::InitialWeights::PassThrough), std::make_shared<NeuralNetworkConnector>(NeuralNetworkConnector(inputCount, outputCount)), CreateRandomWaves(inputCount), Random::Number(0.0, 100.0))
 {
@@ -39,16 +44,16 @@ GeneSenseSine::GeneSenseSine(const std::shared_ptr<NeuralNetwork>& network, cons
         }
     });
 
+    AddColumnInsertedAndRemovedMutations(
     // Add wave
-    AddColumnInsertedMutation(0.15 * BASE_WEIGHT, [&](unsigned index)
+    0.15 * BASE_WEIGHT, [&](unsigned index)
     {
         auto iter = sineWaves_.begin();
         std::advance(iter, index);
         sineWaves_.insert(iter, { Random::Gaussian(0.75, 0.1), Random::Gaussian(0.01, 0.1) });
-    });
-
+    },
     // Remove wave
-    AddColumnInsertedMutation(0.15 * BASE_WEIGHT, [&](unsigned index)
+    0.15 * BASE_WEIGHT, [&](unsigned index)
     {
         auto iter = sineWaves_.begin();
         std::advance(iter, index);

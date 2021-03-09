@@ -20,8 +20,7 @@ protected:
 
     Energy GetMetabolicCost() const;
 
-    void AddColumnInsertedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnAdded);
-    void AddColumnRemovedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnRemoved);
+    void AddColumnInsertedAndRemovedMutations(double addedMutationWeight, std::function<void(unsigned index)>&& onColumnAdded, double removedMutationWeight, std::function<void(unsigned index)>&& onColumnRemoved);
 
     const std::shared_ptr<NeuralNetwork> GetNetwork() const { return network_; }
     const std::shared_ptr<NeuralNetworkConnector> GetInputConnections() const { return inputConnections_; }

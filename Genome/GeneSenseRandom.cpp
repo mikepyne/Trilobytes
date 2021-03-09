@@ -44,16 +44,16 @@ GeneSenseRandom::GeneSenseRandom(const std::shared_ptr<NeuralNetwork>& network, 
         }
     });
 
+    AddColumnInsertedAndRemovedMutations(
     // Add one
-    AddColumnInsertedMutation(0.5 * BASE_WEIGHT, [&](unsigned index)
+    0.5 * BASE_WEIGHT, [&](unsigned index)
     {
         auto iter = filteredRandoms_.begin();
         std::advance(iter, index);
         filteredRandoms_.insert(iter, { -1.0, 1.0, std::clamp(Random::Gaussian(0.5, 0.1), 0.0, 1.0) });
-    });
-
+    },
     // Remove one
-    AddColumnRemovedMutation(0.5 * BASE_WEIGHT, [&](unsigned index)
+    0.5 * BASE_WEIGHT, [&](unsigned index)
     {
         auto iter = filteredRandoms_.begin();
         std::advance(iter, index);

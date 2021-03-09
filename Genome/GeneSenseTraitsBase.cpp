@@ -57,16 +57,16 @@ GeneSenseTraitsBase::GeneSenseTraitsBase(std::vector<SenseTraitsBase::TraitNorma
         }
     });
 
+    AddColumnInsertedAndRemovedMutations(
     // Add trait
-    AddColumnInsertedMutation(0.15 * BASE_WEIGHT, [&](unsigned index)
+    0.15 * BASE_WEIGHT, [&](unsigned index)
     {
         auto iter = toDetect_.begin();
         std::advance(iter, index);
         toDetect_.insert(iter, SenseTraitsBase::DefaultNormalisation(Random::Item(SenseTraitsBase::ALL_TRAITS)));
-    });
-
+    },
     // Remove trait
-    AddColumnRemovedMutation(0.15 * BASE_WEIGHT, [&](unsigned index)
+    0.15 * BASE_WEIGHT, [&](unsigned index)
     {
         auto iter = toDetect_.begin();
         std::advance(iter, index);

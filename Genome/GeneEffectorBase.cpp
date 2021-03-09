@@ -45,22 +45,19 @@ Energy GeneEffectorBase::GetMetabolicCost() const
     return (1 + network_->GetLayerCount()) * network_->GetLayerWidth() * 0.05_uj;
 }
 
-void GeneEffectorBase::AddColumnInsertedMutation(double mutationWeight, std::function<void (unsigned)>&& onColumnAdded)
+void GeneEffectorBase::AddColumnInsertedAndRemovedMutations(double addedMutationWeight, std::function<void (unsigned)>&& onColumnAdded, double removedMutationWeight, std::function<void (unsigned)>&& onColumnRemoved)
 {
     // Insert a new column
-    AddMutation(mutationWeight, [&, onColumnAdded = std::move(onColumnAdded)]()
+    AddMutation(addedMutationWeight, [&, onColumnAdded = std::move(onColumnAdded)]()
     {
         unsigned newColIndex = Random::Number(0u, network_->GetInputCount());
         network_ = network_->WithColumnAdded(newColIndex, NeuralNetwork::InitialWeights::Random);
         inputConnections_ = inputConnections_->WithOutputAdded(newColIndex);
         onColumnAdded(newColIndex);
     });
-}
 
-void GeneEffectorBase::AddColumnRemovedMutation(double mutationWeight, std::function<void(unsigned index)>&& onColumnRemoved)
-{
     // Remove a column
-    AddMutation(mutationWeight, [&, onColumnRemoved = std::move(onColumnRemoved)]()
+    AddMutation(removedMutationWeight, [&, onColumnRemoved = std::move(onColumnRemoved)]()
     {
         // Don't allow mutation to remove final column
         if (network_->GetInputCount() > 1) {

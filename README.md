@@ -62,22 +62,11 @@ Need a seperate momentumTransform, which is not just affected by friction and in
  - Add global control for friction
 
 Add 3 mouth types,
- - DONE(needs downside, high level of drag?) FilterMouth (wide oval touching body somewhere, small entities only, adds drag to swimmer but 100% efficient),
- - DONE(perhaps also deal small ammount of damage?) Proboscis (needle point protruding from body, living target only (i.e. swimmers and eggs), reduced feeding rate but 100% efficient)
  - ToothedMouth (circle touching body somewhere, pellets @ ~50% & eggs/meat chunks at ~75%, can bite swimmers for damage) perhaps it can only eat a fixed ammount per tick, with smaller bites being more energy efficient but doing less damage?
-
-Add another tail type
- - DONE SpringTail
 
 Add some effectors
  - Vortex generator, moves entities near to swimmer in a vortex pattern
- - DONE Spike, damages entities that collide with it
 
 Add adjustable friction cooeficient (speed *= friction) so friction is between 0.0 and 1.0
 
 Ability to add/remove spikes
-
-GeneFactory could do with some love
- - DefaultGenome could do with some variation in terms of content OR RandomGenome could do with some tighter restrictions on what it contains?
- - Perhaps split genes into effectors, sensors, cosmetic etc so a random genome can contain a fixed number of each, but still random?
- - maybe new category for swimmer genome that is more varied than default, but less random than random?
