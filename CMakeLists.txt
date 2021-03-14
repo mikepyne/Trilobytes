@@ -15,12 +15,18 @@ find_package(QT NAMES Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 # Nlhomann JSON library
-set(JsonLibDir "Libs/nlohmann")
-file(MAKE_DIRECTORY ${JsonLibDir})
-file(DOWNLOAD https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp ${CMAKE_SOURCE_DIR}/${JsonLibDir}/json.hpp)
+set(JSON_LIB Libs/nlohmann/json.hpp)
+file(DOWNLOAD https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp ${JSON_LIB})
+add_library(Json ${JSON_LIB})
+set_target_properties(Json PROPERTIES LINKER_LANGUAGE CXX)
+
+# Catch library
+set(CATCH_LIB Libs/Catch2/catch.hpp)
+file(DOWNLOAD https://raw.githubusercontent.com/catchorg/Catch2/v2.x/single_include/catch2/catch.hpp ${CATCH_LIB})
+add_library(Catch ${CATCH_LIB})
+set_target_properties(Catch PROPERTIES LINKER_LANGUAGE CXX)
 
 set(PROJECT_SOURCES
-        main.cpp
         MainWindow.cpp
         Effectors/Effector.cpp
         Effectors/EffectorFilterMouth.cpp
@@ -165,14 +171,24 @@ set(EXTRA_FILES
 add_custom_target(Other SOURCES ${EXTRA_FILES})
 
 qt_add_executable(Trilobytes
+    main.cpp
     ${PROJECT_SOURCES}
     ${PROJECT_HEADERS}
     ${PROJECT_DESIGNER_FILES}
 )
+
+target_link_libraries(Trilobytes PRIVATE
+    Catch
+    Json
+    Qt${QT_VERSION_MAJOR}::Widgets
+)
+
 
 # Ensure our release contains our saved genomes
 add_custom_command(TARGET Trilobytes POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/SavedGenomes/ ${CMAKE_BINARY_DIR}/SavedGenomes/)
 
-target_link_libraries(Trilobytes PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+add_subdirectory(Tests)
+enable_testing()
+add_test(NAME MyTest COMMAND Tests)
