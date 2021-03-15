@@ -1,7 +1,7 @@
 #include "GeneSenseMagneticField.h"
 
 #include "Phenotype.h"
-#include "Sensors/SenseMagneticField.h"
+#include "SenseMagneticField.h"
 
 using namespace nlohmann;
 

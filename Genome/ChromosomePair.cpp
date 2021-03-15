@@ -3,7 +3,6 @@
 #include "Random.h"
 #include "GeneFactory.h"
 #include "NeuralNetwork.h"
-#include "Utils.h"
 
 using namespace nlohmann;
 

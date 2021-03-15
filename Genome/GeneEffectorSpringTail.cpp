@@ -1,7 +1,7 @@
 #include "GeneEffectorSpringTail.h"
 
 #include "Swimmer.h"
-#include "Effectors/EffectorSpringTail.h"
+#include "EffectorSpringTail.h"
 
 using namespace nlohmann;
 

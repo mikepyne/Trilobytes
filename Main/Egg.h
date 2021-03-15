@@ -2,7 +2,7 @@
 #define EGG_H
 
 #include "Entity.h"
-#include "Genome/Genome.h"
+#include "Genome.h"
 #include "NeuralNetwork.h"
 
 class Egg : public Entity {

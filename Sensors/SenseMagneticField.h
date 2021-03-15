@@ -5,7 +5,7 @@
 #include "NeuralNetwork.h"
 #include "NeuralNetworkConnector.h"
 #include "EntityContainerInterface.h"
-#include "Utility/RangeConverter.h"
+#include "RangeConverter.h"
 
 #include <memory>
 

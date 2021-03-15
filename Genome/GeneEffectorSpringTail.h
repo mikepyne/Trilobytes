@@ -1,7 +1,7 @@
 #ifndef GENEEFFECTORSPRINGTAIL_H
 #define GENEEFFECTORSPRINGTAIL_H
 
-#include "Utility/RangeConverter.h"
+#include "RangeConverter.h"
 
 #include "GeneEffectorBase.h"
 

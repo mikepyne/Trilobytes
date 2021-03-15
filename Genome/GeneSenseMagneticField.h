@@ -3,8 +3,8 @@
 
 #include "GeneSenseBase.h"
 #include "Shape.h"
-#include "Utility/Range.h"
-#include "Utility/RangeConverter.h"
+#include "Range.h"
+#include "RangeConverter.h"
 
 class GeneSenseMagneticField : public GeneSenseBase {
 public:

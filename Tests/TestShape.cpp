@@ -1,9 +1,11 @@
+#include <iostream>
+
+#include <catch2/catch.hpp>
+
 #include "Shape.h"
 #include "Random.h"
 
-#include "Libs/Catch2/catch.hpp"
 
-#include <iostream>
 
 // Allow us and Catch2 to easily display values
 

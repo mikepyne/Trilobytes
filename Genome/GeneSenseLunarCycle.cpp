@@ -1,7 +1,7 @@
 #include "GeneSenseLunarCycle.h"
 
 #include "Phenotype.h"
-#include "Sensors/SenseLunarCycle.h"
+#include "SenseLunarCycle.h"
 
 using namespace nlohmann;
 

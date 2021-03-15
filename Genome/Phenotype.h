@@ -2,9 +2,9 @@
 #define PHENOTYPE_H
 
 #include "Energy.h"
-#include "Sensors/Sense.h"
+#include "Sense.h"
 #include "NeuralNetwork.h"
-#include "Effectors/Effector.h"
+#include "Effector.h"
 
 #include <QColor>
 
