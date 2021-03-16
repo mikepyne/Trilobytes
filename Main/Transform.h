@@ -1,8 +1,8 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-#include "Libs/nlohmann/json.hpp"
-#include "Utility/JsonHelpers.h"
+#include <nlohmann/json.hpp>
+#include "JsonHelpers.h"
 
 #include "Shape.h"
 

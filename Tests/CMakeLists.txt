@@ -1,17 +1,18 @@
-INCLUDE_DIRECTORIES(
-    ${PROJECT_SOURCE_DIR}
-)
+add_executable(Tests)
 
-set(TEST_SOURCES
-        TestShape.cpp
-)
-
-qt_add_executable(Tests
+target_sources(Tests
+    PUBLIC
     main.cpp
-    ${TEST_SOURCES}
+    TestShape.cpp
 )
 
-target_link_libraries(Tests PRIVATE
-    Catch
-    Json
+target_include_directories(Tests
+    PUBLIC
+    ${PROJECT_SOURCE_DIR}/Main
+    ${PROJECT_SOURCE_DIR}/Utility
+)
+
+target_link_libraries(Tests
+    PRIVATE
+    Catch2::Catch2
 )

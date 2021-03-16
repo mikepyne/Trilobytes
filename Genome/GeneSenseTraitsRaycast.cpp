@@ -1,7 +1,7 @@
 #include "GeneSenseTraitsRaycast.h"
 
 #include "Phenotype.h"
-#include "Sensors/SenseTraitsRaycast.h"
+#include "SenseTraitsRaycast.h"
 
 using namespace nlohmann;
 

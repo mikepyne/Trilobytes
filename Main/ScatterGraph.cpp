@@ -1,6 +1,6 @@
 #include "ScatterGraph.h"
 
-#include "Utility/RangeConverter.h"
+#include "RangeConverter.h"
 
 #include <QPaintEvent>
 #include <QPainter>

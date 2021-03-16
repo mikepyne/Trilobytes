@@ -1,8 +1,9 @@
 #ifndef RANGECONVERTER_H
 #define RANGECONVERTER_H
 
-#include "Utility/Range.h"
-#include "Libs/nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
+#include "Range.h"
+
 
 #include <optional>
 

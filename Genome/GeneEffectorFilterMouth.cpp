@@ -2,7 +2,7 @@
 
 #include "Swimmer.h"
 #include "Phenotype.h"
-#include "Effectors/EffectorFilterMouth.h"
+#include "EffectorFilterMouth.h"
 
 using namespace nlohmann;
 

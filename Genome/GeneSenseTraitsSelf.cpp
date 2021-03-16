@@ -1,7 +1,7 @@
 #include "GeneSenseTraitsSelf.h"
 
 #include "Phenotype.h"
-#include "Sensors/SenseTraitsSelf.h"
+#include "SenseTraitsSelf.h"
 
 using namespace nlohmann;
 

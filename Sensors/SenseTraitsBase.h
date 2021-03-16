@@ -1,13 +1,13 @@
 #ifndef SENSETRAITSBASE_H
 #define SENSETRAITSBASE_H
 
+#include <nlohmann/json.hpp>
 #include "Sense.h"
 #include "Utils.h"
 #include "Energy.h"
 #include "Transform.h"
-#include "Utility/JsonHelpers.h"
-#include "Utility/RangeConverter.h"
-#include "Libs/nlohmann/json.hpp"
+#include "JsonHelpers.h"
+#include "RangeConverter.h"
 
 #include <functional>
 

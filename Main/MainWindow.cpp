@@ -7,9 +7,9 @@
 #include "MeatChunk.h"
 #include "LineGraphContainerWidget.h"
 #include "UniverseWidget.h"
-#include "Genome/GeneFactory.h"
+#include "GeneFactory.h"
 
-#include "Libs/nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 
 #include "QFileDialog"
 

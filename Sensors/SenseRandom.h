@@ -1,9 +1,9 @@
 #ifndef SENSERANDOM_H
 #define SENSERANDOM_H
 
+#include <nlohmann/json.hpp>
 #include "Sense.h"
-#include "Libs/nlohmann/json.hpp"
-#include "Utility/JsonHelpers.h"
+#include "JsonHelpers.h"
 
 #include <optional>
 

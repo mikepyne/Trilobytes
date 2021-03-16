@@ -2,7 +2,7 @@
 #define GENESENSETRAITSBASE_H
 
 #include "GeneSenseBase.h"
-#include "Sensors/SenseTraitsBase.h"
+#include "SenseTraitsBase.h"
 
 #include <vector>
 #include <memory>

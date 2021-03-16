@@ -1,7 +1,7 @@
 #include "GeneEffectorSpike.h"
 
 #include "Swimmer.h"
-#include "Effectors/EffectorSpike.h"
+#include "EffectorSpike.h"
 
 using namespace nlohmann;
 

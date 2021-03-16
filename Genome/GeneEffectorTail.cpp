@@ -1,7 +1,7 @@
 #include "GeneEffectorTail.h"
 
 #include "Swimmer.h"
-#include "Effectors/EffectorTail.h"
+#include "EffectorTail.h"
 
 using namespace nlohmann;
 

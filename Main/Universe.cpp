@@ -7,7 +7,7 @@
 #include "Spike.h"
 #include "Random.h"
 #include "MainWindow.h"
-#include "Genome/GeneFactory.h"
+#include "GeneFactory.h"
 
 #include <QVariant>
 

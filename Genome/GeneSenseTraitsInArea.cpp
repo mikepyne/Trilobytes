@@ -1,7 +1,7 @@
 #include "GeneSenseTraitsInArea.h"
 
 #include "Phenotype.h"
-#include "Sensors/SenseTraitsInArea.h"
+#include "SenseTraitsInArea.h"
 
 using namespace nlohmann;
 

@@ -3,9 +3,9 @@
 
 #include "Entity.h"
 #include "NeuralNetwork.h"
-#include "Genome/Genome.h"
-#include "Sensors/Sense.h"
-#include "Effectors/Effector.h"
+#include "Genome.h"
+#include "Sense.h"
+#include "Effector.h"
 
 #include <memory>
 

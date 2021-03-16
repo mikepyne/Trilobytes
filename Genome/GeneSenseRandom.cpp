@@ -1,7 +1,7 @@
 #include "GeneSenseRandom.h"
 
 #include "Phenotype.h"
-#include "Sensors/SenseRandom.h"
+#include "SenseRandom.h"
 
 using namespace nlohmann;
 
