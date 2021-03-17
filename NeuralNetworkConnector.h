@@ -1,8 +1,9 @@
 #ifndef NEURALNETWORKCONNECTOR_H
 #define NEURALNETWORKCONNECTOR_H
 
-#include "Libs/nlohmann/json.hpp"
 #include "Utility/JsonHelpers.h"
+
+#include <nlohmann/json.hpp>
 
 #include <vector>
 #include <memory>

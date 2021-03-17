@@ -1,8 +1,9 @@
 #ifndef RANGE_H
 #define RANGE_H
 
-#include "Libs/nlohmann/json.hpp"
 #include "Utility/JsonHelpers.h"
+
+#include <nlohmann/json.hpp>
 
 #include <algorithm>
 #include <optional>

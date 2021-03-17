@@ -2,8 +2,9 @@
 #define SHAPEH
 
 #include "Utils.h"
-#include "Libs/nlohmann/json.hpp"
 #include "Utility/JsonHelpers.h"
+
+#include <nlohmann/json.hpp>
 
 #include <limits>
 #include <math.h>

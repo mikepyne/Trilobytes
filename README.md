@@ -29,7 +29,6 @@ TODO
  - More graphs & configurable graphs
  - Matrix based coordinate system/collisions
  - More entities (pheremones? poisons? more food types?)
- - MAYBE Fixed number of "nodes" on a Swimmer, limiting the number of senses and effectors that can be attached to it?
  - tabs in left and right GUI to split up settings (add more settings per section) and add geneome inspector on right
  -  - Allow adding multiple swimmers at a time
  -  - Move feed dispenser

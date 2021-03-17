@@ -2,8 +2,9 @@
 #define NEURALNETWORK_H
 
 #include "Random.h"
-#include "Libs/nlohmann/json.hpp"
 #include "Utility/JsonHelpers.h"
+
+#include <nlohmann/json.hpp>
 
 #include <vector>
 #include <memory>

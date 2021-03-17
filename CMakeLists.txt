@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.14)
 
 project(Trilobytes LANGUAGES CXX)
 
@@ -11,13 +11,18 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# This allows Catch2 to be built by MinGW without MinGW having a fit over the size of the object file generated
+add_compile_options("-Wa,-mbig-obj")
+
 find_package(QT NAMES Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
-# Nlhomann JSON library
-set(JsonLibDir "Libs/nlohmann")
-file(MAKE_DIRECTORY ${JsonLibDir})
-file(DOWNLOAD https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp ${CMAKE_SOURCE_DIR}/${JsonLibDir}/json.hpp)
+include(FetchContent)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+include(json)
+include(fmt)
+include(catch2)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -149,7 +154,6 @@ set(PROJECT_HEADERS
         Utility/Range.h
         Utility/RangeConverter.h
         Utils.h
-        ${JsonLibDir}/json.hpp
 )
 
 set(PROJECT_DESIGNER_FILES
@@ -169,6 +173,8 @@ qt_add_executable(Trilobytes
     ${PROJECT_HEADERS}
     ${PROJECT_DESIGNER_FILES}
 )
+
+add_subdirectory(test)
 
 # Ensure our release contains our saved genomes
 add_custom_command(TARGET Trilobytes POST_BUILD

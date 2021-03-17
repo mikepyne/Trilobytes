@@ -1,10 +1,10 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-#include "Libs/nlohmann/json.hpp"
+#include "Shape.h"
 #include "Utility/JsonHelpers.h"
 
-#include "Shape.h"
+#include <nlohmann/json.hpp>
 
 /**
  * @brief Placeholder for a proper matrix based coordinate system

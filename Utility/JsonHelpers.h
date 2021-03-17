@@ -1,7 +1,7 @@
 #ifndef JSONHELPERS_H
 #define JSONHELPERS_H
 
-#include "Libs/nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 
 class JsonHelpers {
 public:
