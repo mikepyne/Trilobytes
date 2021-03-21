@@ -9,13 +9,10 @@ target_sources(Tests
 target_include_directories(Tests
     PUBLIC
     ${PROJECT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/src
 )
 
 target_link_libraries(Tests
     PRIVATE
     Catch2::Catch2
-)
-
-add_custom_command(TARGET Tests POST_BUILD
-    COMMAND Tests
 )

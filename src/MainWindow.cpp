@@ -10,11 +10,15 @@
 #include "Genome/GeneFactory.h"
 
 #include <nlohmann/json.hpp>
+#include <fmt/core.h>
 
 #include "QFileDialog"
 
 #include <fstream>
 //#include <filesystem>
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -22,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    setWindowTitle("Trilobytes - Evolution Simulator");
+    setWindowTitle(QString::fromStdString(fmt::format("Trilobytes - Evolution Simulator v{}.{} {}", TOSTRING(VERSION_MAJOR), TOSTRING(VERSION_MINOR), TOSTRING(VERSION_ADDITIONAL))));
 
     universe_ = std::make_shared<Universe>(Rect{ -500, -500, 500, 500 });
     ui->universe->SetUniverse(universe_);

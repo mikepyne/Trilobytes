@@ -19,7 +19,6 @@ The easiest way to build from sources yourself is to open project in QtCreator, 
 
 TODO
 -----
- - Tests
  - More GUI controlls
  - More niches
  - More effectors (body armor? sex organs? pheremone creators? poison creators? decoy creators? food creators? Egg layers?)
