@@ -134,14 +134,6 @@ set(PROJECT_DESIGNER_FILES
         MainWindow.ui
 )
 
-set(EXTRA_FILES
-        README.md
-        How-to-create-Windows-release.txt
-)
-
-# This line is just to make these files appear in QtCreator
-add_custom_target(Other SOURCES ${EXTRA_FILES})
-
 qt_add_executable(Trilobytes
     ${PROJECT_SOURCES}
     ${PROJECT_HEADERS}
@@ -164,6 +156,19 @@ target_link_libraries(Trilobytes
 add_custom_command(TARGET Trilobytes POST_BUILD
     COMMAND ${CMAKE_BINARY_DIR}/test/Tests
     COMMENT "Running Tests..."
+)
+
+# Retrieve the absolute path to qmake and then use that path to find
+# the windeployqt and qtenv2 executables
+get_target_property(QMAKE_EXE Qt6::qmake IMPORTED_LOCATION)
+get_filename_component(QT_BIN_DIR "${QMAKE_EXE}" DIRECTORY)
+find_program(WINDEPLOYQT_ENV_SETUP qtenv2.bat HINTS "${QT_BIN_DIR}")
+find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${QT_BIN_DIR}")
+
+add_custom_command(TARGET Trilobytes
+    POST_BUILD
+    COMMAND "${WINDEPLOYQT_ENV_SETUP}" && "${WINDEPLOYQT_EXECUTABLE}" \"$<TARGET_FILE:Trilobytes>\"
+    COMMENT "Packaging dependancies..."
 )
 
 # Ensure our release contains our saved genomes

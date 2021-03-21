@@ -24,5 +24,13 @@ include(json)
 include(fmt)
 include(catch2)
 
+# Make additional files appear in QtCreator
+FILE(GLOB SAVD_GENOMES SavedGenomes/*)
+add_custom_target(Other
+    SOURCES
+    README.md
+    ${SAVD_GENOMES}
+)
+
 add_subdirectory(src)
 add_subdirectory(test)
