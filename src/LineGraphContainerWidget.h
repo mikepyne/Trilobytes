@@ -2,6 +2,7 @@
 #define LINEGRAPHCONTAINERWIDGET_H
 
 #include "LineGraph.h"
+#include "Utility/AutoClearingContainer.h"
 
 #include <QWidget>
 #include <QLayout>

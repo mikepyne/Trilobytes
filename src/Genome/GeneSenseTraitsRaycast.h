@@ -2,6 +2,7 @@
 #define GENESENSEENTITYRAYCAST_H
 
 #include "GeneSenseTraitsBase.h"
+#include "Utility/TypeName.h"
 
 class GeneSenseTraitsRaycast : public GeneSenseTraitsBase {
 public:

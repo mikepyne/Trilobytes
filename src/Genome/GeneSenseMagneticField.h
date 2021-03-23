@@ -5,6 +5,7 @@
 #include "Shape.h"
 #include "Utility/Range.h"
 #include "Utility/RangeConverter.h"
+#include "Utility/TypeName.h"
 
 class GeneSenseMagneticField : public GeneSenseBase {
 public:

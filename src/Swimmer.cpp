@@ -3,7 +3,6 @@
 #include "Random.h"
 #include "FoodPellet.h"
 #include "MeatChunk.h"
-#include "Utils.h"
 #include "Egg.h"
 #include "Genome/GeneFactory.h"
 

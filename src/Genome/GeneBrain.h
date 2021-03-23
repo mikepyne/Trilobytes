@@ -3,6 +3,7 @@
 
 #include "Gene.h"
 #include "NeuralNetwork.h"
+#include "Utility/TypeName.h"
 
 #include <memory>
 

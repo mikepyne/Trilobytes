@@ -1,7 +1,8 @@
 #ifndef BARGRAPH_H
 #define BARGRAPH_H
 
-#include "Utils.h"
+#include "Utility/MinMax.h"
+#include "Utility/CircularBuffer.h"
 
 #include <QWidget>
 #include <QString>

@@ -1,7 +1,7 @@
 #ifndef SCATTERGRAPH_H
 #define SCATTERGRAPH_H
 
-#include "Utils.h"
+#include "Utility/MinMax.h"
 
 #include <QWidget>
 

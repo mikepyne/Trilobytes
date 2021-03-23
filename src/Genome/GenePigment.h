@@ -2,6 +2,7 @@
 #define GENEPIGMENT_H
 
 #include "Gene.h"
+#include "Utility/TypeName.h"
 
 class GenePigment : public Gene {
 public:

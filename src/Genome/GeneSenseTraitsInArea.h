@@ -2,6 +2,7 @@
 #define GENESENSEENTITIESINAREA_H
 
 #include "GeneSenseTraitsBase.h"
+#include "Utility/TypeName.h"
 
 class GeneSenseTraitsInArea final : public GeneSenseTraitsBase {
 public:

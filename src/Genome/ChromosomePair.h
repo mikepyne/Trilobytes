@@ -1,9 +1,9 @@
 #ifndef CHROMOSOMEPAIR_H
 #define CHROMOSOMEPAIR_H
 
-#include "Utils.h"
 #include "Gene.h"
 #include "UniverseParameters.h"
+#include "Utility/Range.h"
 
 #include <map>
 #include <vector>

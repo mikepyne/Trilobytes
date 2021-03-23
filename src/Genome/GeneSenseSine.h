@@ -5,6 +5,7 @@
 #include "NeuralNetwork.h"
 #include "NeuralNetworkConnector.h"
 #include "Sensors/SenseSine.h"
+#include "Utility/TypeName.h"
 
 class GeneSenseSine : public GeneSenseBase {
 public:

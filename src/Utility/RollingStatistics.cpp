@@ -1,4 +1,7 @@
-#include "Utils.h"
+#include "RollingStatistics.h"
+
+#include <algorithm>
+#include <cmath>
 
 namespace Tril {
 

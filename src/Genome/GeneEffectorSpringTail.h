@@ -2,6 +2,7 @@
 #define GENEEFFECTORSPRINGTAIL_H
 
 #include "Utility/RangeConverter.h"
+#include "Utility/TypeName.h"
 
 #include "GeneEffectorBase.h"
 

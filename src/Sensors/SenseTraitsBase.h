@@ -2,7 +2,6 @@
 #define SENSETRAITSBASE_H
 
 #include "Sense.h"
-#include "Utils.h"
 #include "Energy.h"
 #include "Transform.h"
 #include "Utility/JsonHelpers.h"

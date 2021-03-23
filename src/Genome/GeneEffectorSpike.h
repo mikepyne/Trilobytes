@@ -2,6 +2,7 @@
 #define GENEEFFECTORSPIKE_H
 
 #include "GeneEffectorBase.h"
+#include "Utility/TypeName.h"
 
 class GeneEffectorSpike : public GeneEffectorBase {
 public:

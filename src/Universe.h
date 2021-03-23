@@ -5,6 +5,7 @@
 #include "Energy.h"
 #include "LineGraph.h"
 #include "FeedDispenser.h"
+#include "Utility/AutoClearingContainer.h"
 
 #include <QTimer>
 #include <QPainter>

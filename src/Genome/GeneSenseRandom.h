@@ -5,6 +5,7 @@
 #include "NeuralNetwork.h"
 #include "NeuralNetworkConnector.h"
 #include "Sensors/SenseRandom.h"
+#include "Utility/TypeName.h"
 
 class GeneSenseRandom : public GeneSenseBase {
 public:

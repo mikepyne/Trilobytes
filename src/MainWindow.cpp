@@ -8,6 +8,7 @@
 #include "LineGraphContainerWidget.h"
 #include "UniverseWidget.h"
 #include "Genome/GeneFactory.h"
+#include "Utility/RollingStatistics.h"
 
 #include <nlohmann/json.hpp>
 #include <fmt/core.h>

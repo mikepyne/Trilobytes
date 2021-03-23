@@ -1,8 +1,8 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
-#include "Utils.h"
 #include "Shape.h"
+#include "Utility/MathConstants.h"
 
 #include <random>
 #include <limits>

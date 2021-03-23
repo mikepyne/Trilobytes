@@ -58,7 +58,7 @@ set(PROJECT_SOURCES
         UniverseWidget.cpp
         Utility/JsonHelpers.cpp
         Utility/RangeConverter.cpp
-        Utils.cpp
+        Utility/RollingStatistics.cpp
 )
 
 set(PROJECT_HEADERS
@@ -124,10 +124,17 @@ set(PROJECT_HEADERS
         Universe.h
         UniverseParameters.h
         UniverseWidget.h
+        Utility/AutoClearingContainer.h
+        Utility/Algorithm.h
+        Utility/CircularBuffer.h
+        Utility/FormatHelpers.h
         Utility/JsonHelpers.h
+        Utility/MathConstants.h
+        Utility/MinMax.h
         Utility/Range.h
         Utility/RangeConverter.h
-        Utils.h
+        Utility/RollingStatistics.h
+        Utility/TypeName.h
 )
 
 set(PROJECT_DESIGNER_FILES

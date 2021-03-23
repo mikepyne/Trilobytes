@@ -1,6 +1,5 @@
 #include "Entity.h"
 
-#include "Utils.h"
 #include "Random.h"
 
 #include <QPainter>
