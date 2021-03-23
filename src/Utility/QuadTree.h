@@ -1,10 +1,10 @@
 #ifndef QUADTREE_H
 #define QUADTREE_H
 
-#include "Shape.h"
 #include "EntityContainerInterface.h"
 #include "Entity.h"
 #include "UniverseParameters.h"
+#include "Shape.h"
 
 #include <memory>
 #include <vector>

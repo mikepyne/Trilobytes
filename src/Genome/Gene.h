@@ -1,7 +1,7 @@
 #ifndef GENE_H
 #define GENE_H
 
-#include "Random.h"
+#include "Utility/Random.h"
 
 #include <nlohmann/json.hpp>
 

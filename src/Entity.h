@@ -1,11 +1,11 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include "Shape.h"
-#include "Energy.h"
-#include "Transform.h"
 #include "EntityContainerInterface.h"
 #include "UniverseParameters.h"
+#include "Utility/Shape.h"
+#include "Utility/Energy.h"
+#include "Utility/Transform.h"
 
 #include <QColor>
 

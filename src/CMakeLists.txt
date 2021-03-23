@@ -34,13 +34,8 @@ set(PROJECT_SOURCES
         Genome/GeneSenseTraitsTouching.cpp
         Genome/Genome.cpp
         LineGraphContainerWidget.cpp
-        LineGraph.cpp
         MeatChunk.cpp
-        NeuralNetwork.cpp
-        NeuralNetworkConnector.cpp
         NeuralNetworkInspector.cpp
-        QuadTree.cpp
-        ScatterGraph.cpp
         Sensors/Sense.cpp
         Sensors/SenseLunarCycle.cpp
         Sensors/SenseMagneticField.cpp
@@ -53,12 +48,17 @@ set(PROJECT_SOURCES
         Sensors/SenseTraitsTouching.cpp
         Spike.cpp
         Swimmer.cpp
-        Transform.cpp
         Universe.cpp
         UniverseWidget.cpp
         Utility/JsonHelpers.cpp
+        Utility/LineGraph.cpp
+        Utility/NeuralNetwork.cpp
+        Utility/NeuralNetworkConnector.cpp
+        Utility/QuadTree.cpp
         Utility/RangeConverter.cpp
         Utility/RollingStatistics.cpp
+        Utility/ScatterGraph.cpp
+        Utility/Transform.cpp
 )
 
 set(PROJECT_HEADERS
@@ -70,7 +70,6 @@ set(PROJECT_HEADERS
         Effectors/EffectorSpringTail.h
         Effectors/EffectorTail.h
         Egg.h
-        Energy.h
         Entity.h
         EntityContainerInterface.h
         FeedDispenser.h
@@ -99,14 +98,8 @@ set(PROJECT_HEADERS
         Genome/Genome.h
         Genome/Phenotype.h
         LineGraphContainerWidget.h
-        LineGraph.h
         MeatChunk.h
-        NeuralNetwork.h
-        NeuralNetworkConnector.h
         NeuralNetworkInspector.h
-        QuadTree.h
-        Random.h
-        ScatterGraph.h
         Sensors/Sense.h
         Sensors/SenseLunarCycle.h
         Sensors/SenseMagneticField.h
@@ -117,23 +110,30 @@ set(PROJECT_HEADERS
         Sensors/SenseTraitsRaycast.h
         Sensors/SenseTraitsSelf.h
         Sensors/SenseTraitsTouching.h
-        Shape.h
         Spike.h
         Swimmer.h
-        Transform.h
         Universe.h
         UniverseParameters.h
         UniverseWidget.h
         Utility/AutoClearingContainer.h
         Utility/Algorithm.h
         Utility/CircularBuffer.h
+        Utility/Energy.h
         Utility/FormatHelpers.h
         Utility/JsonHelpers.h
+        Utility/LineGraph.h
         Utility/MathConstants.h
         Utility/MinMax.h
+        Utility/NeuralNetwork.h
+        Utility/NeuralNetworkConnector.h
+        Utility/QuadTree.h
+        Utility/Random.h
         Utility/Range.h
         Utility/RangeConverter.h
         Utility/RollingStatistics.h
+        Utility/ScatterGraph.h
+        Utility/Shape.h
+        Utility/Transform.h
         Utility/TypeName.h
 )
 

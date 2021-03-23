@@ -1,5 +1,7 @@
 #include "NeuralNetwork.h"
 
+#include "Algorithm.h"
+
 using namespace nlohmann;
 
 NeuralNetwork::NeuralNetwork(unsigned layerCount, unsigned width, NeuralNetwork::InitialWeights initialWeights)

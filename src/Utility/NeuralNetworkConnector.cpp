@@ -1,7 +1,7 @@
 #include "NeuralNetworkConnector.h"
 
 #include "Random.h"
-#include "Utility/Algorithm.h"
+#include "Algorithm.h"
 
 #include <assert.h>
 

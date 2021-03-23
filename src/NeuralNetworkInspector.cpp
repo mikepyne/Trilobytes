@@ -2,7 +2,8 @@
 
 #include "Swimmer.h"
 #include "EntityContainerInterface.h"
-#include "NeuralNetwork.h"
+#include "Utility/NeuralNetwork.h"
+#include "Utility/Algorithm.h"
 
 #include <QMouseEvent>
 #include <QPainter>

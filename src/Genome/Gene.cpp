@@ -1,7 +1,5 @@
 #include "Gene.h"
 
-#include "Random.h"
-
 Gene::Gene(double dominance)
     : dominance_(dominance)
 {

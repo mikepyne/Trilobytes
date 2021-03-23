@@ -1,8 +1,8 @@
 #ifndef FEEDDISPENSER_H
 #define FEEDDISPENSER_H
 
-#include "Energy.h"
-#include "Shape.h"
+#include "Utility/Energy.h"
+#include "Utility/Shape.h"
 
 #include <memory>
 

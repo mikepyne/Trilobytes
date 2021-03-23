@@ -1,8 +1,8 @@
 #include "GeneSenseTraitsTouching.h"
 
-#include "Random.h"
 #include "Phenotype.h"
 #include "Sensors/SenseTraitsTouching.h"
+#include "Utility/Random.h"
 #include "Utility/JsonHelpers.h"
 
 using namespace nlohmann;

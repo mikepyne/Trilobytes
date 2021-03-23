@@ -1,5 +1,9 @@
 #include "SenseSine.h"
 
+#include "Utility/Algorithm.h"
+
+#include <iomanip>
+
 using namespace nlohmann;
 
 json SenseSine::SineWave::Serialise(const SenseSine::SineWave& wave)
@@ -28,6 +32,7 @@ SenseSine::SenseSine(const std::shared_ptr<NeuralNetwork>& network, const std::s
 std::string SenseSine::GetDescription() const
 {
     std::stringstream desc;
+    desc << std::fixed << std::setprecision(2);
 
     desc << "<p>This sense acts like an internal rythm, instead of detecting "
             "something external. Each input is its own sine wave, and the value"

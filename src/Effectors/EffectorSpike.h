@@ -2,7 +2,7 @@
 #define EFFECTORSPIKE_H
 
 #include "Effector.h"
-#include "Shape.h"
+#include "Utility/Shape.h"
 
 class EffectorSpike : public Effector {
 public:

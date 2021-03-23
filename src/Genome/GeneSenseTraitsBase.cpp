@@ -1,6 +1,6 @@
 #include "GeneSenseTraitsBase.h"
 
-#include "Random.h"
+#include "Utility/Random.h"
 
 #include <functional>
 

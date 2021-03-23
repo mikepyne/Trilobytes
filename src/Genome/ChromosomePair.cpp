@@ -1,8 +1,8 @@
 #include "ChromosomePair.h"
 
-#include "Random.h"
 #include "GeneFactory.h"
-#include "NeuralNetwork.h"
+#include "Utility/Random.h"
+#include "Utility/NeuralNetwork.h"
 
 using namespace nlohmann;
 

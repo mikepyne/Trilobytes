@@ -1,7 +1,7 @@
 #include "EffectorSpike.h"
 
-#include "Shape.h"
 #include "Swimmer.h"
+#include "Utility/Shape.h"
 
 #include <QPainter>
 #include <QPainterPath>

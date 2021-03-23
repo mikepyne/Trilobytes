@@ -2,9 +2,9 @@
 #define GENESENSEMAGNETICFIELD_H
 
 #include "GeneSenseBase.h"
-#include "Shape.h"
 #include "Utility/Range.h"
 #include "Utility/RangeConverter.h"
+#include "Utility/Shape.h"
 #include "Utility/TypeName.h"
 
 class GeneSenseMagneticField : public GeneSenseBase {

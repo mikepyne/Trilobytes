@@ -1,6 +1,5 @@
 #include "GeneFactory.h"
 
-#include "Random.h"
 #include "GeneBrain.h"
 #include "GenePigment.h"
 #include "GeneSenseRandom.h"
@@ -16,6 +15,7 @@
 #include "GeneSenseTraitsTouching.h"
 #include "GeneSenseTraitsRaycast.h"
 #include "GeneSenseTraitsSelf.h"
+#include "Utility/Random.h"
 
 const GeneFactory& GeneFactory::Get()
 {

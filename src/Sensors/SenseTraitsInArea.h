@@ -1,8 +1,8 @@
 #ifndef SENSEENTITIESINAREA_H
 #define SENSEENTITIESINAREA_H
 
-#include "Shape.h"
 #include "SenseTraitsBase.h"
+#include "Utility/Shape.h"
 
 class SenseTraitsInArea final : public SenseTraitsBase {
 public:

@@ -1,7 +1,7 @@
 #include "GeneBrain.h"
 
-#include "Energy.h"
 #include "Phenotype.h"
+#include "Utility/Energy.h"
 
 using namespace nlohmann;
 

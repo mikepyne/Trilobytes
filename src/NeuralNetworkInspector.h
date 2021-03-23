@@ -1,8 +1,8 @@
 #ifndef NEURALNETWORKINSPECTOR_H
 #define NEURALNETWORKINSPECTOR_H
 
-#include "Shape.h"
 #include "UniverseParameters.h"
+#include "Utility/Shape.h"
 
 #include <QWidget>
 

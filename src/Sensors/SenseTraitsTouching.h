@@ -1,8 +1,8 @@
 #ifndef SENSEENTITIESTOUCHING_H
 #define SENSEENTITIESTOUCHING_H
 
-#include "Shape.h"
 #include "SenseTraitsBase.h"
+#include "Utility/Shape.h"
 
 class QPainter;
 

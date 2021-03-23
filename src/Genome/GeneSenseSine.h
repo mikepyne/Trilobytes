@@ -2,9 +2,9 @@
 #define GENESINE_H
 
 #include "GeneSenseBase.h"
-#include "NeuralNetwork.h"
-#include "NeuralNetworkConnector.h"
 #include "Sensors/SenseSine.h"
+#include "Utility/NeuralNetwork.h"
+#include "Utility/NeuralNetworkConnector.h"
 #include "Utility/TypeName.h"
 
 class GeneSenseSine : public GeneSenseBase {

@@ -2,7 +2,7 @@
 #define TRANSFORM_H
 
 #include "Shape.h"
-#include "Utility/JsonHelpers.h"
+#include "JsonHelpers.h"
 
 #include <nlohmann/json.hpp>
 

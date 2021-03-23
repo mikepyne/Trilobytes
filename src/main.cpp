@@ -1,6 +1,6 @@
 #include "MainWindow.h"
 
-#include "Random.h"
+#include "Utility/Random.h"
 
 #include <fmt/core.h>
 

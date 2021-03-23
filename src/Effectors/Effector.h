@@ -1,10 +1,10 @@
 #ifndef EFFECTOR_H
 #define EFFECTOR_H
 
-#include "Energy.h"
-#include "NeuralNetwork.h"
-#include "NeuralNetworkConnector.h"
 #include "UniverseParameters.h"
+#include "Utility/Energy.h"
+#include "Utility/NeuralNetwork.h"
+#include "Utility/NeuralNetworkConnector.h"
 
 #include <vector>
 

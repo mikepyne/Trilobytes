@@ -1,9 +1,9 @@
 #ifndef SHAPEH
 #define SHAPEH
 
-#include "Utility/JsonHelpers.h"
-#include "Utility/MathConstants.h"
-#include "Utility/Range.h"
+#include "JsonHelpers.h"
+#include "MathConstants.h"
+#include "Range.h"
 
 #include <nlohmann/json.hpp>
 

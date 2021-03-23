@@ -2,7 +2,7 @@
 #define RANDOM_H
 
 #include "Shape.h"
-#include "Utility/MathConstants.h"
+#include "MathConstants.h"
 
 #include <random>
 #include <limits>

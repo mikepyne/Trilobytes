@@ -1,7 +1,7 @@
 #ifndef ENTITYCONTAINERINTERFACE_H
 #define ENTITYCONTAINERINTERFACE_H
 
-#include "Shape.h"
+#include "Utility/Shape.h"
 
 #include <memory>
 #include <functional>

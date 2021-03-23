@@ -1,10 +1,10 @@
 #ifndef PHENOTYPE_H
 #define PHENOTYPE_H
 
-#include "Energy.h"
 #include "Sensors/Sense.h"
-#include "NeuralNetwork.h"
 #include "Effectors/Effector.h"
+#include "Utility/Energy.h"
+#include "Utility/NeuralNetwork.h"
 
 #include <QColor>
 

@@ -2,9 +2,9 @@
 #define GENESENSERANDOM_H
 
 #include "GeneSenseBase.h"
-#include "NeuralNetwork.h"
-#include "NeuralNetworkConnector.h"
 #include "Sensors/SenseRandom.h"
+#include "Utility/NeuralNetwork.h"
+#include "Utility/NeuralNetworkConnector.h"
 #include "Utility/TypeName.h"
 
 class GeneSenseRandom : public GeneSenseBase {

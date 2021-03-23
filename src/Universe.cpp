@@ -5,9 +5,9 @@
 #include "FoodPellet.h"
 #include "Egg.h"
 #include "Spike.h"
-#include "Random.h"
 #include "MainWindow.h"
 #include "Genome/GeneFactory.h"
+#include "Utility/Random.h"
 
 #include <QVariant>
 

@@ -2,7 +2,7 @@
 #define GENEBRAIN_H
 
 #include "Gene.h"
-#include "NeuralNetwork.h"
+#include "Utility/NeuralNetwork.h"
 #include "Utility/TypeName.h"
 
 #include <memory>

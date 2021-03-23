@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include "Universe.h"
-#include "ScatterGraph.h"
+#include "Utility/ScatterGraph.h"
 
 #include <QMainWindow>
 #include <QImage>

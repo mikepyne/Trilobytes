@@ -1,7 +1,7 @@
 #ifndef RANGE_H
 #define RANGE_H
 
-#include "Utility/JsonHelpers.h"
+#include "JsonHelpers.h"
 
 #include <nlohmann/json.hpp>
 

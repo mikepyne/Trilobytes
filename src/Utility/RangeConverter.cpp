@@ -1,6 +1,6 @@
 #include "RangeConverter.h"
 
-#include "Utility/JsonHelpers.h"
+#include "JsonHelpers.h"
 
 using namespace nlohmann;
 

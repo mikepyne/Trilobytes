@@ -1,7 +1,7 @@
 #include "SenseMagneticField.h"
 
 #include "Swimmer.h"
-#include "Shape.h"
+#include "Utility/Shape.h"
 #include "Utility/MathConstants.h"
 
 #include <QPainter>

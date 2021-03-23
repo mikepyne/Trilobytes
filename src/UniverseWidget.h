@@ -1,8 +1,8 @@
 #ifndef UNIVERSEWIDGET_H
 #define UNIVERSEWIDGET_H
 
-#include "Shape.h"
 #include "Universe.h"
+#include "Utility/Shape.h"
 
 // TODO QOpenGLWidget allows QPainter painting, but its messed up, consider moving over once everything is pixmap based
 #include <QWidget>

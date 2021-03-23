@@ -3,7 +3,7 @@
 
 #include "Entity.h"
 #include "Genome/Genome.h"
-#include "NeuralNetwork.h"
+#include "Utility/NeuralNetwork.h"
 
 class Egg : public Entity {
 public:
