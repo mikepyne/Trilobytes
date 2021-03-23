@@ -5,7 +5,8 @@
 #include "Genome/Genome.h"
 #include "Sensors/Sense.h"
 #include "Effectors/Effector.h"
-#include "Utility/NeuralNetwork.h"
+
+#include <NeuralNetwork.h>
 
 #include <memory>
 

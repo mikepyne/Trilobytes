@@ -2,7 +2,7 @@
 #define SENSEMAGNETICFIELD_H
 
 #include "Sense.h"
-#include "Utility/RangeConverter.h"
+#include <RangeConverter.h>
 
 #include <memory>
 

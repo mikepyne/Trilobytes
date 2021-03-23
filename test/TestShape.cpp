@@ -1,5 +1,5 @@
-#include "Utility/Shape.h"
-#include "Utility/Random.h"
+#include "Shape.h"
+#include "Random.h"
 
 #include <catch2/catch.hpp>
 

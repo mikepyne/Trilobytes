@@ -3,9 +3,10 @@
 
 #include "GeneSenseBase.h"
 #include "Sensors/SenseSine.h"
-#include "Utility/NeuralNetwork.h"
-#include "Utility/NeuralNetworkConnector.h"
-#include "Utility/TypeName.h"
+
+#include <NeuralNetwork.h>
+#include <NeuralNetworkConnector.h>
+#include <TypeName.h>
 
 class GeneSenseSine : public GeneSenseBase {
 public:

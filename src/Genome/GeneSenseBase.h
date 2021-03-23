@@ -2,9 +2,10 @@
 #define GENESENSEBASE_H
 
 #include "Gene.h"
-#include "Utility/Energy.h"
-#include "Utility/NeuralNetwork.h"
-#include "Utility/NeuralNetworkConnector.h"
+
+#include <Energy.h>
+#include <NeuralNetwork.h>
+#include <NeuralNetworkConnector.h>
 
 #include <memory>
 

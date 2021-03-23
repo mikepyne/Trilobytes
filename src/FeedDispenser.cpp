@@ -2,8 +2,8 @@
 
 #include "FoodPellet.h"
 #include "UniverseParameters.h"
-#include "Utility/Random.h"
-#include "Utility/QuadTree.h"
+#include "QuadTree.h"
+#include <Random.h>
 
 #include <QPainter>
 

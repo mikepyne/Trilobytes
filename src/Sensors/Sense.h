@@ -5,8 +5,9 @@ class EntityContainerInterface;
 class QPainter;
 
 #include "UniverseParameters.h"
-#include "Utility/NeuralNetwork.h"
-#include "Utility/NeuralNetworkConnector.h"
+
+#include <NeuralNetwork.h>
+#include <NeuralNetworkConnector.h>
 
 #include <string_view>
 #include <memory>

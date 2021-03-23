@@ -4,15 +4,16 @@ target_sources(Tests
     PUBLIC
     main.cpp
     TestShape.cpp
+    TestRangeConverter.cpp
 )
 
 target_include_directories(Tests
     PUBLIC
-    ${PROJECT_SOURCE_DIR}
-    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/Utility
 )
 
 target_link_libraries(Tests
     PRIVATE
     Catch2::Catch2
+    Utility
 )

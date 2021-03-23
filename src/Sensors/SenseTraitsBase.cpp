@@ -1,7 +1,8 @@
 #include "SenseTraitsBase.h"
 
 #include "Swimmer.h"
-#include "Utility/Algorithm.h"
+
+#include <Algorithm.h>
 
 using namespace nlohmann;
 

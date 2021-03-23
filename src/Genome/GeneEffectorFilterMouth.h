@@ -2,7 +2,7 @@
 #define GENEEFFECTORFILTERMOUTH_H
 
 #include "GeneEffectorBase.h"
-#include "Utility/TypeName.h"
+#include <TypeName.h>
 
 class GeneEffectorFilterMouth : public GeneEffectorBase {
 public:

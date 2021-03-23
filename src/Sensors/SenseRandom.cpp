@@ -1,7 +1,8 @@
 #include "SenseRandom.h"
 
-#include "Utility/Algorithm.h"
-#include "Utility/Random.h"
+
+#include <Algorithm.h>
+#include <Random.h>
 
 #include <iomanip>
 

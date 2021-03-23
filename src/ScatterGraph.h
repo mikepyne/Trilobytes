@@ -1,24 +1,19 @@
-#ifndef BARGRAPH_H
-#define BARGRAPH_H
+#ifndef SCATTERGRAPH_H
+#define SCATTERGRAPH_H
 
-#include "MinMax.h"
-#include "CircularBuffer.h"
+#include <MinMax.h>
 
 #include <QWidget>
-#include <QString>
-#include <QRectF>
 
-class LineGraph : public QWidget {
-    Q_OBJECT
+class ScatterGraph : public QWidget {
 public:
-    struct Plot {
-        QString name_;
+    struct DataPoint {
         QRgb colour_;
-        bool hidden_;
-        Tril::CircularBuffer<std::pair<qreal, qreal>> points_;
+        qreal x_;
+        qreal y_;
     };
 
-    LineGraph(QWidget* parent, QString xAxisLabel, QString yAxisLabel, size_t plotDataPointCount = 20'000);
+    ScatterGraph(QWidget* parent, QString title, QString xAxisLabel, QString yAxisLabel);
 
     qreal GetXAxisMin() const { return xRange_.Min(); }
     qreal GetXAxisMax() const { return xRange_.Max(); }
@@ -28,12 +23,9 @@ public:
     qreal GetXAxisMaxOverride() const { return xAxisMaxOverride_; }
     qreal GetYAxisMinOverride() const { return yAxisMinOverride_; }
     qreal GetYAxisMaxOverride() const { return yAxisMaxOverride_; }
-    size_t GetPlotDataPointCount() const { return plotDataPointCount_; }
-    void ForEachPlot(const std::function<void(const Plot& plot, size_t plotIndex)>& action) const;
 
-    void AddPlot(QRgb colour, QString name);
-    void AddPoint(size_t index, qreal x, qreal y);
-    void SetPlotHidden(size_t plotIndex, bool hidden);
+    void SetTitle(QString newTitle) { graphTitle_ = newTitle; }
+    void SetPoints(std::vector<DataPoint>&& points);
     void SetGraticuleHidden(bool hidden);
     void Reset();
     void RecalculateAxisBounds();
@@ -47,19 +39,18 @@ public slots:
     void SetXAxisMaxOverride(qreal value) { xAxisMaxOverrideValue_ = value; update(); }
     void SetYAxisMinOverride(qreal value) { yAxisMinOverrideValue_ = value; update(); }
     void SetYAxisMaxOverride(qreal value) { yAxisMaxOverrideValue_ = value; update(); }
-    void SetPlotDataPointCount(size_t count);
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent* event) override final;
     virtual void paintEvent(QPaintEvent* event) override final;
 
 private:
+    QString graphTitle_;
     Tril::MinMax<qreal> xRange_;
     Tril::MinMax<qreal> yRange_;
     QString xAxisLabel_;
     QString yAxisLabel_;
-    std::vector<Plot> plots_;
-    size_t plotDataPointCount_;
+    std::vector<DataPoint> points_;
     bool xAxisMinOverride_ = false;
     bool xAxisMaxOverride_ = false;
     bool yAxisMinOverride_ = false;
@@ -73,8 +64,8 @@ private:
     QPointF graticuleLocation_;
 
     QPointF PaintAxes(QPainter& painter) const;
-    void PaintKey(QPainter& painter) const;
+    void PaintTitle(QPainter& painter) const;
     void PaintGraticule(QPainter& painter, const QPointF& target, const QRectF& area) const;
 };
 
-#endif // BARGRAPH_H
+#endif // SCATTERGRAPH_H

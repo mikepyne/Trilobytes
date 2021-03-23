@@ -1,6 +1,6 @@
 #include "SenseSine.h"
 
-#include "Utility/Algorithm.h"
+#include <Algorithm.h>
 
 #include <iomanip>
 

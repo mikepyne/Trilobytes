@@ -4,7 +4,7 @@
 #include "EntityContainerInterface.h"
 #include "Entity.h"
 #include "UniverseParameters.h"
-#include "Shape.h"
+#include <Shape.h>
 
 #include <memory>
 #include <vector>

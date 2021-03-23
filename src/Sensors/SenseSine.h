@@ -2,7 +2,8 @@
 #define SENSESINE_H
 
 #include "Sense.h"
-#include "Utility/JsonHelpers.h"
+
+#include <JsonHelpers.h>
 
 #include <nlohmann/json.hpp>
 

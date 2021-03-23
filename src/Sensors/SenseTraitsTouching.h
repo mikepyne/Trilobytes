@@ -2,7 +2,7 @@
 #define SENSEENTITIESTOUCHING_H
 
 #include "SenseTraitsBase.h"
-#include "Utility/Shape.h"
+#include <Shape.h>
 
 class QPainter;
 

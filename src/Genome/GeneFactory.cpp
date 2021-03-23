@@ -15,7 +15,7 @@
 #include "GeneSenseTraitsTouching.h"
 #include "GeneSenseTraitsRaycast.h"
 #include "GeneSenseTraitsSelf.h"
-#include "Utility/Random.h"
+#include <Random.h>
 
 const GeneFactory& GeneFactory::Get()
 {

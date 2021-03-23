@@ -2,7 +2,7 @@
 #define GENESENSELUNARCYCLE_H
 
 #include "GeneSenseBase.h"
-#include "Utility/TypeName.h"
+#include <TypeName.h>
 
 class GeneSenseLunarCycle : public GeneSenseBase {
 public:

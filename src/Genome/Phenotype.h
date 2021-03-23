@@ -3,8 +3,9 @@
 
 #include "Sensors/Sense.h"
 #include "Effectors/Effector.h"
-#include "Utility/Energy.h"
-#include "Utility/NeuralNetwork.h"
+
+#include <Energy.h>
+#include <NeuralNetwork.h>
 
 #include <QColor>
 

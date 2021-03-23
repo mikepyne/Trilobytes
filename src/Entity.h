@@ -3,9 +3,10 @@
 
 #include "EntityContainerInterface.h"
 #include "UniverseParameters.h"
-#include "Utility/Shape.h"
-#include "Utility/Energy.h"
-#include "Utility/Transform.h"
+
+#include <Shape.h>
+#include <Energy.h>
+#include <Transform.h>
 
 #include <QColor>
 

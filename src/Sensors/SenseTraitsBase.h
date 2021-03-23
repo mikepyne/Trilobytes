@@ -2,10 +2,11 @@
 #define SENSETRAITSBASE_H
 
 #include "Sense.h"
-#include "Utility/Energy.h"
-#include "Utility/Transform.h"
-#include "Utility/JsonHelpers.h"
-#include "Utility/RangeConverter.h"
+
+#include <Energy.h>
+#include <Transform.h>
+#include <JsonHelpers.h>
+#include <RangeConverter.h>
 
 #include <nlohmann/json.hpp>
 

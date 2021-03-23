@@ -2,7 +2,7 @@
 #define GENEEFFECTORPROBOSCISMOUTH_H
 
 #include "GeneEffectorBase.h"
-#include "Utility/TypeName.h"
+#include <TypeName.h>
 
 class GeneEffectorProboscisMouth : public GeneEffectorBase {
 public:

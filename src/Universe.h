@@ -2,10 +2,11 @@
 #define UNIVERSE_H
 
 #include "FeedDispenser.h"
-#include "Utility/QuadTree.h"
-#include "Utility/Energy.h"
-#include "Utility/LineGraph.h"
-#include "Utility/AutoClearingContainer.h"
+#include "LineGraph.h"
+#include "QuadTree.h"
+
+#include <Energy.h>
+#include <AutoClearingContainer.h>
 
 #include <QTimer>
 #include <QPainter>

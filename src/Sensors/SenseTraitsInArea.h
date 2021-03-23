@@ -2,7 +2,7 @@
 #define SENSEENTITIESINAREA_H
 
 #include "SenseTraitsBase.h"
-#include "Utility/Shape.h"
+#include <Shape.h>
 
 class SenseTraitsInArea final : public SenseTraitsBase {
 public:

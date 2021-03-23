@@ -1,7 +1,7 @@
 #include "GenePigment.h"
 
 #include "Swimmer.h"
-#include "Utility/Random.h"
+#include <Random.h>
 
 #include <QPixmap>
 #include <QPainter>

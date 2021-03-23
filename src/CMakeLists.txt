@@ -33,9 +33,12 @@ set(PROJECT_SOURCES
         Genome/GeneSenseTraitsSelf.cpp
         Genome/GeneSenseTraitsTouching.cpp
         Genome/Genome.cpp
+        LineGraph.cpp
         LineGraphContainerWidget.cpp
         MeatChunk.cpp
         NeuralNetworkInspector.cpp
+        QuadTree.cpp
+        ScatterGraph.cpp
         Sensors/Sense.cpp
         Sensors/SenseLunarCycle.cpp
         Sensors/SenseMagneticField.cpp
@@ -50,15 +53,6 @@ set(PROJECT_SOURCES
         Swimmer.cpp
         Universe.cpp
         UniverseWidget.cpp
-        Utility/JsonHelpers.cpp
-        Utility/LineGraph.cpp
-        Utility/NeuralNetwork.cpp
-        Utility/NeuralNetworkConnector.cpp
-        Utility/QuadTree.cpp
-        Utility/RangeConverter.cpp
-        Utility/RollingStatistics.cpp
-        Utility/ScatterGraph.cpp
-        Utility/Transform.cpp
 )
 
 set(PROJECT_HEADERS
@@ -97,9 +91,12 @@ set(PROJECT_HEADERS
         Genome/GeneSenseTraitsTouching.h
         Genome/Genome.h
         Genome/Phenotype.h
+        LineGraph.h
         LineGraphContainerWidget.h
         MeatChunk.h
         NeuralNetworkInspector.h
+        QuadTree.h
+        ScatterGraph.h
         Sensors/Sense.h
         Sensors/SenseLunarCycle.h
         Sensors/SenseMagneticField.h
@@ -115,26 +112,6 @@ set(PROJECT_HEADERS
         Universe.h
         UniverseParameters.h
         UniverseWidget.h
-        Utility/AutoClearingContainer.h
-        Utility/Algorithm.h
-        Utility/CircularBuffer.h
-        Utility/Energy.h
-        Utility/FormatHelpers.h
-        Utility/JsonHelpers.h
-        Utility/LineGraph.h
-        Utility/MathConstants.h
-        Utility/MinMax.h
-        Utility/NeuralNetwork.h
-        Utility/NeuralNetworkConnector.h
-        Utility/QuadTree.h
-        Utility/Random.h
-        Utility/Range.h
-        Utility/RangeConverter.h
-        Utility/RollingStatistics.h
-        Utility/ScatterGraph.h
-        Utility/Shape.h
-        Utility/Transform.h
-        Utility/TypeName.h
 )
 
 set(PROJECT_DESIGNER_FILES
@@ -154,10 +131,21 @@ target_compile_definitions(Trilobytes
     VERSION_ADDITIONAL=alpha
 )
 
+target_include_directories(Trilobytes
+    PRIVATE
+    ${PROJECT_SOURCE_DIR}/Utility
+)
+
 target_link_libraries(Trilobytes
     PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
+    nlohmann_json::nlohmann_json
     fmt::fmt
+    Utility
+)
+
+add_dependencies(Trilobytes
+    Tests
 )
 
 add_custom_command(TARGET Trilobytes POST_BUILD

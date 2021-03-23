@@ -2,7 +2,7 @@
 #define GENEEFFECTORTAIL_H
 
 #include "GeneEffectorBase.h"
-#include "Utility/TypeName.h"
+#include <TypeName.h>
 
 #include <memory>
 

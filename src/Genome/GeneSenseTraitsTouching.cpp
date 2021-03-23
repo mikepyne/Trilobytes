@@ -2,8 +2,9 @@
 
 #include "Phenotype.h"
 #include "Sensors/SenseTraitsTouching.h"
-#include "Utility/Random.h"
-#include "Utility/JsonHelpers.h"
+
+#include <Random.h>
+#include <JsonHelpers.h>
 
 using namespace nlohmann;
 

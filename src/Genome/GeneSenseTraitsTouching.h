@@ -2,7 +2,7 @@
 #define GENESENSEENTITIESTOUCHING_H
 
 #include "GeneSenseTraitsBase.h"
-#include "Utility/TypeName.h"
+#include <TypeName.h>
 
 class GeneSenseTraitsTouching final : public GeneSenseTraitsBase {
 public:

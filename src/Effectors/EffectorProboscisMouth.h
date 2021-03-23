@@ -2,7 +2,7 @@
 #define EFFECTORPROBOSCISMOUTH_H
 
 #include "Effector.h"
-#include "Utility/Shape.h"
+#include <Shape.h>
 
 class EffectorProboscisMouth : public Effector {
 public:

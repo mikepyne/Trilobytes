@@ -2,7 +2,7 @@
 #define GENESENSETRAITSSELF_H
 
 #include "GeneSenseTraitsBase.h"
-#include "Utility/TypeName.h"
+#include <TypeName.h>
 
 class GeneSenseTraitsSelf : public GeneSenseTraitsBase {
 public:
