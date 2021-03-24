@@ -17,11 +17,18 @@ Built with CMake and Ninja in QtCreator
 
 The easiest way to build from sources yourself is to open project in QtCreator, select a compatible (C++17) toolchain and build through the QtCreator GUI.
 
+The CMake buildfiles could do with being more platform independant, however the changes required to run on linux are minimal (comment out the windeployqt command and the MinGW options in src/CMakeLists.txt)
+
 TODO
 -----
+ - Need to move QuadTree into utility, which will require some simple base class for entity to extend
+ - - Then particle can also extend entity, (FeedDispenser could also be a particle?)
  - More GUI controlls
  - More niches
- - More effectors (body armor? sex organs? pheremone creators? poison creators? decoy creators? food creators? Egg layers?)
+ - - More hazards
+ - - More food types
+ - - More environmental effects (localised friction? e.t.c.)
+ - More effectors (body armor? reproductive organs? pheremone creators? poison creators? decoy creators? food creators? Egg layers?)
  - Genes that encode more than a single effector or sensor (Pair of antenna? pair of eyes? memory/flip-flop (loop output to input)?
  - Improve rendering (image based? decals? OpenGL?)
  - Genes inspector view
