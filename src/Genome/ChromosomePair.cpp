@@ -12,7 +12,7 @@ ChromosomePair::ChromosomePair(std::vector<std::shared_ptr<Gene> >&& genes)
     , bChromosomeRange_(aChromosomeRange_)
 {
     for (auto& gene : genes) {
-        chromosomePair_.insert({ Random::Number(aChromosomeRange_.Min(), aChromosomeRange_.Max()), std::make_pair(gene, gene) });
+        chromosomePair_.insert({ Random::Number(aChromosomeRange_), std::make_pair(gene, gene) });
     }
 }
 
@@ -156,11 +156,13 @@ void ChromosomePair::MutateGene()
         }
     }
 }
-
+#include <iostream>
 void ChromosomePair::MutateStructure()
 {
     // All equally weighted for now
-    switch (Random::WeightedIndex({ 1, 1, 1, 1, 1, 1 })) {
+    auto index = Random::WeightedIndex({ 1, 1, 1, 1, 1, 1 });
+    std::cout << "MutateStructure() " << index << std::endl;
+    switch (index) {
     case 0:
         // chromosome range change
         for (Tril::Range<unsigned>* range : { &aChromosomeRange_, &bChromosomeRange_ }) {
@@ -177,7 +179,7 @@ void ChromosomePair::MutateStructure()
             std::shared_ptr<Gene>& randomGene = Gene::GetRandom(genePair);
             if (randomGene != nullptr) {
                 bool addToA = Random::Boolean();
-                size_t randomLocation = Random::Number<size_t>(addToA ? aChromosomeRange_.Min() : bChromosomeRange_.Min(), addToA ? aChromosomeRange_.Max() : bChromosomeRange_.Max());
+                unsigned randomLocation = Random::Number<unsigned>(addToA ? aChromosomeRange_ : bChromosomeRange_);
                 addToA ? chromosomePair_[randomLocation].first = randomGene : chromosomePair_[randomLocation].second = randomGene;
             }
         }
@@ -210,8 +212,7 @@ void ChromosomePair::MutateStructure()
              */
         std::shared_ptr<Gene> randomGene = GeneFactory::Get().GenerateRandomGene(NeuralNetwork::BRAIN_WIDTH);
         bool addToA = Random::Boolean();
-        const auto& range = addToA ? aChromosomeRange_ : bChromosomeRange_;
-        size_t randomLocation = Random::Number<size_t>(range.Min(), range.Max());
+        unsigned randomLocation = Random::Number<unsigned>(addToA ? aChromosomeRange_ : bChromosomeRange_);
         addToA ? chromosomePair_[randomLocation].first = randomGene : chromosomePair_[randomLocation].second = randomGene;
     }
         break;
@@ -223,8 +224,7 @@ void ChromosomePair::MutateStructure()
             std::shared_ptr<Gene>& randomGene = Gene::GetRandom(genePair);
             if (randomGene) {
                 bool addToA = Random::Boolean();
-                const auto& range = addToA ? aChromosomeRange_ : bChromosomeRange_;
-                size_t randomLocation = Random::Number<size_t>(range.Min(), range.Max());
+                unsigned randomLocation = Random::Number<unsigned>(addToA ? aChromosomeRange_ : bChromosomeRange_);
                 addToA ? chromosomePair_[randomLocation].first = randomGene : chromosomePair_[randomLocation].second = randomGene;
                 randomGene.reset();
             }

@@ -80,6 +80,12 @@ public:
         }
     }
 
+    template<typename NumericType>
+    static NumericType Number(const Tril::Range<NumericType>& range)
+    {
+        return Number<NumericType>(range.Min(), range.Max());
+    }
+
     static size_t WeightedIndex(std::initializer_list<double>&& weights)
     {
         std::discrete_distribution<size_t> d(std::move(weights));
