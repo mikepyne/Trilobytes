@@ -11,8 +11,12 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# This allows Catch2 to be built by MinGW without MinGW having a fit over the size of the object file generated
-add_compile_options("-Wa,-mbig-obj")
+if (MINGW)
+    # This allows Catch2 to be built by MinGW without MinGW having a fit over the size of the object file generated
+    add_compile_options("-Wa,-mbig-obj")
+endif()
+
+Message("${CMAKE_CXX_COMPILER_ID}")
 
 find_package(QT NAMES Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)

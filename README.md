@@ -17,8 +17,6 @@ Built with CMake and Ninja in QtCreator
 
 The easiest way to build from sources yourself is to open project in QtCreator, select a compatible (C++17) toolchain and build through the QtCreator GUI.
 
-The CMake buildfiles could do with being more platform independant, however the changes required to run on linux are minimal (comment out the windeployqt command and the MinGW options in src/CMakeLists.txt)
-
 TODO
 -----
  - Need to move QuadTree into utility, which will require some simple base class for entity to extend
