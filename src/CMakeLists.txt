@@ -118,7 +118,7 @@ set(PROJECT_DESIGNER_FILES
         MainWindow.ui
 )
 
-qt_add_executable(Trilobytes
+add_executable(Trilobytes
     ${PROJECT_SOURCES}
     ${PROJECT_HEADERS}
     ${PROJECT_DESIGNER_FILES}
